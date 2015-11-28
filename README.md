@@ -7,5 +7,4 @@ Do the following in the project directory:
 2. Use the command: project server
 3. Use the command: re-start
 
-This will start the server on port 8080. Now open a browser and go to:
-[localhost:8080](localhost:8080)
+This will start the server on port 8080. Now open a browser and go to: [localhost:8080](localhost:8080)
