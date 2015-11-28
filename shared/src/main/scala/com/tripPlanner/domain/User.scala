@@ -1,4 +1,4 @@
-package com.travelPlanner.domain
+package com.tripPlanner.domain
 
 /**
   * Created by rjkj on 11/14/15.
