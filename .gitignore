@@ -25,4 +25,4 @@ node_modules/
 
 #intellij
 *.iml
-.idea
+.idea/
