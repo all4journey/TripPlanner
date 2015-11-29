@@ -35,7 +35,10 @@ lazy val server = (project in file("server"))
   .settings(commonSettings: _*)
   .dependsOn(sharedJvm)
   .settings(libraryDependencies ++=Seq(
-    "com.typesafe.akka" %% "akka-http-experimental" % "1.0-M3",
+    "com.typesafe.akka" %% "akka-http-core-experimental" % "2.0-M1",
+    "com.typesafe.akka" %% "akka-http-xml-experimental" % "2.0-M1",
+    "com.typesafe.akka" %% "akka-http-experimental" % "2.0-M1",
+    "org.scala-lang.modules" %% "scala-xml" % "1.0.5",
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   ))
   .settings(Revolver.settings,

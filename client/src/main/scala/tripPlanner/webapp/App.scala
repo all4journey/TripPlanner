@@ -31,6 +31,7 @@ object App extends JSApp {
 
   def main(): Unit = {
     println("About to init map...")
+    jQuery("#form").append("Hello. this will be a button")
 
     def initialize() = js.Function {
       val opts = google.maps.MapOptions(
