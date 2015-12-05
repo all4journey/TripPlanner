@@ -10,7 +10,9 @@ import com.tripPlanner.webapp.Page
 trait IndexPage extends Page {
   def apply()(implicit sys:ActorSystem, mat:Materializer) = pathEnd{
     get{
-      complete(IndexView())
+      extractRequestContext { implicit ctx =>
+        complete(IndexView())
+      }
     }
   }
 }

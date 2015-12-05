@@ -60,7 +60,8 @@ lazy val server = (project in file("server"))
     "org.scala-lang.modules" %% "scala-xml" % "1.0.5",
     "org.scalatest" %% "scalatest" % "2.2.1" % "test",
     "com.lihaoyi" %% "scalatags" % "0.5.3",
-    "com.github.japgolly.scalacss" %% "core" % "0.3.1"
+    "com.github.japgolly.scalacss" %% "core" % "0.3.1",
+    "org.webjars" % "webjars-locator" % "0.23"
   ))
   .settings(Revolver.settings,
     (resourceGenerators in Compile) <+=
