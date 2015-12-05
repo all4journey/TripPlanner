@@ -10,6 +10,8 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.marshallers.xml.ScalaXmlSupport._
 import StatusCodes._
+import com.tripPlanner.webapp.index.IndexPage
+import tripPlanner.webapp.App
 
 import scala.concurrent.Future
 
@@ -41,7 +43,8 @@ trait Routes {
   val route =
     get {
       pathSingleSlash {
-        getFromResource("web/index-dev.html")
+        IndexPage()
+//        getFromResource("web/index-dev.html")
       } ~
         path("client-fastopt.js")(getFromResource("client-fastopt.js")) ~
         path("client-launcher.js")(getFromResource("client-launcher.js")) ~
