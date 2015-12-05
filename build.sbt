@@ -39,8 +39,9 @@ lazy val client = (project in file("client"))
     "be.doeraene" %%% "scalajs-jquery" % "0.8.1",
     "com.lihaoyi" %%% "scalatags" % "0.5.3",
     "com.github.japgolly.scalacss" %%% "core" % "0.3.1",
-    "io.surfkit" %%% "scalajs-google-maps" % "0.1-SNAPSHOT"
-  ))
+    "io.surfkit" %%% "scalajs-google-maps" % "0.1-SNAPSHOT"),
+    jsDependencies += "org.webjars.bower" % "bootstrap" % "3.3.4" / "bootstrap.js" commonJSName "bootstrap"
+  )
   .settings(
     persistLauncher in Compile := true,
     persistLauncher in Test := false
@@ -84,6 +85,7 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
       "com.github.benhutchison" %%% "prickle" % "1.1.10",
       "org.scala-js" %% "scalajs-stubs" % scalaJsV
     )
+
     //other settings
   )
 
