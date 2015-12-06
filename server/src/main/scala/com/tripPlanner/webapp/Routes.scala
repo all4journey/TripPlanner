@@ -6,6 +6,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
 import com.tripPlanner.webapp.index.IndexPage
+import com.tripPlanner.webapp.profile.ProfilePage
 import org.webjars.WebJarAssetLocator
 import akka.http.scaladsl.marshallers.xml.ScalaXmlSupport._
 
@@ -37,7 +38,10 @@ object Routes extends Page{
           complete{
             <h1>Hello World</h1>
           }
-        }
+        } ~
+      path("profile") {
+        ProfilePage()
+      }
     } ~
       getFromResource("web")
   }
