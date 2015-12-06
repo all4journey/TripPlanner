@@ -12,3 +12,14 @@
 >
 >
 >This will start the server on port 8080. Now open a browser and go to: [localhost:8080](localhost:8080)
+
+## Database Setup
+
+>Need to have docker installed - https://docs.docker.com/engine/installation/
+>
+>Once Docker is installed run command:
+>>docker run --name tripPlannerMysql -e MYSQL_ROOT_PASSWORD=password1 -e MYSQL_DATABASE=trip_planner  -v /mysql/datadir:/var/lib/mysql -p 3306:3306 -d mysql:latest
+>
+>This will create the database with the user root and password: password1
+>
+>After the database is started. run sbt domain/flywayMigrate in the project directory

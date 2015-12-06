@@ -12,7 +12,7 @@ object MainTemplate extends View {
              content: Seq[Modifier] = Seq.empty,
              footer: Seq[Modifier] = Seq.empty
            )
-             (implicit ctx: RequestContext)
+           (implicit ctx: RequestContext)
   =
     html(
       head(
