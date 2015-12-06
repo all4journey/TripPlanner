@@ -6,7 +6,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
 import com.tripPlanner.webapp.index.IndexPage
-import com.tripPlanner.webapp.profile.ProfilePage
+import com.tripPlanner.webapp.pages.ProfilePage
 import org.webjars.WebJarAssetLocator
 import akka.http.scaladsl.marshallers.xml.ScalaXmlSupport._
 

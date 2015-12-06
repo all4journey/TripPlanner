@@ -1,10 +1,11 @@
-package tripPlanner.webapp
+package com.tripPlanner.webapp
 
 import java.util.UUID
 
 import com.tripPlanner.domain.User
+import com.tripPlanner.webapp.pages.HomePage
 import google.maps.LatLng
-import tripPlanner.webapp.pages.HomePage
+import com.tripPlanner.webapp.pages.HomePage
 
 import scala.scalajs.js.JSApp
 import org.scalajs.dom

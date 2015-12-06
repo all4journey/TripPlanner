@@ -1,4 +1,4 @@
-package tripPlanner.webapp.pages
+package com.tripPlanner.webapp.pages
 
 import org.scalajs.dom
 
