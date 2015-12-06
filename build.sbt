@@ -112,7 +112,7 @@ lazy val sharedJvm = shared.jvm
 lazy val sharedJs = shared.js
 
 lazy val slick = TaskKey[Seq[File]]("gen-tables")
-lazy val slickCodeGenTask = (sourceDirectory, dependencyClasspath in Compile, runner in Compile, streams) map {(dir, cp, r, s) =>
+lazy val slickCodeGenTask = (sourceManaged, dependencyClasspath in Compile, runner in Compile, streams) map {(dir, cp, r, s) =>
   val outputDir = (dir/"main/scala").getPath
   val url = "jdbc:mysql://localhost:3306/trip_planner?user=root&password=password1"
   val jdbcDriver = "com.mysql.jdbc.Driver"
