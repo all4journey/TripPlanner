@@ -113,13 +113,13 @@ lazy val sharedJs = shared.js
 
 lazy val slick = TaskKey[Seq[File]]("gen-tables")
 lazy val slickCodeGenTask = (sourceManaged, dependencyClasspath in Compile, runner in Compile, streams) map {(dir, cp, r, s) =>
-  val outputDir = (dir/"main/scala").getPath
+  val outputDir = (dir/"generated").getPath
   val url = "jdbc:mysql://localhost:3306/trip_planner?user=root&password=password1"
   val jdbcDriver = "com.mysql.jdbc.Driver"
   val slickDriver = "slick.driver.MySQLDriver"
-  val pkg = "com.tripPlanner.domain"
+  val pkg = "com.tripPlanner.domain.generated"
   toError(r.run("slick.codegen.SourceCodeGenerator", cp.files, Array(slickDriver, jdbcDriver, url, outputDir, pkg), s.log))
-  val fname = s"$outputDir/com/tripPlanner/domain/Tables.scala"
+  val fname = s"$outputDir/com/tripPlanner/domain/generated/Tables.scala"
   Seq(file(fname))
 }
 
