@@ -21,7 +21,6 @@ object ProfileJsImpl extends ProfileJs {
   }
 
   def profilePanel = div(cls := "container")(
-    hr(),
     div(cls := "row")(
       div(cls := "col-md-3")(
         div(cls := "text-center")(
