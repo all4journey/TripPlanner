@@ -1,4 +1,4 @@
-package com.tripPlanner.webapp.index
+package com.tripPlanner.webapp.pages
 
 import akka.actor.ActorSystem
 import akka.stream.Materializer

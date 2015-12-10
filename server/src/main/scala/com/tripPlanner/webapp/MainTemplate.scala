@@ -24,17 +24,15 @@ object MainTemplate extends View {
         css("/assets/bootstrap/bootstrap.min.css"),
         header
       ),
-      body(
+      body()(
         div(cls := "navbar navbar-inverse navbar-fixed-top", role := "navigation")(
+            ul(cls := "nav navbar-nav")(
+              menuItem("Main", "/"),
+              menuItem("Profile", "/profile")
+            )
         ),
         div(cls := "container-fluid")(
-          div(cls := "col-sm-3 col-md-2 sidebar")(
-            ul(cls := "nav nav-sidebar")(
-              menuItem("Main", "/"),
-              menuItem("Page 2", "/page2")
-            )
-          ),
-          div(cls := "col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main")(
+          div(cls := "col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main", paddingTop:="50px")(
             h1(cls := "page-header", titleText),
             div(id := "content"),
             div(content)

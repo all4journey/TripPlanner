@@ -1,7 +1,8 @@
-package com.tripPlanner.webapp.index
+package com.tripPlanner.webapp.pages
 
 import akka.http.scaladsl.server.RequestContext
 import com.tripPlanner.webapp.{MainTemplate, View}
+
 import scalatags.Text.all._
 
 /**
@@ -10,10 +11,7 @@ import scalatags.Text.all._
 trait IndexView extends View {
   def apply()(implicit ctx: RequestContext) =
     MainTemplate(
-      titleText = "It Works",
-      content = Seq(
-        p("Hello World")
-      ),
+      titleText = "Welcome to Trip Planner",
       footer = Seq(jsModule[IndexJs])
     )
 }
