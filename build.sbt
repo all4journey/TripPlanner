@@ -84,6 +84,7 @@ lazy val domain = (project in file("domain"))
       "mysql" % "mysql-connector-java" % "5.1.37",
       "com.typesafe.slick" %% "slick" % slickVersion,
       "com.typesafe.slick" %% "slick-codegen" % slickVersion,
+      "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
       "org.slf4j" % "slf4j-nop" % "1.7.12"
     ),
     libraryDependencies ++= commonTestDeps,
