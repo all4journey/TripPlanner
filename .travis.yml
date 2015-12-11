@@ -10,4 +10,4 @@ before_install:
     - sbt domain/flywayMigrate
 jdk:
     - oraclejdk8
-script: sbt test -Ddb_config="travis-db"
+script: sbt test -Ddb_config="travis-db" -Dflyway_password=""
