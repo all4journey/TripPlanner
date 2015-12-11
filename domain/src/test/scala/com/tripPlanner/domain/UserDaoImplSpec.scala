@@ -21,7 +21,7 @@ class UserDaoImplSpec extends FlatSpec with Matchers with BeforeAndAfter{
 
 
   before {
-    val databaseConfig = sys.env.get("db_config")
+    val databaseConfig = sys.props.get("db_config")
     db = Database.forConfig(databaseConfig.getOrElse("db"))
   }
 
