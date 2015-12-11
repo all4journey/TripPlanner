@@ -3,6 +3,6 @@ scala:
     -2.11.7
 services:
     -mysql
-before_install
+before_install:
     - mysql -e "create database IF NOT EXISTS trip_planner;" -uroot
     - sbt domain/flywayMigrate -Dflyway.password=""
