@@ -91,7 +91,7 @@ lazy val domain = (project in file("domain"))
     flywayUrl := "jdbc:mysql://127.0.0.1:3306/trip_planner",
     flywayUser := "root",
 //    flywayPassword := "password1",
-    slick <<= slickCodeGenTask,
+//    slick <<= slickCodeGenTask,
     sourceGenerators in Compile <+= slickCodeGenTask
   )
   .dependsOn(sharedJvm)
