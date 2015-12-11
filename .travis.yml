@@ -3,10 +3,11 @@ scala:
     - 2.11.7
 services:
     - mysql
+install:
+    - npm install phantomjs
 before_install:
     - mysql -e "create database IF NOT EXISTS trip_planner;" -uroot
     - sbt domain/flywayMigrate
-     - npm install phantomjs
 jdk:
     - oraclejdk8
 script: sbt test -Ddb_config="travis-db"
