@@ -5,6 +5,6 @@ services:
     -mysql
 before_install:
     - mysql -e "create database IF NOT EXISTS trip_planner;" -uroot
-    - sbt domain/flywayMigrate -Dflyway.password=""
+    - sbt domain/flywayMigrate
 jdk:
     - oraclejdk8
