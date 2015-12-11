@@ -45,12 +45,16 @@ lazy val client = (project in file("client"))
     "be.doeraene" %%% "scalajs-jquery" % "0.8.1",
     "com.lihaoyi" %%% "scalatags" % "0.5.3",
     "com.github.japgolly.scalacss" %%% "core" % "0.3.1",
-    "io.surfkit" %%% "scalajs-google-maps" % "0.1-SNAPSHOT"),
+    "io.surfkit" %%% "scalajs-google-maps" % "0.1-SNAPSHOT",
+    "com.lihaoyi" %% "utest" % "0.3.1" % "test"
+  ),
     jsDependencies += "org.webjars.bower" % "bootstrap" % "3.3.4" / "bootstrap.js" commonJSName "bootstrap"
   )
   .settings(
     persistLauncher in Compile := true,
-    persistLauncher in Test := false
+    persistLauncher in Test := false,
+    testFrameworks += new TestFramework("utest.runner.Framework"),
+    requiresDOM := true
   )
   .enablePlugins(ScalaJSPlugin)
   .dependsOn(sharedJs)

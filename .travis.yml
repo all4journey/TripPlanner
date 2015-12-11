@@ -6,5 +6,7 @@ services:
 before_install:
     - mysql -e "create database IF NOT EXISTS trip_planner;" -uroot
     - sbt domain/flywayMigrate
+     - npm install phantomjs
 jdk:
     - oraclejdk8
+script: sbt test -Ddb_config="travis-db"
