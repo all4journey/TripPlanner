@@ -1,5 +1,6 @@
 import sbt.Keys._
 import sbt._
+import NativePackagerHelper._
 
 lazy val commonSettings = Seq(
   organization := "com.tripPlanners",
@@ -61,6 +62,7 @@ lazy val client = (project in file("client"))
 
 lazy val server = (project in file("server"))
   .settings(commonSettings: _*)
+  .enablePlugins(JavaServerAppPackaging)
   .dependsOn(sharedJvm)
   .dependsOn(client)
   .settings(libraryDependencies ++= Seq(
@@ -79,6 +81,11 @@ lazy val server = (project in file("server"))
         map((f1, f2, f3) => Seq(f1.data, f2.data, f3.getAbsoluteFile)),
     watchSources <++= (watchSources in client)
   )
+  .settings(
+      mainClass in Compile := Some("com.tripPlanner.Boot"),
+      mappings in Universal ++= {contentOf("/src/main/resources").toMap.mapValues("config/" + _).toSeq},
+      scriptClasspath := Seq("../config/") ++ scriptClasspath.value
+      )
 
 lazy val domain = (project in file("domain"))
   .settings(commonSettings: _*)
