@@ -6,6 +6,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
 import com.tripPlanner.webapp.pages.{IndexPage, ProfilePage}
+import com.tripPlanner.webapp.util.LogAppender
 import org.webjars.WebJarAssetLocator
 import akka.http.scaladsl.marshallers.xml.ScalaXmlSupport._
 
@@ -14,10 +15,10 @@ import scala.util.{Success, Try}
 /**
   * Created by rjkj on 12/5/15.
   */
-object Routes extends Page{
+object Routes extends Page {
   val webJarLocator = new WebJarAssetLocator()
 
-  def apply()(implicit system: ActorSystem, mat:Materializer): Route = {
+  def apply()(implicit system: ActorSystem, mat: Materializer): Route = {
     get {
       pathSingleSlash {
         IndexPage()
@@ -26,17 +27,22 @@ object Routes extends Page{
         path("client-fastopt.js")(getFromResource("client-fastopt.js")) ~
         path("client-launcher.js")(getFromResource("client-launcher.js")) ~
         path("client-jsdeps.js")(getFromResource("client-jsdeps.js")) ~
-        path("assets" / Segment / Rest){ (webjar, partialPath) =>
+        path("assets" / Segment / Rest) { (webjar, partialPath) =>
           Try(webJarLocator.getFullPath(webjar, partialPath)) match {
             case Success(path) => getFromResource(path)
             case _ => complete(StatusCodes.NotFound)
           }
 
-        }~
-      path("profile") {
-        ProfilePage()
-      }
+        } ~
+        path("profile") {
+          ProfilePage()
+        }
     } ~
-      getFromResource("web")
+      getFromResource("web")~
+    post {
+      path("log"){
+        LogAppender()
+      }
+    }
   }
 }

@@ -1,7 +1,5 @@
 package com.tripPlanner.webapp.pages
 
-import com.tripPlanner.webapp.pages.ProfileJs
-
 import scala.scalajs.js
 import js.Dynamic.{ global => g }
 import org.scalajs.dom
