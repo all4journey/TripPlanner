@@ -37,6 +37,11 @@ object Routes extends Page{
         ProfilePage()
       }
     } ~
-      getFromResource("web")
+    getFromResource("web") ~
+    post {
+      path("profile"){
+        ProfilePage()
+      }
+    }
   }
 }

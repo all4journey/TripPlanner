@@ -15,4 +15,13 @@ trait ProfileView extends View {
     )
 }
 
+trait ProfileSavedView extends View {
+  def apply()(implicit ctx: RequestContext) =
+    MainTemplate(
+      titleText = "Edit Profile",
+      footer = Seq(jsModule[ProfileSavedJs])
+    )
+}
+
 object ProfileView extends ProfileView
+object ProfileSavedView extends ProfileSavedView

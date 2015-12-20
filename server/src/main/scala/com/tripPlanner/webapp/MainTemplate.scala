@@ -32,7 +32,7 @@ object MainTemplate extends View {
             )
         ),
         div(cls := "container-fluid")(
-          div(cls := "col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main", paddingTop:="50px")(
+          div(cls := "main", paddingTop:="50px")(
             h1(cls := "page-header", titleText),
             div(id := "content"),
             div(content)
