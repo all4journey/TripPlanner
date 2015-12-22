@@ -2,7 +2,9 @@ package com.tripPlanner.webapp.pages
 
 import akka.actor.ActorSystem
 import akka.stream.Materializer
+import com.tripPlanner.domain.Profile
 import com.tripPlanner.webapp.Page
+import prickle.Unpickle
 
 /**
   * Created by aabreu on 12/6/15.
@@ -16,17 +18,19 @@ trait ProfilePage extends Page {
     }~
     post {
       extractRequestContext { implicit ctx =>
-        formFields('firstName, 'lastName, 'company, 'userTimezone, 'streetAddress, 'userState, 'zipCode, 'userVehicleYear, 'make, 'model) { (firstName, lastName,
-        company, userTimezone, streetAddress, userState, zipCode, year, make, model) =>
+        entity(as[String]) { profileJsonPayload =>
+          val userInfo = Unpickle[Profile].fromString(profileJsonPayload).get
           complete(s"This following info was obtained from the form input\n" +
-            "****Personal Info**** \n" +
-            s"Last Name := '$lastName', First Name := '$firstName'\n" +
-            s"Company := '$company'\n" +
-            s"Time Zone := '$userTimezone'\n" +
-            s"Street Address := '$streetAddress'\n" +
-            s"State := '$userState', Zip code := '$zipCode'\n" +
-            "****Vehicle Info****\n" +
-            s"Year := '$year', Make := '$make', Model := '$model'")
+                        "****Personal Info**** \n" +
+                        s"Last Name := '${userInfo.lastName}', First Name := '${userInfo.firstName}'\n" +
+                        s"Company := '${userInfo.company}'\n" +
+                        s"Time Zone := '${userInfo.userTimezone}'\n" +
+                        s"Street Address := '${userInfo.streetAddress}'\n" +
+                        s"State := '${userInfo.userState}', Zip code := '${userInfo.zipCode}'\n" +
+                        "****Vehicle Info****\n" +
+                        s"Year := '${userInfo.userVehicleYear}', Make := '${userInfo.make}', Model := '${userInfo.model}'")
+
+
         }
       }
     }

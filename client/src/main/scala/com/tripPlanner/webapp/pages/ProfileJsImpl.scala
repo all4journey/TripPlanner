@@ -1,13 +1,16 @@
 package com.tripPlanner.webapp.pages
 
-import com.tripPlanner.webapp.pages.ProfileJs
+
+import com.tripPlanner.domain.Profile
+
+import prickle.Pickle
 
 import scala.scalajs.js
 import js.Dynamic.{ global => g }
 import org.scalajs.dom
 import scalatags.JsDom.all._
-import org.scalajs.jquery.{ jQuery => $ }
-
+import org.scalajs.jquery.{jQuery => $, JQueryXHR, JQueryAjaxSettings}
+import scala.scalajs.js
 
 
 /**
@@ -20,8 +23,6 @@ class ProfileJsImpl extends ProfileJs {
 
   }
 
-  def alertBanner = div()
-
   def profilePanel = div(cls := "container")(
     div(cls := "row")(
       div(cls := "col-md-3")(
@@ -32,9 +33,18 @@ class ProfileJsImpl extends ProfileJs {
         )
       ),
       div(cls := "col-md-9 personal-info")(
-        alertBanner,
+        div(id := "successBanner", cls := "alert alert-info alert-dismissable", hidden)(
+          a(cls := "panel-close close", "data-dismiss".attr := "alert")("×"),
+          i(cls := "fa fa-coffee")(),
+          strong("Success"), " profile was saved successfully"
+        ),
+        div(id := "errorBanner", cls := "alert alert-danger alert-dismissable", hidden)(
+          a(cls := "panel-close close", "data-dismiss".attr := "alert")("×"),
+          i(cls := "fa fa-coffee")(),
+          strong("Error"), " profile was ", strong("not"), " saved successfully"
+        ),
         h3("Personal Info"),
-        form(cls := "form-horizontal", role := "form", action := "profile", method := "post")(
+        form(cls := "form-horizontal", role := "form")(
           div(cls := "form-group")(
             label(cls := "col-lg-3 control-label")("First name:"),
             div(cls := "col-lg-8")(
@@ -124,7 +134,39 @@ class ProfileJsImpl extends ProfileJs {
           div(cls := "form-group")(
             label(cls := "col-lg-3 control-label")(),
             div(cls := "col-md-8")(
-              input(id := "saveButton", `type` := "submit", cls := "btn btn-primary", value := "Save Changes"),
+              input(id := "saveButton", `type` := "button", cls := "btn btn-primary", value := "Save Changes", onclick := { () =>
+                val firstName = $("#firstName").value().toString.trim
+                val lastName = $("#lastName").value().toString.trim
+                val company = $("#company").value().toString.trim
+                val userTimezone = $("#userTimezone").value().toString.trim
+                val streetAddress = $("#streetAddress").value().toString.trim
+                val userState = $("#userSate").value().toString.trim
+                val zipCode = $("#zipCode").value().toString.trim
+                val userVehicleYear = $("#userVehicleYear").value().toString.trim
+                val make = $("#make").value().toString.trim
+                val model = $("#model").value().toString.trim
+
+                val userInfo = new Profile(firstName, lastName, company, userTimezone, streetAddress, userState, zipCode, userVehicleYear, make, model)
+                val pickledUserInfo = Pickle.intoString(userInfo)
+
+                $.ajax(js.Dynamic.literal(
+                   url = "profile",
+                  `type` = "post",
+                   data = pickledUserInfo,
+                   contentType = "application/json; charset=utf-8",
+                   traditional = true,
+                   success = { (data: js.Any, jqXHR: JQueryXHR) =>
+                     val content = dom.document.getElementById("content")
+                     content.appendChild(p(s"$data").render)
+                     $("#successBanner").show()
+
+                   },
+                   error = { () =>
+                     $("#errorBanner").show()
+                   }
+                ).asInstanceOf[JQueryAjaxSettings])
+              }),
+
               span(),
               input(id := "cancelButton", `type` := "reset", cls := "btn btn-default", value := "Cancel")
             )

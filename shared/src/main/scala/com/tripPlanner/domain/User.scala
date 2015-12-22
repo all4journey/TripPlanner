@@ -8,4 +8,4 @@ import java.util.UUID
   */
 case class User(id:String, fName:String = "Default", lName:String, registrationDate: Option[ZonedDateTime])
 
-case class Profile(id:UUID)
+case class Profile(firstName: String, lastName: String, company: String, userTimezone: String, streetAddress: String, userState: String, zipCode: String, userVehicleYear: String, make: String, model: String)
