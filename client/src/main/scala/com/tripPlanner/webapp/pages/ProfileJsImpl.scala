@@ -20,6 +20,8 @@ class ProfileJsImpl extends ProfileJs {
   def run(): Unit = {
     val content = dom.document.getElementById("content")
     content.appendChild(profilePanel.render)
+    $("#successBanner").hide();
+    $("#errorBanner").hide();
 
   }
 
@@ -33,15 +35,19 @@ class ProfileJsImpl extends ProfileJs {
         )
       ),
       div(cls := "col-md-9 personal-info")(
-        div(id := "successBanner", cls := "alert alert-info alert-dismissable", hidden)(
-          a(cls := "panel-close close", "data-dismiss".attr := "alert")("×"),
+        div(id := "successBanner", cls := "alert alert-info alert-dismissable")(
+          a(cls := "panel-close close", onclick := { () =>
+            $("#successBanner").hide();
+          })("×"),
           i(cls := "fa fa-coffee")(),
-          strong("Success"), " profile was saved successfully"
+          strong("Success!"), " profile was saved successfully"
         ),
-        div(id := "errorBanner", cls := "alert alert-danger alert-dismissable", hidden)(
-          a(cls := "panel-close close", "data-dismiss".attr := "alert")("×"),
+        div(id := "errorBanner", cls := "alert alert-danger alert-dismissable")(
+          a(cls := "panel-close close", onclick := { () =>
+            $("#errorBanner").hide();
+          })("×"),
           i(cls := "fa fa-coffee")(),
-          strong("Error"), " profile was ", strong("not"), " saved successfully"
+          strong("Error!"), " profile was ", strong("not"), " saved successfully"
         ),
         h3("Personal Info"),
         form(cls := "form-horizontal", role := "form")(
@@ -156,10 +162,9 @@ class ProfileJsImpl extends ProfileJs {
                    contentType = "application/json; charset=utf-8",
                    traditional = true,
                    success = { (data: js.Any, jqXHR: JQueryXHR) =>
-                     val content = dom.document.getElementById("content")
-                     content.appendChild(p(s"$data").render)
+//                     val content = dom.document.getElementById("content")
+//                     content.appendChild(p(s"$data").render)
                      $("#successBanner").show()
-
                    },
                    error = { () =>
                      $("#errorBanner").show()
