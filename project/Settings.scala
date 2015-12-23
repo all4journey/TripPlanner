@@ -13,13 +13,13 @@ object Settings {
     val akkaExperimental = "2.0-M2"
     val scalaJs = "0.6.5"
     val slick = "3.1.0"
-    val log4js = "1.4.10"
+    val log4js = "1.4.9"
   }
 
 
   val jsDependencies = Def.setting(Seq(
-    "org.webjars.bower" % "bootstrap" % "3.3.4" / "bootstrap.js" commonJSName "bootstrap",
-    "org.webjars" % "log4javascript" % versions.log4js / "js/log4javascript_uncompressed.js" minified "js/log4javascript.js" commonJSName "log4javascript"
+    "org.webjars.bower" % "bootstrap" % "3.3.4" / "bootstrap.js" commonJSName "bootstrap" minified "bootstrap.min.js",
+    "org.webjars.bower" % "log4javascript" % versions.log4js / "js/log4javascript_uncompressed.js" minified "js/log4javascript.js"
   ))
 
   val clientDependencies = Def.setting(Seq(
@@ -28,7 +28,8 @@ object Settings {
     "com.lihaoyi" %%% "scalatags" % "0.5.3",
     "com.github.japgolly.scalacss" %%% "core" % "0.3.1",
     "io.surfkit" %%% "scalajs-google-maps" % "0.1-SNAPSHOT",
-    "com.lihaoyi" %% "utest" % "0.3.1" % "test"
+    "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
+    "org.monifu" %%% "minitest" % "0.14" % "test"
   ))
 
   val serverDependencies = Def.setting(Seq(

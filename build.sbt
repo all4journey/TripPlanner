@@ -34,8 +34,8 @@ lazy val client = (project in file("client"))
     jsDependencies += RuntimeDOM % "test",
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
-    testFrameworks += new TestFramework("utest.runner.Framework")
-//    requiresDOM := true
+    testFrameworks += new TestFramework("utest.runner.Framework"),
+    requiresDOM := true
   )
   .enablePlugins(ScalaJSPlugin)
   .dependsOn(sharedJs)
