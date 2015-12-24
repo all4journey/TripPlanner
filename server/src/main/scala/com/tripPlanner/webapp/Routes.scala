@@ -26,8 +26,8 @@ object Routes extends Page{
         path("client-fastopt.js")(getFromResource("client-fastopt.js")) ~
         path("client-launcher.js")(getFromResource("client-launcher.js")) ~
         path("client-jsdeps.js")(getFromResource("client-jsdeps.js")) ~
-        path("assets/fonts" / Rest){ fontFile => //bootstrap fonts route
-            Try(webJarLocator.getFullPath("bootstrap",s"/fonts/$fontFile")) match {
+        path("assets" / "fonts" / Rest){ fontFile => //bootstrap fonts route
+            Try(webJarLocator.getFullPath("bootstrap",s"dist/fonts/$fontFile")) match {
                 case Success(path) => getFromResource(path)
                 case _ => complete(StatusCodes.NotFound)
             }
