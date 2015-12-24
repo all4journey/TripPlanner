@@ -6,7 +6,7 @@ import com.tripPlanner.domain.Profile
 import prickle.Pickle
 
 import scala.scalajs.js
-import js.Dynamic.{ global => g }
+import js.Dynamic.{global => g}
 import org.scalajs.dom
 import scalatags.JsDom.all._
 import org.scalajs.jquery.{jQuery => $, JQueryXHR, JQueryAjaxSettings}
@@ -20,8 +20,8 @@ class ProfileJsImpl extends ProfileJs {
   def run(): Unit = {
     val content = dom.document.getElementById("content")
     content.appendChild(profilePanel.render)
-    $("#successBanner").hide();
-    $("#errorBanner").hide();
+    $("#successBanner").hide()
+    $("#errorBanner").hide()
 
   }
 
@@ -36,12 +36,13 @@ class ProfileJsImpl extends ProfileJs {
       ),
       div(cls := "col-md-9 personal-info")(
         div(id := "successBanner", cls := "alert alert-info alert-dismissable")(
-          a(cls := "panel-close close", onclick := { () =>
-            $("#successBanner").hide();
-          })("×"),
-          i(cls := "fa fa-coffee")(),
-          strong("Success!"), " profile was saved successfully"
-        ),
+          span(cls := "glyphicon glyphicon-exclamation-sign", "aria-hidden".attr := "true")(),
+            a(cls := "panel-close close", onclick := { () =>
+              $("#successBanner").hide();
+            })("×"),
+            i(cls := "fa fa-coffee")(),
+            strong("Success!"), " profile was saved successfully"
+          ),
         div(id := "errorBanner", cls := "alert alert-danger alert-dismissable")(
           a(cls := "panel-close close", onclick := { () =>
             $("#errorBanner").hide();
@@ -156,19 +157,19 @@ class ProfileJsImpl extends ProfileJs {
                 val pickledUserInfo = Pickle.intoString(userInfo)
 
                 $.ajax(js.Dynamic.literal(
-                   url = "profile",
+                  url = "profile",
                   `type` = "post",
-                   data = pickledUserInfo,
-                   contentType = "application/json; charset=utf-8",
-                   traditional = true,
-                   success = { (data: js.Any, jqXHR: JQueryXHR) =>
-//                     val content = dom.document.getElementById("content")
-//                     content.appendChild(p(s"$data").render)
-                     $("#successBanner").show()
-                   },
-                   error = { () =>
-                     $("#errorBanner").show()
-                   }
+                  data = pickledUserInfo,
+                  contentType = "application/json; charset=utf-8",
+                  traditional = true,
+                  success = { (data: js.Any, jqXHR: JQueryXHR) =>
+                    //                     val content = dom.document.getElementById("content")
+                    //                     content.appendChild(p(s"$data").render)
+                    $("#successBanner").show()
+                  },
+                  error = { () =>
+                    $("#errorBanner").show()
+                  }
                 ).asInstanceOf[JQueryAjaxSettings])
               }),
 
