@@ -16,7 +16,7 @@ import scala.scalajs.js
 /**
   * Created by rjkj on 12/5/15.
   */
-class ProfileJsImpl extends ProfileJs {
+object ProfileJsImpl extends ProfileJs {
   def run(): Unit = {
     val content = dom.document.getElementById("content")
     content.appendChild(profilePanel.render)
@@ -36,19 +36,20 @@ class ProfileJsImpl extends ProfileJs {
       ),
       div(cls := "col-md-9 personal-info")(
         div(id := "successBanner", cls := "alert alert-info alert-dismissable")(
-          span(cls := "glyphicon glyphicon-exclamation-sign", "aria-hidden".attr := "true")(),
+          span(cls := "glyphicon glyphicon-ok", "aria-hidden".attr := "true")(),
             a(cls := "panel-close close", onclick := { () =>
               $("#successBanner").hide();
             })("×"),
             i(cls := "fa fa-coffee")(),
-            strong("Success!"), " profile was saved successfully"
+            strong(" Success!"), " profile was saved successfully"
           ),
         div(id := "errorBanner", cls := "alert alert-danger alert-dismissable")(
+          span(cls := "glyphicon glyphicon-exclamation-sign", "aria-hidden".attr := "true")(),
           a(cls := "panel-close close", onclick := { () =>
             $("#errorBanner").hide();
           })("×"),
           i(cls := "fa fa-coffee")(),
-          strong("Error!"), " profile was ", strong("not"), " saved successfully"
+          strong(" Error!"), " profile was ", strong("not"), " saved successfully"
         ),
         h3("Personal Info"),
         form(cls := "form-horizontal", role := "form")(
@@ -183,5 +184,3 @@ class ProfileJsImpl extends ProfileJs {
   )
 
 }
-
-object ProfileJsImpl extends ProfileJsImpl
