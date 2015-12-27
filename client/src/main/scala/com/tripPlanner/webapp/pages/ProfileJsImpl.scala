@@ -1,8 +1,10 @@
 package com.tripPlanner.webapp.pages
 
-import com.tripPlanner.domain.Profile
+import java.time.ZonedDateTime
 
-import prickle.Pickle
+import com.tripPlanner.domain.{User, Profile, Address, State, Timezone, Vehicle}
+
+import prickle._
 
 import scala.scalajs.js
 import js.Dynamic.{global => g}
@@ -62,12 +64,6 @@ object ProfileJsImpl extends ProfileJs {
             label(cls := "col-lg-3 control-label")("Last name:"),
             div(cls := "col-lg-8")(
               input(id := "lastName", name := "lastName", cls := "form-control", `type` := "text")
-            )
-          ),
-          div(cls := "form-group")(
-            label(cls := "col-lg-3 control-label")("Company:"),
-            div(cls := "col-lg-8")(
-              input(id := "company", name := "company", cls := "form-control", `type` := "text")
             )
           ),
           div(cls := "form-group")(
@@ -142,24 +138,38 @@ object ProfileJsImpl extends ProfileJs {
             label(cls := "col-lg-3 control-label")(),
             div(cls := "col-md-8")(
               input(id := "saveButton", `type` := "button", cls := "btn btn-primary", value := "Save Changes", onclick := { () =>
+
                 val firstName = $("#firstName").value().toString.trim
                 val lastName = $("#lastName").value().toString.trim
-                val company = $("#company").value().toString.trim
-                val userTimezone = $("#userTimezone").value().toString.trim
+                val user = new User("a123a", firstName, lastName, None);
+
+                val userTimezoneId = $("#userTimezone").value().toString.trim
+                val userTimezoneDescription = $("#userTimezone").text().toString.trim
+                val timezone = new Timezone(userTimezoneId, userTimezoneDescription)
+
+                val userStateId = $("#userSate").value().toString.trim
+                val userStateDescription = $("#userSate").text().toString.trim
+                val state = new State(userStateId, userStateDescription, timezone)
+
                 val streetAddress = $("#streetAddress").value().toString.trim
-                val userState = $("#userSate").value().toString.trim
                 val zipCode = $("#zipCode").value().toString.trim
+                val address = new Address(user.id, streetAddress, state, zipCode)
+                val addresses: Seq[Address] = List(address)
+
                 val userVehicleYear = $("#userVehicleYear").value().toString.trim
                 val make = $("#make").value().toString.trim
                 val model = $("#model").value().toString.trim
+                val vehicle = new Vehicle(user.id, userVehicleYear, make, model)
+                val vehicles: Seq[Vehicle] = List(vehicle)
 
-                val userInfo = new Profile(firstName, lastName, company, userTimezone, streetAddress, userState, zipCode, userVehicleYear, make, model)
-                val pickledUserInfo = Pickle.intoString(userInfo)
+                val profileInfo = new Profile(user, addresses, vehicles)
+
+                val pickledProfileInfo = Pickle.intoString(profileInfo)
 
                 $.ajax(js.Dynamic.literal(
                   url = "profile",
                   `type` = "post",
-                  data = pickledUserInfo,
+                  data = pickledProfileInfo,
                   contentType = "application/json; charset=utf-8",
                   traditional = true,
                   success = { (data: js.Any, jqXHR: JQueryXHR) =>
