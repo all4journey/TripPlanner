@@ -1,8 +1,20 @@
 package com.tripPlanner.webapp
-import minitest._
+import utest._
+import utest.ExecutionContext.RunNow
 
-object MyTestSuite extends SimpleTestSuite {
-  test("should be"){
-    assertEquals(2, 2)
+import scala.concurrent.Future
+
+object MyTestSuite extends TestSuite {
+  override def tests = TestSuite {
+    'test {
+      Future {
+        assert(true)
+      }
+    }
   }
+
+  tests.runAsync().map( results => {
+    assert(results.toSeq.head.value.isSuccess)
+  })
+
 }

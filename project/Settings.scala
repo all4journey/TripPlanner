@@ -18,8 +18,7 @@ object Settings {
 
 
   val jsDependencies = Def.setting(Seq(
-    "org.webjars.bower" % "bootstrap" % "3.3.4" / "bootstrap.js" commonJSName "bootstrap" minified "bootstrap.min.js",
-    "org.webjars.bower" % "log4javascript" % versions.log4js / "js/log4javascript_uncompressed.js" minified "js/log4javascript.js"
+    "org.webjars.bower" % "bootstrap" % "3.3.4" / "bootstrap.js" commonJSName "bootstrap" minified "bootstrap.min.js"
   ))
 
   val clientDependencies = Def.setting(Seq(
