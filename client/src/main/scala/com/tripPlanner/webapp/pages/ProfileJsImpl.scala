@@ -1,6 +1,5 @@
 package com.tripPlanner.webapp.pages
 
-
 import com.tripPlanner.domain.Profile
 
 import prickle.Pickle
