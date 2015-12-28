@@ -21,6 +21,7 @@ object MainTemplate extends View {
         scriptPath("client-fastopt.js"),
         scriptPath("client-jsdeps.js"),
         scriptPath("/assets/bootstrap/bootstrap.min.js"),
+        scriptPath("/assets/log4javascript/js/log4javascript.js"),
         css("/assets/bootstrap/bootstrap.min.css"),
         header
       ),

@@ -3,15 +3,18 @@ package com.tripPlanner.webapp.pages
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.tripPlanner.webapp.Page
+import com.typesafe.scalalogging.LazyLogging
 
 /**
   * Created by aabreu on 12/6/15.
   */
-trait ProfilePage extends Page {
-  def apply()(implicit sys:ActorSystem, mat:Materializer) = pathEnd{
-    get{
-      extractRequestContext { implicit ctx =>
+trait ProfilePage extends Page with LazyLogging{
+  def apply()(implicit sys: ActorSystem, mat: Materializer) = pathEnd {
+    get {
+      extractRequestContext { implicit ctx => {
+        logger.info("Hello Logging")
         complete(ProfileView())
+      }
       }
     }
   }
