@@ -12,7 +12,7 @@ trait ProfilePage extends Page with LazyLogging{
   def apply()(implicit sys: ActorSystem, mat: Materializer) = pathEnd {
     get {
       extractRequestContext { implicit ctx => {
-        logger.info("Hello Logging")
+        logger.debug("loading profile page")
         complete(ProfileView())
       }
       }

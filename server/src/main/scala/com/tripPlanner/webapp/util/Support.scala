@@ -8,14 +8,14 @@ import scalacss.mutable.StyleSheet
 import scalatags.Text.TypedTag
 
 trait ScalaTagsSupport {
-  val htmlContentType = ContentType(MediaTypes.`text/html`)
+  val htmlContentType = MediaTypes.`text/html`
 
   implicit def scalaTagsMarshaller: ToEntityMarshaller[TypedTag[String]] =
     Marshaller.StringMarshaller.wrap(htmlContentType)(_.toString())
 }
 
 trait ScalaCssSupport {
-  val cssContentType = ContentType(MediaTypes.`text/css`)
+  val cssContentType = MediaTypes.`text/css`
 
   // See https://github.com/japgolly/scalacss/issues/47
   implicit val inOrderRenderer = new Renderer[String] {
