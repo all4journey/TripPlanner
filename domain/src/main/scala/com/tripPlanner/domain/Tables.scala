@@ -1,4 +1,5 @@
 package com.tripPlanner.domain
+
 // AUTO-GENERATED Slick data model
 /** Stand-alone Slick data model for immediate use */
 object Tables extends {
@@ -14,9 +15,38 @@ trait Tables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = SchemaVersion.schema ++ users.schema
+  lazy val schema: profile.SchemaDescription = Array(Address.schema, SchemaVersion.schema, Timezone.schema, User.schema, UsState.schema, Vehicle.schema).reduceLeft(_ ++ _)
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
+
+  /** Entity class storing rows of table Address
+   *  @param userId Database column USER_ID SqlType(VARCHAR), Length(50,true)
+   *  @param street Database column STREET SqlType(VARCHAR), Length(100,true), Default(None)
+   *  @param stateId Database column STATE_ID SqlType(VARCHAR), Length(2,true), Default(None)
+   *  @param zipcode Database column ZIPCODE SqlType(VARCHAR), Length(10,true), Default(None) */
+  case class AddressRow(userId: String, street: Option[String] = None, stateId: Option[String] = None, zipcode: Option[String] = None)
+  /** GetResult implicit for fetching AddressRow objects using plain SQL queries */
+  implicit def GetResultAddressRow(implicit e0: GR[String], e1: GR[Option[String]]): GR[AddressRow] = GR{
+    prs => import prs._
+    AddressRow.tupled((<<[String], <<?[String], <<?[String], <<?[String]))
+  }
+  /** Table description of table ADDRESS. Objects of this class serve as prototypes for rows in queries. */
+  class Address(_tableTag: Tag) extends Table[AddressRow](_tableTag, "ADDRESS") {
+    def * = (userId, street, stateId, zipcode) <> (AddressRow.tupled, AddressRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(userId), street, stateId, zipcode).shaped.<>({r=>import r._; _1.map(_=> AddressRow.tupled((_1.get, _2, _3, _4)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column USER_ID SqlType(VARCHAR), Length(50,true) */
+    val userId: Rep[String] = column[String]("USER_ID", O.Length(50,varying=true))
+    /** Database column STREET SqlType(VARCHAR), Length(100,true), Default(None) */
+    val street: Rep[Option[String]] = column[Option[String]]("STREET", O.Length(100,varying=true), O.Default(None))
+    /** Database column STATE_ID SqlType(VARCHAR), Length(2,true), Default(None) */
+    val stateId: Rep[Option[String]] = column[Option[String]]("STATE_ID", O.Length(2,varying=true), O.Default(None))
+    /** Database column ZIPCODE SqlType(VARCHAR), Length(10,true), Default(None) */
+    val zipcode: Rep[Option[String]] = column[Option[String]]("ZIPCODE", O.Length(10,varying=true), O.Default(None))
+  }
+  /** Collection-like TableQuery object for table Address */
+  lazy val Address = new TableQuery(tag => new Address(tag))
 
   /** Entity class storing rows of table SchemaVersion
    *  @param versionRank Database column version_rank SqlType(INT)
@@ -77,6 +107,29 @@ trait Tables {
   /** Collection-like TableQuery object for table SchemaVersion */
   lazy val SchemaVersion = new TableQuery(tag => new SchemaVersion(tag))
 
+  /** Entity class storing rows of table Timezone
+   *  @param id Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true)
+   *  @param description Database column DESCRIPTION SqlType(VARCHAR), Length(50,true), Default(None) */
+  case class TimezoneRow(id: String, description: Option[String] = None)
+  /** GetResult implicit for fetching TimezoneRow objects using plain SQL queries */
+  implicit def GetResultTimezoneRow(implicit e0: GR[String], e1: GR[Option[String]]): GR[TimezoneRow] = GR{
+    prs => import prs._
+    TimezoneRow.tupled((<<[String], <<?[String]))
+  }
+  /** Table description of table TIMEZONE. Objects of this class serve as prototypes for rows in queries. */
+  class Timezone(_tableTag: Tag) extends Table[TimezoneRow](_tableTag, "TIMEZONE") {
+    def * = (id, description) <> (TimezoneRow.tupled, TimezoneRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(id), description).shaped.<>({r=>import r._; _1.map(_=> TimezoneRow.tupled((_1.get, _2)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true) */
+    val id: Rep[String] = column[String]("ID", O.PrimaryKey, O.Length(50,varying=true))
+    /** Database column DESCRIPTION SqlType(VARCHAR), Length(50,true), Default(None) */
+    val description: Rep[Option[String]] = column[Option[String]]("DESCRIPTION", O.Length(50,varying=true), O.Default(None))
+  }
+  /** Collection-like TableQuery object for table Timezone */
+  lazy val Timezone = new TableQuery(tag => new Timezone(tag))
+
   /** Entity class storing rows of table User
    *  @param id Database column ID SqlType(VARCHAR), Length(50,true)
    *  @param firstName Database column FIRST_NAME SqlType(VARCHAR), Length(50,true)
@@ -89,7 +142,7 @@ trait Tables {
     UserRow.tupled((<<[String], <<[String], <<[String], <<[java.sql.Date]))
   }
   /** Table description of table USER. Objects of this class serve as prototypes for rows in queries. */
-  class Users(_tableTag: Tag) extends Table[UserRow](_tableTag, "USER") {
+  class User(_tableTag: Tag) extends Table[UserRow](_tableTag, "USER") {
     def * = (id, firstName, lastName, registrationDate) <> (UserRow.tupled, UserRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(id), Rep.Some(firstName), Rep.Some(lastName), Rep.Some(registrationDate)).shaped.<>({r=>import r._; _1.map(_=> UserRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -104,5 +157,60 @@ trait Tables {
     val registrationDate: Rep[java.sql.Date] = column[java.sql.Date]("REGISTRATION_DATE")
   }
   /** Collection-like TableQuery object for table User */
-  lazy val users = new TableQuery(tag => new Users(tag))
+  lazy val User = new TableQuery(tag => new User(tag))
+
+  /** Entity class storing rows of table UsState
+   *  @param id Database column ID SqlType(VARCHAR), PrimaryKey, Length(2,true)
+   *  @param description Database column DESCRIPTION SqlType(VARCHAR), Length(20,true), Default(None)
+   *  @param timezoneId Database column TIMEZONE_ID SqlType(VARCHAR), Length(50,true), Default(None) */
+  case class UsStateRow(id: String, description: Option[String] = None, timezoneId: Option[String] = None)
+  /** GetResult implicit for fetching UsStateRow objects using plain SQL queries */
+  implicit def GetResultUsStateRow(implicit e0: GR[String], e1: GR[Option[String]]): GR[UsStateRow] = GR{
+    prs => import prs._
+    UsStateRow.tupled((<<[String], <<?[String], <<?[String]))
+  }
+  /** Table description of table US_STATE. Objects of this class serve as prototypes for rows in queries. */
+  class UsState(_tableTag: Tag) extends Table[UsStateRow](_tableTag, "US_STATE") {
+    def * = (id, description, timezoneId) <> (UsStateRow.tupled, UsStateRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(id), description, timezoneId).shaped.<>({r=>import r._; _1.map(_=> UsStateRow.tupled((_1.get, _2, _3)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column ID SqlType(VARCHAR), PrimaryKey, Length(2,true) */
+    val id: Rep[String] = column[String]("ID", O.PrimaryKey, O.Length(2,varying=true))
+    /** Database column DESCRIPTION SqlType(VARCHAR), Length(20,true), Default(None) */
+    val description: Rep[Option[String]] = column[Option[String]]("DESCRIPTION", O.Length(20,varying=true), O.Default(None))
+    /** Database column TIMEZONE_ID SqlType(VARCHAR), Length(50,true), Default(None) */
+    val timezoneId: Rep[Option[String]] = column[Option[String]]("TIMEZONE_ID", O.Length(50,varying=true), O.Default(None))
+  }
+  /** Collection-like TableQuery object for table UsState */
+  lazy val UsState = new TableQuery(tag => new UsState(tag))
+
+  /** Entity class storing rows of table Vehicle
+   *  @param userId Database column USER_ID SqlType(VARCHAR), Length(50,true)
+   *  @param year Database column YEAR SqlType(VARCHAR), Length(4,true), Default(None)
+   *  @param make Database column MAKE SqlType(VARCHAR), Length(10,true), Default(None)
+   *  @param model Database column MODEL SqlType(VARCHAR), Length(10,true), Default(None) */
+  case class VehicleRow(userId: String, year: Option[String] = None, make: Option[String] = None, model: Option[String] = None)
+  /** GetResult implicit for fetching VehicleRow objects using plain SQL queries */
+  implicit def GetResultVehicleRow(implicit e0: GR[String], e1: GR[Option[String]]): GR[VehicleRow] = GR{
+    prs => import prs._
+    VehicleRow.tupled((<<[String], <<?[String], <<?[String], <<?[String]))
+  }
+  /** Table description of table VEHICLE. Objects of this class serve as prototypes for rows in queries. */
+  class Vehicle(_tableTag: Tag) extends Table[VehicleRow](_tableTag, "VEHICLE") {
+    def * = (userId, year, make, model) <> (VehicleRow.tupled, VehicleRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(userId), year, make, model).shaped.<>({r=>import r._; _1.map(_=> VehicleRow.tupled((_1.get, _2, _3, _4)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column USER_ID SqlType(VARCHAR), Length(50,true) */
+    val userId: Rep[String] = column[String]("USER_ID", O.Length(50,varying=true))
+    /** Database column YEAR SqlType(VARCHAR), Length(4,true), Default(None) */
+    val year: Rep[Option[String]] = column[Option[String]]("YEAR", O.Length(4,varying=true), O.Default(None))
+    /** Database column MAKE SqlType(VARCHAR), Length(10,true), Default(None) */
+    val make: Rep[Option[String]] = column[Option[String]]("MAKE", O.Length(10,varying=true), O.Default(None))
+    /** Database column MODEL SqlType(VARCHAR), Length(10,true), Default(None) */
+    val model: Rep[Option[String]] = column[Option[String]]("MODEL", O.Length(10,varying=true), O.Default(None))
+  }
+  /** Collection-like TableQuery object for table Vehicle */
+  lazy val Vehicle = new TableQuery(tag => new Vehicle(tag))
 }

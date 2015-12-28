@@ -4,7 +4,6 @@ import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import com.tripPlanner.domain.Tables._
 import slick.driver.MySQLDriver.api._
 
 /**
@@ -20,7 +19,7 @@ case class UserDaoImpl(db:Database)(implicit ec:ExecutionContext) extends UserDa
       case Some(date:ZonedDateTime) => date.toLocalDate
       case None => LocalDate.now()
     }
-    val insertUser = users += UserRow(user.id, user.fName, user.lName, java.sql.Date.valueOf(date))
+    val insertUser = Tables.User += Tables.UserRow(user.id, user.fName, user.lName, java.sql.Date.valueOf(date))
 
     db.run(insertUser) map {
       result => result
