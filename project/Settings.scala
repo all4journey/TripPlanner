@@ -18,18 +18,16 @@ object Settings {
 
 
   val jsDependencies = Def.setting(Seq(
-    "org.webjars.bower" % "bootstrap" % "3.3.4" / "bootstrap.js" commonJSName "bootstrap" minified "bootstrap.min.js",
-    "org.webjars.bower" % "log4javascript" % versions.log4js / "js/log4javascript_uncompressed.js" minified "js/log4javascript.js"
+    "org.webjars.bower" % "bootstrap" % "3.3.4" / "bootstrap.js" commonJSName "bootstrap" minified "bootstrap.min.js"
   ))
 
   val clientDependencies = Def.setting(Seq(
     "org.scala-js" %%% "scalajs-dom" % "0.8.0",
     "be.doeraene" %%% "scalajs-jquery" % "0.8.1",
     "com.lihaoyi" %%% "scalatags" % "0.5.3",
-    "com.github.japgolly.scalacss" %%% "core" % "0.3.1",
-    "io.surfkit" %%% "scalajs-google-maps" % "0.1-SNAPSHOT",
     "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
-    "org.monifu" %%% "minitest" % "0.14" % "test"
+    "com.github.japgolly.scalacss" %%% "core" % "0.3.1",
+    "io.surfkit" %%% "scalajs-google-maps" % "0.1-SNAPSHOT"
   ))
 
   val serverDependencies = Def.setting(Seq(
