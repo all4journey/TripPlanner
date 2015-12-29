@@ -5,7 +5,8 @@ import akka.stream.Materializer
 import com.tripPlanner.shared.domain.{Profile, Address, State, Vehicle}
 import com.tripPlanner.webapp.{logger, Page}
 
-import com.tripPlanner.domain.UserDao
+import com.tripPlanner.domain.UserDaoImpl
+
 
 import prickle.Unpickle
 import akka.http.scaladsl.model.StatusCodes
@@ -13,12 +14,16 @@ import scala.util.Success
 import scala.util.Try
 import com.typesafe.scalalogging.LazyLogging
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
+import slick.driver.MySQLDriver.api._
+
 
 /**
   * Created by aabreu on 12/6/15.
   */
 trait ProfilePage extends Page with LazyLogging {
-  def apply()(implicit sys: ActorSystem, mat: Materializer) = pathEnd {
+  def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
     get {
       extractRequestContext { implicit ctx => {
         logger.info("Hello Logging")
@@ -31,7 +36,9 @@ trait ProfilePage extends Page with LazyLogging {
           entity(as[String]) { profileJsonPayload =>
             Unpickle[Profile].fromString(profileJsonPayload) match {
               case Success(userInfo: Profile) => {
-                val userDao = new UserDao()
+                val databaseConfig = sys.props.get("db_config")
+                var db:Database = Database.forConfig(databaseConfig.getOrElse("db"))
+                val userDao = UserDaoImpl(db)
                 userDao.save(userInfo.user)
                 complete(s"This following info was obtained from the form input\n" +
                   "****Personal Info**** \n" +

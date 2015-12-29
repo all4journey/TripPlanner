@@ -6,8 +6,9 @@ import java.util.Date
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import com.tripPlanner.domain.Tables._
 import slick.driver.MySQLDriver.api._
+
+import com.tripPlanner.shared.domain.User
 
 /**
   * Created by rjkj on 12/9/15.
@@ -24,10 +25,7 @@ case class UserDaoImpl(db:Database)(implicit ec:ExecutionContext) extends UserDa
       case None => new Date()
     }
 
-    val instant = Instant.ofEpochMilli(dateFromString.getTime())
-    val date:LocalDate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate()
-
-    val insertUser = Tables().User += Tables().UserRow(user.id, user.fName, user.lName, java.sql.Date.valueOf(date))
+    val insertUser = Tables.User += Tables.UserRow(user.id, user.fName, user.lName, new java.sql.Date(dateFromString.getTime))
 
     db.run(insertUser) map {
       result => result
