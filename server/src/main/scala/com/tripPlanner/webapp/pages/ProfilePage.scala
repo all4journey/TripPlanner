@@ -1,21 +1,17 @@
 package com.tripPlanner.webapp.pages
 
 import akka.actor.ActorSystem
-import akka.stream.Materializer
-import com.tripPlanner.shared.domain.{Profile, Address, State, Vehicle}
-import com.tripPlanner.webapp.util.DomainSupport
-import com.tripPlanner.webapp.{logger, Page}
-
-import com.tripPlanner.domain.UserDaoImpl
-
-
-import prickle.Unpickle
 import akka.http.scaladsl.model.StatusCodes
-import scala.util.Success
-import scala.util.Try
+import akka.stream.Materializer
+import com.tripPlanner.domain.UserDaoImpl
+import com.tripPlanner.shared.domain.Profile
+import com.tripPlanner.webapp.Page
+import com.tripPlanner.webapp.util.DomainSupport
 import com.typesafe.scalalogging.LazyLogging
+import prickle.Unpickle
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Success
 
 
 
