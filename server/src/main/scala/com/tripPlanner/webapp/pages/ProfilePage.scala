@@ -3,6 +3,7 @@ package com.tripPlanner.webapp.pages
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.tripPlanner.shared.domain.{Profile, Address, State, Vehicle}
+import com.tripPlanner.webapp.util.DomainSupport
 import com.tripPlanner.webapp.{logger, Page}
 
 import com.tripPlanner.domain.UserDaoImpl
@@ -16,13 +17,12 @@ import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-import slick.driver.MySQLDriver.api._
 
 
 /**
   * Created by aabreu on 12/6/15.
   */
-trait ProfilePage extends Page with LazyLogging {
+trait ProfilePage extends Page with LazyLogging{
   def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
     get {
       extractRequestContext { implicit ctx => {
@@ -36,9 +36,7 @@ trait ProfilePage extends Page with LazyLogging {
           entity(as[String]) { profileJsonPayload =>
             Unpickle[Profile].fromString(profileJsonPayload) match {
               case Success(userInfo: Profile) => {
-                val databaseConfig = sys.props.get("db_config")
-                var db:Database = Database.forConfig(databaseConfig.getOrElse("db"))
-                val userDao = UserDaoImpl(db)
+                val userDao = UserDaoImpl(DomainSupport.db)
                 userDao.save(userInfo.user)
                 complete(s"This following info was obtained from the form input\n" +
                   "****Personal Info**** \n" +

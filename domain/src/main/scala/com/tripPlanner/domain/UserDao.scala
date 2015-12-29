@@ -9,6 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import slick.driver.MySQLDriver.api._
 
 import com.tripPlanner.shared.domain.User
+import com.tripPlanner.domain.Tables.{User=>Users, UserRow}
 
 /**
   * Created by rjkj on 12/9/15.
@@ -25,7 +26,7 @@ case class UserDaoImpl(db:Database)(implicit ec:ExecutionContext) extends UserDa
       case None => new Date()
     }
 
-    val insertUser = Tables.User += Tables.UserRow(user.id, user.fName, user.lName, new java.sql.Date(dateFromString.getTime))
+    val insertUser = Users += UserRow(user.id, user.fName, user.lName, new java.sql.Date(dateFromString.getTime))
 
     db.run(insertUser) map {
       result => result
