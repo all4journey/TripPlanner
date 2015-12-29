@@ -1,6 +1,8 @@
 package com.tripPlanner.domain
 
-import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
+import java.text.SimpleDateFormat
+import java.time._
+import java.util.Date
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -16,11 +18,16 @@ trait UserDao {
 
 case class UserDaoImpl(db:Database)(implicit ec:ExecutionContext) extends UserDao {
   def save(user:User) = {
-    val date:LocalDate = user.registrationDate match {
-      case Some(date:ZonedDateTime) => date.toLocalDate
-      case None => LocalDate.now()
+    val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
+    val dateFromString:Date = user.registrationDate match {
+      case Some(stringDate:String) => dateFormat.parse(stringDate)
+      case None => new Date()
     }
-    val insertUser = users += UserRow(user.id, user.fName, user.lName, java.sql.Date.valueOf(date))
+
+    val instant = Instant.ofEpochMilli(dateFromString.getTime())
+    val date:LocalDate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate()
+
+    val insertUser = Tables().User += Tables().UserRow(user.id, user.fName, user.lName, java.sql.Date.valueOf(date))
 
     db.run(insertUser) map {
       result => result

@@ -2,7 +2,7 @@ package com.tripPlanner.webapp
 
 import java.util.UUID
 
-import com.tripPlanner.domain.User
+import com.tripPlanner.shared.domain.User
 import com.tripPlanner.webapp.pages.HomePage
 import google.maps.LatLng
 import com.tripPlanner.webapp.pages.HomePage

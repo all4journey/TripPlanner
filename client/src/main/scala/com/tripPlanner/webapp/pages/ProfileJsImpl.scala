@@ -2,7 +2,7 @@ package com.tripPlanner.webapp.pages
 
 import java.time.ZonedDateTime
 
-import com.tripPlanner.domain.{User, Profile, Address, State, Timezone, Vehicle}
+import com.tripPlanner.shared.domain.{User, Profile, Address, State, Timezone, Vehicle}
 
 import prickle._
 
