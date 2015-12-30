@@ -1,29 +1,41 @@
 package com.tripPlanner.webapp.pages
 
-import java.time.ZonedDateTime
-
-import com.tripPlanner.shared.domain.{User, Profile, Address, State, Timezone, Vehicle}
+import com.tripPlanner.shared.domain.{User, Profile, Address, State, Vehicle}
 
 import prickle._
 
-import scala.scalajs.js
-import js.Dynamic.{global => g}
 import org.scalajs.dom
 import scalatags.JsDom.all._
 import org.scalajs.jquery.{jQuery => $, JQueryXHR, JQueryAjaxSettings}
 import scala.scalajs.js
+import scala.util.Success
 
 
 /**
   * Created by rjkj on 12/5/15.
   */
 object ProfileJsImpl extends ProfileJs {
-  def run(): Unit = {
+
+  def run(params: Seq[State]): Unit = {}
+  def runWithParams(params: Any): Unit = {
     val content = dom.document.getElementById("content")
     content.appendChild(profilePanel.render)
     $("#successBanner").hide()
     $("#errorBanner").hide()
 
+    val stateDropdown = dom.document.getElementById("userState")
+
+    Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
+      case Success(states: Seq[State]) => {
+        for (stateItem <- states) {
+          val option = dom.document.createElement("option")
+          option.textContent = stateItem.description
+          option.setAttribute("value", stateItem.id)
+          stateDropdown.appendChild(option)
+        }
+      }
+      case _ => Seq[State]()
+    }
   }
 
   def profilePanel = div(cls := "container")(
@@ -67,23 +79,6 @@ object ProfileJsImpl extends ProfileJs {
             )
           ),
           div(cls := "form-group")(
-            label(cls := "col-lg-3 control-label")("Time Zone:"),
-            div(cls := "col-lg-8")(
-              div(cls := "ui-select")(
-                select(id := "userTimezone", name := "userTimezone", cls := "form-control")(
-                  option(value := "Hawaii")("(GMT-10:00) Hawaii"),
-                  option(value := "Alaska")("(GMT-09:00) Alaska"),
-                  option(value := "Pacific Time (US & Canada)")("(GMT-08:00) Pacific Time (US & Canada)"),
-                  option(value := "Arizona")("(GMT-07:00) Arizona"),
-                  option(value := "Mountain Time (US & Canada)")("(GMT-07:00) Mountain Time (US & Canada)"),
-                  option(value := "Central Time (US & Canada)")("(GMT-06:00) Central Time (US & Canada)"),
-                  option(value := "Eastern Time (US & Canada)", selected := "selected")("(GMT-05:00) Eastern Time (US & Canada)"),
-                  option(value := "Indiana (East)")("(GMT-05:00) Indiana (East)")
-                )
-              )
-            )
-          ),
-          div(cls := "form-group")(
             label(cls := "col-lg-3 control-label")("Street Address:"),
             div(cls := "col-lg-8")(
               input(id := "streetAddress", name := "streetAddress", cls := "form-control", `type` := "text")
@@ -94,9 +89,7 @@ object ProfileJsImpl extends ProfileJs {
             div(cls := "col-lg-8")(
               div(cls := "ui-select")(
                 select(id := "userState", name := "userState", cls := "form-control")(
-                  option(value := "NY", selected := "selected")("New York"),
-                  option(value := "PA")("Pennsylvania"),
-                  option(value := "GA")("Georgia")
+                  option(value := "NONE", selected := "selected")("Choose a state")
                 )
               )
             )
@@ -143,23 +136,19 @@ object ProfileJsImpl extends ProfileJs {
                 val lastName = $("#lastName").value().toString.trim
                 val user = new User("a123a", firstName, lastName, None);
 
-                val userTimezoneId = $("#userTimezone").value().toString.trim
-                val userTimezoneDescription = $("#userTimezone").text().toString.trim
-                val timezone = new Timezone(userTimezoneId, userTimezoneDescription)
-
-                val userStateId = $("#userSate").value().toString.trim
-                val userStateDescription = $("#userSate").text().toString.trim
-                val state = new State(userStateId, userStateDescription, timezone)
+                val userStateId = $("#userState :selected").value().toString.trim
+                val userStateDescription = $("#userState :selected").text().toString.trim
+                val state = new State(userStateId, userStateDescription)
 
                 val streetAddress = $("#streetAddress").value().toString.trim
                 val zipCode = $("#zipCode").value().toString.trim
-                val address = new Address(user.id, streetAddress, state, zipCode)
+                val address = new Address(user.id, Some(streetAddress), state, Some(zipCode))
                 val addresses: Seq[Address] = List(address)
 
-                val userVehicleYear = $("#userVehicleYear").value().toString.trim
+                val userVehicleYear = $("#userVehicleYear :selected").value().toString.trim
                 val make = $("#make").value().toString.trim
                 val model = $("#model").value().toString.trim
-                val vehicle = new Vehicle(user.id, userVehicleYear, make, model)
+                val vehicle = new Vehicle(user.id, Some(userVehicleYear), Some(make), Some(model))
                 val vehicles: Seq[Vehicle] = List(vehicle)
 
                 val profileInfo = new Profile(user, addresses, vehicles)

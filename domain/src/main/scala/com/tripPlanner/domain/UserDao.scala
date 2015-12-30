@@ -1,7 +1,6 @@
 package com.tripPlanner.domain
 
 import java.text.SimpleDateFormat
-import java.time._
 import java.util.Date
 
 import scala.concurrent.{ExecutionContext, Future}
