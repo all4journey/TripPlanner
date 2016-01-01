@@ -57,6 +57,7 @@ object Settings {
   val sharedDependencies = Def.setting(Seq(
     "com.github.benhutchison" %%% "prickle" % "1.1.10",
     "org.scala-js" %% "scalajs-stubs" % versions.scalaJs,
-    "org.scalatest" %% "scalatest" % versions.scalaTest % "test"
+    "org.scalatest" %% "scalatest" % versions.scalaTest % "test",
+    "org.scoverage" %% "scalac-scoverage-runtime" % "1.1.1"
   ))
 }
