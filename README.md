@@ -23,3 +23,7 @@
 >This will create the database with the user root and password: password1
 >
 >After the database is started. run sbt domain/flywayMigrate in the project directory
+
+##SCoverage
+
+>Run sbt then execute the following commands separately: clean coverage test coverageReport coverageAggregate
