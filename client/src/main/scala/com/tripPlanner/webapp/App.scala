@@ -3,9 +3,8 @@ package com.tripPlanner.webapp
 import java.util.UUID
 
 import com.tripPlanner.domain.User
-import com.tripPlanner.webapp.pages.HomePage
+import com.tripPlanner.webapp.pages.IndexJsImpl
 import google.maps.LatLng
-import com.tripPlanner.webapp.pages.HomePage
 
 import scala.scalajs.js.JSApp
 import org.scalajs.dom
@@ -16,7 +15,7 @@ import org.scalajs.jquery.jQuery
 import google.maps.Data.Feature
 import scala.scalajs.js
 
-
+// $COVERAGE-OFF$
 object App extends JSApp {
 //  def main(): Unit = {
 //    val user = User(
@@ -34,9 +33,7 @@ object App extends JSApp {
 //  }
 
   def main(): Unit = {
-    val currentNode = HomePage.renderMap.render
-    dom.document.getElementById("content").appendChild(currentNode)
-
+    IndexJsImpl.run()
 //    val user = new User(id = "", fName = "Rob", lName = "kernick", registrationDate = None);
 //
 //    user.registrationDate match {
@@ -161,3 +158,4 @@ object App extends JSApp {
   }
 
 }
+// $COVERAGE-ON$

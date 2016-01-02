@@ -7,7 +7,7 @@ import scalatags.JsDom.all._
 import org.scalajs.jquery.{ jQuery => $ }
 
 
-
+// $COVERAGE-OFF$
 /**
   * Created by rjkj on 12/5/15.
   */
@@ -135,3 +135,4 @@ object ProfileJsImpl extends ProfileJs {
   )
 
 }
+// $COVERAGE-ON$

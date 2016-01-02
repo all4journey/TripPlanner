@@ -1,10 +1,10 @@
 package com.tripPlanner.domain
 
-import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
+import java.time.{LocalDate, ZonedDateTime}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import com.tripPlanner.domain.Tables._
+import Tables._
 import slick.driver.MySQLDriver.api._
 
 /**
