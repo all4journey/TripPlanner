@@ -11,3 +11,9 @@ before_install:
 jdk:
     - oraclejdk8
 script: sbt test -Ddb_config="travis-db"
+
+notifications:
+    email:
+        recipients:
+            -rjkernick@gmail.com
+            -andy.abreu@gmail.com

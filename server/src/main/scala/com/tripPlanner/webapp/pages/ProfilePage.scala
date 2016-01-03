@@ -24,6 +24,7 @@ trait ProfilePage extends Page with LazyLogging {
   def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
     get {
       extractRequestContext { implicit ctx => {
+
         val states = ProfileLogic.getStates
 
         val myList = Await.result(states, 10 seconds) //TODO: look into removing Await

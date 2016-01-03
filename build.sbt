@@ -7,6 +7,8 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
   scalaJSStage in Global := FastOptStage,
   skip in packageJSDependencies := false,
+  coverageEnabled.in(Test, test) := true,
+  coverageExcludedFiles.in(Test, test) := "*Tables.*",
   resolvers ++= Seq(
     "Typesafe repository snapshots" at "http://repo.typesafe.com/typesafe/snapshots/",
     "Typesafe repository releases" at "http://repo.typesafe.com/typesafe/releases/",
@@ -35,7 +37,8 @@ lazy val client = (project in file("client"))
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
     testFrameworks += new TestFramework("utest.runner.Framework"),
-    requiresDOM := true
+    requiresDOM := true,
+    coverageEnabled.in(Test, test) := false
   )
   .enablePlugins(ScalaJSPlugin)
   .dependsOn(sharedJs)
@@ -44,7 +47,7 @@ lazy val server = (project in file("server"))
   .settings(commonSettings: _*)
   .dependsOn(sharedJvm, client, domain)
   .settings(libraryDependencies ++= Settings.serverDependencies.value,
-  Revolver.settings,
+    Revolver.settings,
     (resourceGenerators in Compile) <+=
       (fastOptJS in Compile in client, packageScalaJSLauncher in Compile in client, packageJSDependencies in Compile in client).
         map((f1, f2, f3) => Seq(f1.data, f2.data, f3.getAbsoluteFile)),
@@ -60,6 +63,7 @@ lazy val domain = (project in file("domain"))
     flywayUrl := "jdbc:mysql://127.0.0.1:3306/trip_planner",
     flywayUser := "root",
     flywayPassword := sys.props.getOrElse("flyway_password", "password1"),
+    coverageExcludedFiles := "Tables.*",
     slick <<= slickCodeGenTask
     //    ,sourceGenerators in Compile <+= slickCodeGenTask
   )
@@ -70,7 +74,7 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Settings.sharedDependencies.value
-  )
+  ).jsSettings(coverageEnabled:=false)
 
 lazy val sharedJvm = shared.jvm
 lazy val sharedJs = shared.js

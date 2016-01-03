@@ -1,5 +1,6 @@
 package com.tripPlanner.domain
 // AUTO-GENERATED Slick data model
+// $COVERAGE-OFF$
 /** Stand-alone Slick data model for immediate use */
 object Tables extends {
   val profile = slick.driver.MySQLDriver
@@ -201,3 +202,4 @@ trait Tables {
   /** Collection-like TableQuery object for table Vehicle */
   lazy val Vehicle = new TableQuery(tag => new Vehicle(tag))
 }
+// $COVERAGE-ON$

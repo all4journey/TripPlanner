@@ -31,7 +31,16 @@ class UserDaoImplSpec extends FlatSpec with Matchers with BeforeAndAfter{
 
   "UserDaoImpl" should "insert a User" in {
     val dao = UserDaoImpl(db)
-    val user = User("12345", "Rob", "Kernick", Some("12/31/2015"))
+    val user = User(None, "Rob", "Kernick", Some("12/31/2015"))
+    val future = dao.save(user)
+
+    val longResult = Await.result(future, Duration.Inf)
+    longResult should be (1)
+  }
+
+  it should "insert a User with no date set" in {
+    val dao = UserDaoImpl(db)
+    val user = User(None, "Rob", "Kernick", None)
     val future = dao.save(user)
 
     val longResult = Await.result(future, Duration.Inf)

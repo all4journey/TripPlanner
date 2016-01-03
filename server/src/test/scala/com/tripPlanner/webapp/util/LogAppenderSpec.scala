@@ -1,14 +1,14 @@
 package com.tripPlanner.webapp.util
 
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import org.scalatest.{Matchers, FlatSpec}
-
 import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.testkit.ScalatestRouteTest
+import com.tripPlanner.webapp.ServerTestSpec
+import org.scalatest.{FlatSpec, Matchers}
 
 /**
   * Created by rjkj on 12/19/15.
   */
-class LogAppenderSpec extends FlatSpec with Matchers with ScalatestRouteTest with LogAppenderJsonSupport{
+class LogAppenderSpec extends ServerTestSpec with LogAppenderJsonSupport{
   val route = LogAppender()
 
   "Log appender" should "log an info statement" in {

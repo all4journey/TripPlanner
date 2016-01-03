@@ -10,7 +10,7 @@ import org.scalajs.jquery.{jQuery => $, JQueryXHR, JQueryAjaxSettings}
 import scala.scalajs.js
 import scala.util.Success
 
-
+// $COVERAGE-OFF$
 /**
   * Created by rjkj on 12/5/15.
   */
@@ -134,7 +134,7 @@ object ProfileJsImpl extends ProfileJs {
 
                 val firstName = $("#firstName").value().toString.trim
                 val lastName = $("#lastName").value().toString.trim
-                val user = new User("a123a", firstName, lastName, None);
+                val user = new User(Some("a123a"), firstName, lastName, None);
 
                 val userStateId = $("#userState :selected").value().toString.trim
                 val userStateDescription = $("#userState :selected").text().toString.trim
@@ -142,13 +142,13 @@ object ProfileJsImpl extends ProfileJs {
 
                 val streetAddress = $("#streetAddress").value().toString.trim
                 val zipCode = $("#zipCode").value().toString.trim
-                val address = new Address(None, user.id, Some(streetAddress), state, Some(zipCode))
+                val address = new Address(None, "a123a", Some(streetAddress), state, Some(zipCode))
                 val addresses: Seq[Address] = List(address)
 
                 val userVehicleYear = $("#userVehicleYear :selected").value().toString.trim
                 val make = $("#make").value().toString.trim
                 val model = $("#model").value().toString.trim
-                val vehicle = new Vehicle(None, user.id, Some(userVehicleYear), Some(make), Some(model))
+                val vehicle = new Vehicle(None, "a123a", Some(userVehicleYear), Some(make), Some(model))
                 val vehicles: Seq[Vehicle] = List(vehicle)
 
                 val profileInfo = new Profile(user, addresses, vehicles)
@@ -182,3 +182,4 @@ object ProfileJsImpl extends ProfileJs {
   )
 
 }
+// $COVERAGE-ON$

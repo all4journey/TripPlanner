@@ -13,6 +13,7 @@ import com.tripPlanner.webapp.Routes
 import scala.concurrent.Future
 
 
+// $COVERAGE-OFF$
 object Boot extends App{
 
   implicit def myExceptionHandler: ExceptionHandler =
@@ -40,3 +41,4 @@ object Boot extends App{
   val bindingFuture: Future[ServerBinding] =
     Http().bindAndHandle(Routes(), interface, port)
 }
+// $COVERAGE-ON$

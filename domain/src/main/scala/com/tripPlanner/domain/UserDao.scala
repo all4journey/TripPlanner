@@ -1,5 +1,6 @@
 package com.tripPlanner.domain
 
+
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -25,7 +26,12 @@ case class UserDaoImpl(db:Database)(implicit ec:ExecutionContext) extends UserDa
       case None => new Date()
     }
 
-    val insertUser = Users += UserRow(user.id, user.fName, user.lName, new java.sql.Date(dateFromString.getTime))
+    val primaryKey = user.id match {
+      case Some(pk) => pk
+      case None => java.util.UUID.randomUUID.toString
+    }
+
+    val insertUser = Users += UserRow(primaryKey, user.fName, user.lName, new java.sql.Date(dateFromString.getTime))
 
     db.run(insertUser) map {
       result => result
