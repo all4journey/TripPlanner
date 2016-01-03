@@ -14,8 +14,12 @@ trait VehicleDao {
 
 case class VehicleDaoImpl(db:Database)(implicit ec:ExecutionContext) extends VehicleDao {
   def save(vehicle: Vehicle) = {
+    val primaryKey = vehicle.id match {
+      case Some(pk) => pk
+      case None => java.util.UUID.randomUUID.toString
+    }
 
-    val insertVehicle = Vehicles += VehicleRow(vehicle.userId, vehicle.year, vehicle.make, vehicle.model)
+    val insertVehicle = Vehicles += VehicleRow(primaryKey, vehicle.userId, vehicle.year, vehicle.make, vehicle.model)
 
     db.run(insertVehicle) map {
       result => result

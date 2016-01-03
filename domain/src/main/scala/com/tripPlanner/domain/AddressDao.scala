@@ -14,7 +14,11 @@ trait AddressDao {
 
 case class AddressDaoImpl(db:Database)(implicit ec:ExecutionContext) extends AddressDao {
   def save(address:Address) = {
-    val insertAddress = Addresses += AddressRow(address.userId, address.street, address.state.id, address.zipCode)
+    val primaryKey = address.id match {
+      case Some(pk) => pk
+      case None => java.util.UUID.randomUUID.toString
+    }
+    val insertAddress = Addresses += AddressRow(primaryKey, address.userId, address.street, address.state.id, address.zipCode)
 
     db.run(insertAddress) map {
       result => result
