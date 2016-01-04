@@ -1,6 +1,5 @@
 package com.tripPlanner.domain
 // AUTO-GENERATED Slick data model
-// $COVERAGE-OFF$
 /** Stand-alone Slick data model for immediate use */
 object Tables extends {
   val profile = slick.driver.MySQLDriver
@@ -24,18 +23,18 @@ trait Tables {
     *  @param userId Database column USER_ID SqlType(VARCHAR), Length(50,true)
     *  @param street Database column STREET SqlType(VARCHAR), Length(100,true), Default(None)
     *  @param stateId Database column STATE_ID SqlType(VARCHAR), Length(2,true)
-    *  @param zipcode Database column ZIPCODE SqlType(VARCHAR), Length(10,true), Default(None) */
-  case class AddressRow(id: String, userId: String, street: Option[String] = None, stateId: String, zipcode: Option[String] = None)
+    *  @param zipcode Database column ZIPCODE SqlType(VARCHAR), Length(10,true) */
+  case class AddressRow(id: String, userId: String, street: Option[String] = None, stateId: String, zipcode: String)
   /** GetResult implicit for fetching AddressRow objects using plain SQL queries */
   implicit def GetResultAddressRow(implicit e0: GR[String], e1: GR[Option[String]]): GR[AddressRow] = GR{
     prs => import prs._
-      AddressRow.tupled((<<[String], <<[String], <<?[String], <<[String], <<?[String]))
+      AddressRow.tupled((<<[String], <<[String], <<?[String], <<[String], <<[String]))
   }
   /** Table description of table ADDRESS. Objects of this class serve as prototypes for rows in queries. */
   class Address(_tableTag: Tag) extends Table[AddressRow](_tableTag, "ADDRESS") {
     def * = (id, userId, street, stateId, zipcode) <> (AddressRow.tupled, AddressRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), Rep.Some(userId), street, Rep.Some(stateId), zipcode).shaped.<>({r=>import r._; _1.map(_=> AddressRow.tupled((_1.get, _2.get, _3, _4.get, _5)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), Rep.Some(userId), street, Rep.Some(stateId), Rep.Some(zipcode)).shaped.<>({r=>import r._; _1.map(_=> AddressRow.tupled((_1.get, _2.get, _3, _4.get, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true) */
     val id: Rep[String] = column[String]("ID", O.PrimaryKey, O.Length(50,varying=true))
@@ -45,8 +44,8 @@ trait Tables {
     val street: Rep[Option[String]] = column[Option[String]]("STREET", O.Length(100,varying=true), O.Default(None))
     /** Database column STATE_ID SqlType(VARCHAR), Length(2,true) */
     val stateId: Rep[String] = column[String]("STATE_ID", O.Length(2,varying=true))
-    /** Database column ZIPCODE SqlType(VARCHAR), Length(10,true), Default(None) */
-    val zipcode: Rep[Option[String]] = column[Option[String]]("ZIPCODE", O.Length(10,varying=true), O.Default(None))
+    /** Database column ZIPCODE SqlType(VARCHAR), Length(10,true) */
+    val zipcode: Rep[String] = column[String]("ZIPCODE", O.Length(10,varying=true))
 
     /** Foreign key referencing User (database name ADDRESS_ibfk_1) */
     lazy val userFk = foreignKey("ADDRESS_ibfk_1", userId, User)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.Cascade)
@@ -202,4 +201,3 @@ trait Tables {
   /** Collection-like TableQuery object for table Vehicle */
   lazy val Vehicle = new TableQuery(tag => new Vehicle(tag))
 }
-// $COVERAGE-ON$

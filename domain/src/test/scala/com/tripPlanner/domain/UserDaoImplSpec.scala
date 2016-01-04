@@ -1,7 +1,5 @@
 package com.tripPlanner.domain
 
-import java.time.ZonedDateTime
-
 import org.scalatest._
 import slick.driver.MySQLDriver.api._
 
@@ -31,17 +29,17 @@ class UserDaoImplSpec extends FlatSpec with Matchers with BeforeAndAfter{
 
   "UserDaoImpl" should "insert a User" in {
     val dao = UserDaoImpl(db)
-    val user = User(None, "Rob", "Kernick", Some("12/31/2015"))
-    val future = dao.save(user)
+    val user = User("0", "Rob", "Kernick", Some("12/31/2015"))
+    val future = dao.create(user)
 
     val longResult = Await.result(future, Duration.Inf)
     longResult should be (1)
   }
 
-  it should "insert a User with no date set" in {
+  it should "update a User with no date set" in {
     val dao = UserDaoImpl(db)
-    val user = User(None, "Rob", "Kernick", None)
-    val future = dao.save(user)
+    val user = User("0", "Rob", "Kernick", None)
+    val future = dao.create(user)
 
     val longResult = Await.result(future, Duration.Inf)
     longResult should be (1)

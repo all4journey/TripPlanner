@@ -2,18 +2,17 @@ package com.tripPlanner.webapp.pages
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.StatusCodes
-import akka.parboiled2.RuleTrace.Fail
 import akka.stream.Materializer
 import com.tripPlanner.domain.{VehicleDaoImpl, UserDaoImpl, AddressDaoImpl, StateDaoImpl}
 import com.tripPlanner.shared.domain.{Profile, State}
 import com.tripPlanner.webapp.Page
 import com.tripPlanner.webapp.util.DomainSupport
 import com.typesafe.scalalogging.LazyLogging
-import prickle.{Unpickle, Pickle}
+import prickle.Unpickle
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
-import scala.util.{Failure, Success}
+import scala.util.Success
 import scala.concurrent.duration._
 
 
@@ -56,16 +55,36 @@ object ProfilePage extends ProfilePage
 object ProfileLogic extends LazyLogging {
   def save(profileInfo: Profile): Unit = {
     val userDao = UserDaoImpl(DomainSupport.db)
-    userDao.save(profileInfo.user)
+    userDao.create(profileInfo.user)
 
     val addressDao = AddressDaoImpl(DomainSupport.db)
     val addresses = profileInfo.addresses
-    addresses.foreach {
-      addressDao.save
+
+    // TODO: need to leverage the address count in the DB as well
+    val MaxAddresses = 4
+    if (addresses.size > MaxAddresses) {
+      throw new IllegalArgumentException(s"The list of addresses passed exceeds $MaxAddresses")
     }
+
+    for (address <- addresses) {
+      val addressWithUserId = address.copy(userId = profileInfo.user.id)
+      addressDao.create(addressWithUserId)
+    }
+
 
     val vehicleDao = VehicleDaoImpl(DomainSupport.db)
     val vehicles = profileInfo.vehicles
+
+    // TODO: need to leverage the vehicle count in the DB as well
+    val MaxVehicles = 4
+    if (vehicles.size > MaxVehicles) {
+      throw new IllegalArgumentException(s"The list of vehicles passed exceeds $MaxVehicles")
+    }
+
+    for (vehicle <- vehicles) {
+      val vehicleWithUserId = vehicle.copy(userId = profileInfo.user.id)
+      vehicleDao.create(vehicleWithUserId)
+    }
 
     vehicles.foreach {
       vehicleDao.save

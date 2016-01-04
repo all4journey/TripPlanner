@@ -18,12 +18,6 @@ case class StateDaoImpl(db: Database)(implicit ec: ExecutionContext) extends Sta
 
     val statesList = TableQuery[states]
 
-    // hard coding this list for now... it should come out of the DB
-//    val newYork = State("NY", "New York")
-//    val georgia = State("GA", "Georgia")
-//    val pen = State("PA", "Pensylvannia")
-
-
     db.run(statesList.result) map {
       stateList => for {
         s <- stateList

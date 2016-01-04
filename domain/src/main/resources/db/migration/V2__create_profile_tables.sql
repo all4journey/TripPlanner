@@ -18,7 +18,7 @@ create table ADDRESS (
     USER_ID varchar(50) not null,
     STREET varchar(100),
     STATE_ID varchar(2) not null,
-    ZIPCODE varchar(10),
+    ZIPCODE varchar(10) not null,
     primary key (ID),
     index USER_ID_IND (USER_ID),
     FOREIGN KEY (USER_ID)
