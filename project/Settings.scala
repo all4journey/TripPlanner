@@ -31,9 +31,9 @@ object Settings {
   ))
 
   val serverDependencies = Def.setting(Seq(
-    "com.typesafe.akka" %% "akka-http-core-experimental" % versions.akkaStreamsAndHttp,
-    "com.typesafe.akka" %% "akka-http-xml-experimental" % versions.akkaStreamsAndHttp,
-    "com.typesafe.akka" %% "akka-http-experimental" % versions.akkaStreamsAndHttp,
+    "com.typesafe.akka"     %% "akka-http-core-experimental" % versions.akkaStreamsAndHttp,
+    "com.typesafe.akka"     %% "akka-http-xml-experimental" % versions.akkaStreamsAndHttp,
+    "com.typesafe.akka"     %% "akka-http-experimental" % versions.akkaStreamsAndHttp,
     "org.scala-lang.modules" %% "scala-xml" % "1.0.5",
     "com.lihaoyi" %% "scalatags" % "0.5.3",
     "com.github.japgolly.scalacss" %% "core" % "0.3.1",
@@ -41,7 +41,7 @@ object Settings {
     "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0",
     "ch.qos.logback" % "logback-classic" % "1.1.2",
     "com.typesafe.akka" %% "akka-http-spray-json-experimental" % versions.akkaStreamsAndHttp,
-
+    "de.svenkubiak" %  "jBCrypt" % "0.4",
     "org.scalatest" %% "scalatest" % versions.scalaTest % "test",
     "com.typesafe.akka" %% "akka-http-testkit-experimental" % versions.akkaStreamsAndHttp % "test"
   ))
