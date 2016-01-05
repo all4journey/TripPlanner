@@ -17,6 +17,7 @@ import scala.util.Success
 object ProfileJsImpl extends ProfileJs {
 
   def run(params: Seq[State]): Unit = {}
+
   def runWithParams(params: Any): Unit = {
     val content = dom.document.getElementById("content")
     content.appendChild(profilePanel.render)
@@ -26,14 +27,13 @@ object ProfileJsImpl extends ProfileJs {
     val stateDropdown = dom.document.getElementById("userState")
 
     Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
-      case Success(states: Seq[State]) => {
+      case Success(states: Seq[State]) =>
         for (stateItem <- states) {
           val option = dom.document.createElement("option")
           option.textContent = stateItem.description
           option.setAttribute("value", stateItem.id)
           stateDropdown.appendChild(option)
         }
-      }
       case _ => Seq[State]()
     }
   }
@@ -50,12 +50,12 @@ object ProfileJsImpl extends ProfileJs {
       div(cls := "col-md-9 personal-info")(
         div(id := "successBanner", cls := "alert alert-info alert-dismissable")(
           span(cls := "glyphicon glyphicon-ok", "aria-hidden".attr := "true")(),
-            a(cls := "panel-close close", onclick := { () =>
-              $("#successBanner").hide();
-            })("×"),
-            i(cls := "fa fa-coffee")(),
-            strong(" Success!"), " profile was saved successfully"
-          ),
+          a(cls := "panel-close close", onclick := { () =>
+            $("#successBanner").hide();
+          })("×"),
+          i(cls := "fa fa-coffee")(),
+          strong(" Success!"), " profile was saved successfully"
+        ),
         div(id := "errorBanner", cls := "alert alert-danger alert-dismissable")(
           span(cls := "glyphicon glyphicon-exclamation-sign", "aria-hidden".attr := "true")(),
           a(cls := "panel-close close", onclick := { () =>
@@ -134,7 +134,7 @@ object ProfileJsImpl extends ProfileJs {
 
                 val firstName = $("#firstName").value().toString.trim
                 val lastName = $("#lastName").value().toString.trim
-                val user = new User("a123a", firstName, lastName, None);
+                val user: User = new User(fName = firstName, lName = lastName, registrationDate = None)
 
                 val userStateId = $("#userState :selected").value().toString.trim
                 val userStateDescription = $("#userState :selected").text().toString.trim
@@ -182,4 +182,5 @@ object ProfileJsImpl extends ProfileJs {
   )
 
 }
+
 // $COVERAGE-ON$
