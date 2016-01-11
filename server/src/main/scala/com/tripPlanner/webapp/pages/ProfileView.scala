@@ -16,3 +16,13 @@ class ProfileView(states: Seq[State]) extends View {
       footer = Seq(jsModuleWithParams[ProfileJs](myStates))
     )
 }
+
+trait AjaxProfileView extends View {
+  def apply()(implicit ctx: RequestContext) =
+    MainTemplate(
+      titleText = "Profile",
+      footer = Seq(jsModule[AjaxProfileJs])
+    )
+}
+
+object AjaxProfileView extends AjaxProfileView

@@ -49,3 +49,22 @@ object MainTemplate extends View {
       a(href := hrefPath, name)
     )
 }
+
+object AjaxTemplate extends View {
+  def apply(
+             footer: Seq[Modifier] = Seq.empty
+           )
+           (implicit ctx: RequestContext)
+  =
+    html(
+      head(
+        meta(charset := StandardCharsets.UTF_8.name.toLowerCase),
+        scriptPath("/client-fastopt.js"),
+        scriptPath("/client-jsdeps.js")
+      ),
+      body()(
+        div(id := "ajaxContent"),
+        footer
+      )
+    )
+}

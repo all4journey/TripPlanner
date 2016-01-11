@@ -5,7 +5,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
-import com.tripPlanner.webapp.pages.{IndexPage, ProfilePage}
+import com.tripPlanner.webapp.pages._
 import com.tripPlanner.webapp.util.LogAppender
 import org.webjars.WebJarAssetLocator
 import akka.http.scaladsl.marshallers.xml.ScalaXmlSupport._
@@ -42,6 +42,18 @@ object Routes extends Page {
         } ~
         path("profile") {
           ProfilePage()
+        } ~
+        path("ajaxProfile") {
+          AjaxProfilePage()
+        } ~
+        path("ajaxProfile" / "passwordMgr") {
+          AjaxPasswordChangFormPage()
+        } ~
+        path("ajaxProfile" / "vehicle") {
+          AjaxVehicleInfoFormPage()
+        } ~
+        path("ajaxProfile" / "personal") {
+          AjaxPersonalInfoFormPage()
         }
     } ~
     getFromResource("web") ~

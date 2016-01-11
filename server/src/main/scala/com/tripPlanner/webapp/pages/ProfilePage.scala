@@ -6,6 +6,7 @@ import akka.stream.Materializer
 import com.tripPlanner.domain.{VehicleDaoImpl, UserDaoImpl, AddressDaoImpl, StateDaoImpl}
 import com.tripPlanner.shared.domain.{Profile, State}
 import com.tripPlanner.webapp.Page
+import com.tripPlanner.webapp.pages.AjaxProfileView
 import com.tripPlanner.webapp.util.DomainSupport
 import com.typesafe.scalalogging.LazyLogging
 import prickle.Unpickle
@@ -19,6 +20,22 @@ import scala.concurrent.duration._
 /**
   * Created by aabreu on 12/6/15.
   */
+
+trait AjaxProfilePage extends Page with LazyLogging {
+  def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
+    get {
+      extractRequestContext { implicit ctx => {
+
+
+        complete(AjaxProfileView())
+      }
+      }
+    }
+  }
+}
+
+object AjaxProfilePage extends AjaxProfilePage
+
 trait ProfilePage extends Page with LazyLogging {
   def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
     get {
