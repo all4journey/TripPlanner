@@ -3,10 +3,9 @@ package com.tripPlanner.webapp.pages
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.StatusCodes
 import akka.stream.Materializer
-import com.tripPlanner.domain.{VehicleDaoImpl, UserDaoImpl, AddressDaoImpl, StateDaoImpl}
+import com.tripPlanner.domain._
 import com.tripPlanner.shared.domain.{Profile, State}
 import com.tripPlanner.webapp.Page
-import com.tripPlanner.webapp.pages.AjaxProfileView
 import com.tripPlanner.webapp.util.DomainSupport
 import com.typesafe.scalalogging.LazyLogging
 import prickle.Unpickle
@@ -71,7 +70,7 @@ object ProfilePage extends ProfilePage
 
 object ProfileLogic extends LazyLogging {
   def save(profileInfo: Profile): Unit = {
-    val userDao = UserDaoImpl(DomainSupport.db)
+    val userDao = UserDao(DomainSupport.db)
     val userIdFuture = userDao.create(profileInfo.user)
 
     val addressDao = AddressDaoImpl(DomainSupport.db)
@@ -79,13 +78,19 @@ object ProfileLogic extends LazyLogging {
     val vehicleDao = VehicleDaoImpl(DomainSupport.db)
 
     userIdFuture.onSuccess {
-      case id =>
+      case result =>
 //        for {
 //        address <- profileInfo.addresses
 //        addressId <- addressDao.create(address.copy(userId = id))
 //      } yield address.copy(id = addressId)
-        profileInfo.addresses foreach(address => addressDao.create(address.copy(userId = id)))
-        profileInfo.vehicles foreach(vehicle => vehicleDao.create(vehicle.copy(userId = id)))
+        result match {
+          case Some(id) =>
+            profileInfo.addresses foreach(address => addressDao.create(address.copy(userId = id)))
+            profileInfo.vehicles foreach(vehicle => vehicleDao.create(vehicle.copy(userId = id)))
+          case None =>
+            //Throw Error
+        }
+
     }
 //    for {
 //      address <- profileInfo.addresses

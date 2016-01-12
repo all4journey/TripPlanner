@@ -12,7 +12,7 @@ object Settings {
     val akka = "2.4.1"
     val akkaStreamsAndHttp = "2.0.1"
     val scalaJs = "0.6.5"
-    val slick = "3.1.0"
+    val slick = "3.1.1"
     val log4js = "1.4.9"
   }
 

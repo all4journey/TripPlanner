@@ -2,7 +2,7 @@ package com.tripPlanner.domain
 
 
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.{UUID, Date}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -15,13 +15,12 @@ import scala.concurrent.duration._
 /**
   * Created by rjkj on 12/9/15.
   */
-trait UserDao {
-  def update(user: User): Future[Long]
-
-  def create(user: User): Future[String]
-}
-
-case class UserDaoImpl(db: Database)(implicit ec: ExecutionContext) extends UserDao {
+case class UserDao(db: Database)(implicit ec: ExecutionContext){
+  /**
+    * Updates a user's name
+    * @param user User to be updated
+    * @return 1 if successful
+    */
   def update(user: User):Future[Long] = {
     val query = for {
       u <- Users if u.id === user.id
@@ -33,18 +32,34 @@ case class UserDaoImpl(db: Database)(implicit ec: ExecutionContext) extends User
     }
   }
 
-  def create(user: User):Future[String] = {
+  def create(user: User):Future[Option[String]] = {
     val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
     val dateFromString: Date = user.registrationDate match {
       case Some(stringDate: String) => dateFormat.parse(stringDate)
       case None => new Date()
     }
 
-    val userId = (Users returning Users.map(_.id)) += UserRow(user.id, user.fName, user.lName, new java.sql.Date(dateFromString.getTime))
+    val userId = java.util.UUID.randomUUID().toString
 
-    db.run(userId) map {
-      result => result
+    val result = Users += UserRow(userId, user.fName, user.lName, new java.sql.Date(dateFromString.getTime))
+
+    db.run(result) map {
+      result =>
+        if(result == 1)
+          Some(userId)
+        else
+          None
     }
   }
 
+  def delete(user: User): Future[Boolean] = {
+    val query = Users.filter(_.id === user.id)
+    val action = query.delete
+
+    db.run(action) map {
+      case 1 => true
+      case _ => false
+    }
+
+  }
 }

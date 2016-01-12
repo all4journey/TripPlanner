@@ -8,7 +8,7 @@ import java.util.UUID
   */
 
 
-case class User(id: String = java.util.UUID.randomUUID().toString, fName:String = "Default", lName:String, registrationDate: Option[String])
+case class User(id: String = "", fName:String = "Default", lName:String, registrationDate: Option[String])
 
 case class Profile(user: User, addresses: Seq[Address], vehicles: Seq[Vehicle])
 

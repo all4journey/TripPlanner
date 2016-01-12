@@ -16,9 +16,7 @@ trait StateDao {
 case class StateDaoImpl(db: Database)(implicit ec: ExecutionContext) extends StateDao {
   def getStates: Future[Seq[State]] = {
 
-    val statesList = TableQuery[states]
-
-    db.run(statesList.result) map {
+    db.run(states.result) map {
       stateList => for {
         s <- stateList
       } yield State(s.id, s.description.getOrElse("NotFound"))
