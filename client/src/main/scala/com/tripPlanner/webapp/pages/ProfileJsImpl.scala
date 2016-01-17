@@ -142,13 +142,13 @@ object ProfileJsImpl extends ProfileJs {
 
                 val streetAddress = $("#streetAddress").value().toString.trim
                 val zipCode = $("#zipCode").value().toString.trim
-                val address = new Address("0", "a123a", Some(streetAddress), state, zipCode)
+                val address = new Address(street = Option(streetAddress), state = state, zipCode = zipCode)
                 val addresses: Seq[Address] = List(address)
 
                 val userVehicleYear = $("#userVehicleYear :selected").value().toString.trim
                 val make = $("#make").value().toString.trim
                 val model = $("#model").value().toString.trim
-                val vehicle = new Vehicle("0", "a123a", Some(userVehicleYear), Some(make), Some(model))
+                val vehicle = new Vehicle(year = Option(userVehicleYear), make = Option(make), model = Option(model))
                 val vehicles: Seq[Vehicle] = List(vehicle)
 
                 val profileInfo = new Profile(user, addresses, vehicles)

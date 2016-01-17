@@ -30,6 +30,21 @@ class UserDaoSpec extends DomainTestSpec{
 
   }
 
+  it should "update a user" in {
+    val dao = UserDao(db)
+    val user:User = User(fName =  "Rob", lName = "Kernick", registrationDate = None)
+    val future = dao.create(user)
+
+    val id = Await.result(future, Duration.Inf).getOrElse("")
+    id should not be empty
+
+    val updatedUser = user.copy(fName = "Changed", id = id)
+
+    val result = dao.update(updatedUser)
+    val returned = Await.result(result, Duration.Inf)
+    returned shouldEqual 1
+  }
+
   it should "delete a User" in {
     val dao = UserDao(db)
     val user:User = User(fName =  "Rob", lName = "Kernick", registrationDate = None)

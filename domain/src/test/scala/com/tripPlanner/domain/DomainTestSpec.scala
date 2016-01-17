@@ -14,6 +14,7 @@ trait DomainTestSpec extends FlatSpec with Matchers with BeforeAndAfter{
     db = Database.forConfig(databaseConfig.getOrElse("db"))
   }
 
+
   after {
     db.close()
   }

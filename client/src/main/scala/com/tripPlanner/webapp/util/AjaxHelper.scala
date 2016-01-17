@@ -3,7 +3,7 @@ package com.tripPlanner.webapp.util
 import org.scalajs.jquery.{jQuery => $, JQueryXHR, JQueryAjaxSettings}
 
 import scala.scalajs.js
-
+// $COVERAGE-OFF$
 /**
   * Created by aabreu on 1/10/16.
   */
@@ -31,3 +31,5 @@ trait AjaxHelper {
 }
 
 object AjaxHelper extends AjaxHelper
+
+// $COVERAGE-ON$

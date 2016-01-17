@@ -73,62 +73,22 @@ object ProfileLogic extends LazyLogging {
     val userDao = UserDao(DomainSupport.db)
     val userIdFuture = userDao.create(profileInfo.user)
 
-    val addressDao = AddressDaoImpl(DomainSupport.db)
+    val addressDao = AddressDao(DomainSupport.db)
 
-    val vehicleDao = VehicleDaoImpl(DomainSupport.db)
+    val vehicleDao = VehicleDao(DomainSupport.db)
 
     userIdFuture.onSuccess {
       case result =>
-//        for {
-//        address <- profileInfo.addresses
-//        addressId <- addressDao.create(address.copy(userId = id))
-//      } yield address.copy(id = addressId)
         result match {
           case Some(id) =>
-            profileInfo.addresses foreach(address => addressDao.create(address.copy(userId = id)))
-            profileInfo.vehicles foreach(vehicle => vehicleDao.create(vehicle.copy(userId = id)))
+            //TODO - Set limit on vehicles and Addresses
+            profileInfo.addresses foreach (address => addressDao.create(address.copy(userId = id)))
+            profileInfo.vehicles foreach (vehicle => vehicleDao.create(vehicle.copy(userId = id)))
           case None =>
-            //Throw Error
+          //Throw Error
         }
 
     }
-//    for {
-//      address <- profileInfo.addresses
-//      addressId <- addressDao.create(address.copy(userId = userId))
-//    } addressId
-
-    //    val addressDao = AddressDaoImpl(DomainSupport.db)
-    //    val addresses = profileInfo.addresses
-
-    // TODO: need to leverage the address count in the DB as well
-    //    val MaxAddresses = 4
-    //    if (addresses.size > MaxAddresses) {
-    //      throw new IllegalArgumentException(s"The list of addresses passed exceeds $MaxAddresses")
-    //    }
-    //
-    //    for (address <- addresses) {
-    //      val addressWithUserId = address.copy(userId = profileInfo.user.id)
-    //      addressDao.create(addressWithUserId)
-    //    }
-    //
-
-    //    val vehicleDao = VehicleDaoImpl(DomainSupport.db)
-    //    val vehicles = profileInfo.vehicles
-
-    // TODO: need to leverage the vehicle count in the DB as well
-    //    val MaxVehicles = 4
-    //    if (vehicles.size > MaxVehicles) {
-    //      throw new IllegalArgumentException(s"The list of vehicles passed exceeds $MaxVehicles")
-    //    }
-    //
-    //    for (vehicle <- vehicles) {
-    //      val vehicleWithUserId = vehicle.copy(userId = profileInfo.user.id)
-    //      vehicleDao.create(vehicleWithUserId)
-    //    }
-    //
-    //    vehicles.foreach {
-    //      vehicleDao.save
-    //    }
   }
 
   def getStates: Future[Seq[State]] = {

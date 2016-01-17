@@ -9,9 +9,7 @@ import scala.scalajs.js
 import scala.util.Success
 import scalatags.JsDom.all._
 
-/**
-  * Created by aabreu on 1/10/16.
-  */
+// $COVERAGE-OFF$
 object AjaxVehicleInfoFormJsImpl extends AjaxVehicleInfoFormJs {
 
   def run(params: Vehicle): Unit = {}
@@ -59,3 +57,4 @@ object AjaxVehicleInfoFormJsImpl extends AjaxVehicleInfoFormJs {
     )
   )
 }
+// $COVERAGE-ON$

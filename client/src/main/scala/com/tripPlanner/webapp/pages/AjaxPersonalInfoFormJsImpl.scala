@@ -9,9 +9,7 @@ import scala.scalajs.js
 import scala.util.Success
 import scalatags.JsDom.all._
 
-/**
-  * Created by aabreu on 1/10/16.
-  */
+// $COVERAGE-OFF$
 object AjaxPersonalInfoFormJsImpl extends AjaxPersonalInfoFormJs {
 
   def run(params: Seq[State]): Unit = {}
@@ -74,3 +72,4 @@ object AjaxPersonalInfoFormJsImpl extends AjaxPersonalInfoFormJs {
   )
 
 }
+// $COVERAGE-ON$

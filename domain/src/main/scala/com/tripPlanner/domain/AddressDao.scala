@@ -8,15 +8,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 import com.tripPlanner.domain.Tables.{Address => Addresses, AddressRow}
 import scala.concurrent.duration._
 
-/**
-  * Created by aabreu on 12/29/15.
-  */
-trait AddressDao {
-  def update(address:Address): Future[Long]
-  def create(address: Address): Future[Option[String]]
-}
-
-case class AddressDaoImpl(db:Database)(implicit ec:ExecutionContext) extends AddressDao {
+case class AddressDao(db:Database)(implicit ec:ExecutionContext) {
   def update(address:Address) = {
     val query = for {
       a <- Addresses if a.id === address.id

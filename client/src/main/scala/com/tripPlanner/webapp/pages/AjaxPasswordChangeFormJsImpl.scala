@@ -6,9 +6,7 @@ import scala.scalajs.js
 import scala.util.Success
 import scalatags.JsDom.all._
 
-/**
-  * Created by aabreu on 1/10/16.
-  */
+// $COVERAGE-OFF$
 object AjaxPasswordChangeFormJsImpl extends AjaxPasswordChangeFormJs {
   def run(params: String): Unit = {}
 
@@ -50,3 +48,4 @@ object AjaxPasswordChangeFormJsImpl extends AjaxPasswordChangeFormJs {
     )
   )
 }
+// $COVERAGE-ON$
