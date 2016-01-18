@@ -5,7 +5,7 @@ import akka.stream.Materializer
 import com.tripPlanner.domain.{AddressDao, StateDaoImpl}
 import com.tripPlanner.shared.domain.PersonalFormData
 import com.tripPlanner.webapp.Page
-import com.tripPlanner.webapp.util.DomainSupport
+import com.tripPlanner.webapp.util.{UserContext, DomainSupport}
 import com.typesafe.scalalogging.LazyLogging
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -24,11 +24,13 @@ trait PersonalInfoFormPage extends Page with LazyLogging {
         val statesFuture = stateDao.getStates
         val states = Await.result(statesFuture, 10 seconds)
 
+        val user = UserContext.getCurrentUser
+
         val addressDao = AddressDao(DomainSupport.db)
-        val addressesFuture = addressDao.getAddresses
+        val addressesFuture = addressDao.getAddressesByUserId(user.id)
         val addresses = Await.result(addressesFuture, 10 seconds)
 
-        val personalInfoFormView = new PersonalInfoFormView(PersonalFormData(addresses, states))
+        val personalInfoFormView = new PersonalInfoFormView(PersonalFormData(Some(user), addresses, states))
         complete(personalInfoFormView.apply())
       }
       }

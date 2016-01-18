@@ -19,7 +19,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs {
 
     val formData = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
       case Success(fd: PersonalFormData) => fd
-      case _ => PersonalFormData(Seq[Address](), Seq[State]())
+      case _ => PersonalFormData(None, Seq[Address](), Seq[State]())
     }
 
     val content = dom.document.getElementById("content")

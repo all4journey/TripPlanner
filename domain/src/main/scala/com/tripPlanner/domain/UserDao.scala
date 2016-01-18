@@ -62,4 +62,15 @@ case class UserDao(db: Database)(implicit ec: ExecutionContext){
     }
 
   }
+
+  def getUserById(userId: String): Future[Seq[User]] = {
+    val query = Users.filter(_.id === userId)
+    val action = query.result
+
+    db.run(action) map {
+      userList => for {
+        u <- userList
+      } yield User(u.id, u.firstName, u.lastName, Some(u.registrationDate.toString))
+    }
+  }
 }
