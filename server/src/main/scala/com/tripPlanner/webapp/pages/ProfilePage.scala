@@ -20,21 +20,6 @@ import scala.concurrent.duration._
   * Created by aabreu on 12/6/15.
   */
 
-trait AjaxProfilePage extends Page with LazyLogging {
-  def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
-    get {
-      extractRequestContext { implicit ctx => {
-
-
-        complete(AjaxProfileView())
-      }
-      }
-    }
-  }
-}
-
-object AjaxProfilePage extends AjaxProfilePage
-
 trait ProfilePage extends Page with LazyLogging {
   def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
     get {

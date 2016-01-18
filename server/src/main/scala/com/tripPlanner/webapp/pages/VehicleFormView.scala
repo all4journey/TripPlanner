@@ -1,18 +1,18 @@
 package com.tripPlanner.webapp.pages
 
 import akka.http.scaladsl.server.RequestContext
+import com.tripPlanner.shared.domain.Vehicle
 import com.tripPlanner.webapp.{MainTemplate, View}
-import com.tripPlanner.shared.domain.State
-
 
 /**
-  * Created by aabreu on 12/6/15.
+  * Created by aabreu on 1/10/16.
   */
-class ProfileView(states: Seq[State]) extends View {
-  val myStates = states
+class VehicleFormView(vehicles: Seq[Vehicle]) extends View {
+  val myVehicles = vehicles
   def apply()(implicit ctx: RequestContext) =
     MainTemplate(
       titleText = "Edit Profile",
-      footer = Seq(jsModuleWithParams[ProfileJs](myStates))
+      footer = Seq(jsModuleWithParams[VehicleInfoFormJs](myVehicles))
     )
+
 }

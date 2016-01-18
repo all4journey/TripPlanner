@@ -43,17 +43,14 @@ object Routes extends Page {
         path("profile") {
           ProfilePage()
         } ~
-        path("ajaxProfile") {
-          AjaxProfilePage()
+        path("multiformProfile" / "password") {
+          PasswordChangFormPage()
         } ~
-        path("ajaxProfile" / "passwordMgr") {
-          AjaxPasswordChangFormPage()
+        path("multiformProfile" / "vehicle") {
+          VehicleInfoFormPage()
         } ~
-        path("ajaxProfile" / "vehicle") {
-          AjaxVehicleInfoFormPage()
-        } ~
-        path("ajaxProfile" / "personal") {
-          AjaxPersonalInfoFormPage()
+        path("multiformProfile" / "personal") {
+          PersonalInfoFormPage()
         }
     } ~
     getFromResource("web") ~

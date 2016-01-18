@@ -34,4 +34,19 @@ case class AddressDao(db:Database)(implicit ec:ExecutionContext) {
     }
   }
 
+  def getAddresses: Future[Seq[Address]] = {
+
+    val stateDao = StateDaoImpl(db)
+
+    db.run(Addresses.result) map {
+      addressList => for {
+        a <- addressList
+      } yield {
+        val statesFuture = stateDao.getStateById(a.stateId)
+        val stateResult = Await.result(statesFuture, 10 seconds)
+        Address(a.id, a.userId, a.street, stateResult(0), a.zipcode)
+      }
+    }
+  }
+
 }

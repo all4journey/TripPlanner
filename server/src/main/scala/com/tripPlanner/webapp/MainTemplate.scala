@@ -18,8 +18,8 @@ object MainTemplate extends View {
       head(
         meta(charset := StandardCharsets.UTF_8.name.toLowerCase),
         titleTag(s"Trip Planner - $titleText"),
-        scriptPath("client-fastopt.js"),
-        scriptPath("client-jsdeps.js"),
+        scriptPath("/client-fastopt.js"),
+        scriptPath("/client-jsdeps.js"),
         scriptPath("/assets/bootstrap/bootstrap.min.js"),
         css("/assets/bootstrap/bootstrap.min.css"),
         header
@@ -28,7 +28,7 @@ object MainTemplate extends View {
         div(cls := "navbar navbar-inverse navbar-fixed-top", role := "navigation")(
             ul(cls := "nav navbar-nav")(
               menuItem("Main", "/"),
-              menuItem("Profile", "/profile")
+              menuItem("Profile", "/multiformProfile/personal")
             )
         ),
         div(cls := "container-fluid")(
@@ -47,24 +47,5 @@ object MainTemplate extends View {
       if (ctx.request.uri.path.toString == hrefPath) cls := "menu active"
       else cls := "menu",
       a(href := hrefPath, name)
-    )
-}
-
-object AjaxTemplate extends View {
-  def apply(
-             footer: Seq[Modifier] = Seq.empty
-           )
-           (implicit ctx: RequestContext)
-  =
-    html(
-      head(
-        meta(charset := StandardCharsets.UTF_8.name.toLowerCase),
-        scriptPath("/client-fastopt.js"),
-        scriptPath("/client-jsdeps.js")
-      ),
-      body()(
-        div(id := "ajaxContent"),
-        footer
-      )
     )
 }

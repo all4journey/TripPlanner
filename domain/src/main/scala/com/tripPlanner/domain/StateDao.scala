@@ -11,6 +11,7 @@ import com.tripPlanner.domain.Tables.{UsState => states, UsStateRow => row}
   */
 trait StateDao {
   def getStates: Future[Seq[State]]
+  def getStateById(stateId: String): Future[Seq[State]]
 }
 
 case class StateDaoImpl(db: Database)(implicit ec: ExecutionContext) extends StateDao {
@@ -22,4 +23,16 @@ case class StateDaoImpl(db: Database)(implicit ec: ExecutionContext) extends Sta
       } yield State(s.id, s.description.getOrElse("NotFound"))
     }
   }
+
+  def getStateById(stateId: String): Future[Seq[State]] = {
+    val query = states.filter(_.id === stateId)
+
+    db.run(query.result) map {
+      stateList => for {
+        s <- stateList
+      } yield State(s.id, s.description.getOrElse("NotFound"))
+    }
+  }
+
+
 }
