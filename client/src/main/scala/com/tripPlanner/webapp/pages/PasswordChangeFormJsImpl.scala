@@ -1,5 +1,6 @@
 package com.tripPlanner.webapp.pages
 
+import com.tripPlanner.webapp.util.NavPills
 import org.scalajs.dom
 import prickle.Unpickle
 
@@ -11,7 +12,7 @@ import scalatags.JsDom.all._
   * Created by aabreu on 1/17/16.
   */
 // $COVERAGE-OFF$
-object PasswordChangeFormJsImpl extends PasswordChangeFormJs {
+object PasswordChangeFormJsImpl extends PasswordChangeFormJs with NavPills{
   def run(params: String): Unit = {}
 
   def runWithParams(params: Any): Unit = {
@@ -28,17 +29,7 @@ object PasswordChangeFormJsImpl extends PasswordChangeFormJs {
   def passwordChangeForm(emailAddress: String) = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
-        ul(cls := "nav nav-pills")(
-          li(id := "personalInfoLink", role := "presentation")(
-            a(href := "/multiformProfile/personal")("Personal Info")
-          ),
-          li(id := "vehicleInfoLink", role := "presentation")(
-            a(href := "/multiformProfile/vehicle")("Vehicle Info")
-          ),
-          li(id := "passwordChangeLink", role := "presentation", cls := "active")(
-            a(href := "/multiformProfile/password")("Change Password")
-          )
-        )
+        getNavPills("passwordChangeLink")
       )
     ),
     h1(cls := "page-header"),

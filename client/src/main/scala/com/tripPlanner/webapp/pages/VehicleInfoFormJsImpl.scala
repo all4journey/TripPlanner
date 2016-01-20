@@ -1,6 +1,7 @@
 package com.tripPlanner.webapp.pages
 
 import com.tripPlanner.shared.domain.Vehicle
+import com.tripPlanner.webapp.util.NavPills
 import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLElement
 import org.scalajs.jquery.{jQuery => $, _}
@@ -15,7 +16,7 @@ import scalatags.JsDom.all._
   * Created by aabreu on 1/17/16.
   */
 // $COVERAGE-OFF$
-object VehicleInfoFormJsImpl extends VehicleInfoFormJs {
+object VehicleInfoFormJsImpl extends VehicleInfoFormJs with NavPills{
 
   var formIndex = 1
   var vehicles: Seq[Vehicle] = null
@@ -47,7 +48,7 @@ object VehicleInfoFormJsImpl extends VehicleInfoFormJs {
   }
 
   @JSExport
-  def addMoreVehicleFields: Unit = {
+  def addMoreVehicleFields(): Unit = {
     $("#yearDiv0").before(vehicleTextFields("btn btn-danger btn-sub", "glyphicon glyphicon-minus", "has-error", formIndex).render)
     $("#plusMinusButton" + formIndex).click({ (hTMLElement: HTMLElement) =>
       val index = $(hTMLElement).attr("index")
@@ -130,18 +131,7 @@ object VehicleInfoFormJsImpl extends VehicleInfoFormJs {
     )
   )
 
-  @JSExport
-  def getNavPills(someString:String) = ul(cls := "nav nav-pills")(
-    li(id := "personalInfoLink", role := "presentation", if(someString.equalsIgnoreCase("personalInfoLink")) cls := "active" else "")(
-      a(href := "/multiformProfile/personal")("Personal Info")
-    ),
-    li(id := "vehicleInfoLink", role := "presentation", if(someString.equalsIgnoreCase("vehicleinfolink")) cls := "active" else "")(
-      a(href := "/multiformProfile/vehicle")("Vehicle Info")
-    ),
-    li(id := "passwordChangeLink", role := "presentation", if(someString.equalsIgnoreCase("passwordChangeLink")) cls := "active" else "")(
-      a(href := "/multiformProfile/password")("Change Password")
-    )
-  )
+
 
   @JSExport
   def vehicleForm = div(cls := "container")(
