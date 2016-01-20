@@ -131,26 +131,23 @@ object VehicleInfoFormJsImpl extends VehicleInfoFormJs {
   )
 
   @JSExport
-  def vehicleForm(someString: String) = div(cls := "container")(
+  def getNavPills(someString:String) = ul(cls := "nav nav-pills")(
+    li(id := "personalInfoLink", role := "presentation", if(someString.equalsIgnoreCase("personalInfoLink")) cls := "active" else "")(
+      a(href := "/multiformProfile/personal")("Personal Info")
+    ),
+    li(id := "vehicleInfoLink", role := "presentation", if(someString.equalsIgnoreCase("vehicleinfolink")) cls := "active" else "")(
+      a(href := "/multiformProfile/vehicle")("Vehicle Info")
+    ),
+    li(id := "passwordChangeLink", role := "presentation", if(someString.equalsIgnoreCase("passwordChangeLink")) cls := "active" else "")(
+      a(href := "/multiformProfile/password")("Change Password")
+    )
+  )
+
+  @JSExport
+  def vehicleForm = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
-        ul(cls := "nav nav-pills")(
-        if (someString.equals("personalInfoLink")) {
-          li(id := "personalInfoLink", role := "presentation", cls := "active")(
-            a(href := "/multiformProfile/personal")("Personal Info")
-          ),
-        }
-          else {
-          li(id := "personalInfoLink", role := "presentation")(
-          a(href := "/multiformProfile/personal")("Personal Info"),
-        }
-          li(id := "vehicleInfoLink", role := "presentation", cls := "active")(
-            a(href := "/multiformProfile/vehicle")("Vehicle Info")
-          ),
-          li(id := "passwordChangeLink", role := "presentation")(
-            a(href := "/multiformProfile/password")("Change Password")
-          )
-        )
+        getNavPills("vehicleinfolink")
       )
     ),
     h1(cls := "page-header"),

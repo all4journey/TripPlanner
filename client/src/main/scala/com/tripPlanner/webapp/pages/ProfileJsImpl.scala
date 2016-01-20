@@ -14,6 +14,7 @@ import scala.util.Success
 /**
   * Created by rjkj on 12/5/15.
   */
+@deprecated
 object ProfileJsImpl extends ProfileJs {
 
   def run(params: Seq[State]): Unit = {}
