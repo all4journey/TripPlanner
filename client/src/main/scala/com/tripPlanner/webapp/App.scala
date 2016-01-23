@@ -2,8 +2,11 @@ package com.tripPlanner.webapp
 
 import java.util.UUID
 
-import com.tripPlanner.domain.User
+
+import com.tripPlanner.shared.domain.User
+
 import com.tripPlanner.webapp.pages.IndexJsImpl
+
 import google.maps.LatLng
 
 import scala.scalajs.js.JSApp
