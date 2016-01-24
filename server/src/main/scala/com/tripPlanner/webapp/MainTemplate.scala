@@ -18,8 +18,8 @@ object MainTemplate extends View {
       head(
         meta(charset := StandardCharsets.UTF_8.name.toLowerCase),
         titleTag(s"Trip Planner - $titleText"),
-        scriptPath("client-fastopt.js"),
-        scriptPath("client-jsdeps.js"),
+        scriptPath("/client-fastopt.js"),
+        scriptPath("/client-jsdeps.js"),
         scriptPath("/assets/bootstrap/bootstrap.min.js"),
         css("/assets/bootstrap/bootstrap.min.css"),
         header
@@ -28,11 +28,11 @@ object MainTemplate extends View {
         div(cls := "navbar navbar-inverse navbar-fixed-top", role := "navigation")(
             ul(cls := "nav navbar-nav")(
               menuItem("Main", "/"),
-              menuItem("Profile", "/profile")
+              menuItem("Profile", "/multiformProfile/personal")
             )
         ),
         div(cls := "container-fluid")(
-          div(cls := "col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main", paddingTop:="50px")(
+          div(cls := "main", paddingTop:="50px")(
             h1(cls := "page-header", titleText),
             div(id := "content"),
             div(content)

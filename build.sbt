@@ -45,8 +45,7 @@ lazy val client = (project in file("client"))
 
 lazy val server = (project in file("server"))
   .settings(commonSettings: _*)
-  .dependsOn(sharedJvm)
-  .dependsOn(client)
+  .dependsOn(sharedJvm, client, domain)
   .settings(libraryDependencies ++= Settings.serverDependencies.value,
     Revolver.settings,
     (resourceGenerators in Compile) <+=

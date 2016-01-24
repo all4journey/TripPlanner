@@ -10,10 +10,12 @@ object Settings {
     val scala = "2.11.7"
     val scalaTest = "2.2.1"
     val akka = "2.4.1"
-    val akkaStreamsAndHttp = "2.0.1"
+    val akkaStreamsAndHttp = "2.0.2"
     val scalaJs = "0.6.5"
-    val slick = "3.1.0"
+    val slick = "3.1.1"
     val log4js = "1.4.9"
+    val scalaLogging = "3.1.0"
+    val logback = "1.1.3"
   }
 
 
@@ -38,8 +40,8 @@ object Settings {
     "com.lihaoyi" %% "scalatags" % "0.5.3",
     "com.github.japgolly.scalacss" %% "core" % "0.3.1",
     "org.webjars" % "webjars-locator" % "0.23",
-    "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0",
-    "ch.qos.logback" % "logback-classic" % "1.1.2",
+    "com.typesafe.scala-logging" %% "scala-logging" % versions.scalaLogging,
+    "ch.qos.logback" % "logback-classic" % versions.logback,
     "com.typesafe.akka" %% "akka-http-spray-json-experimental" % versions.akkaStreamsAndHttp,
     "de.svenkubiak" %  "jBCrypt" % "0.4",
     "org.scalatest" %% "scalatest" % versions.scalaTest % "test",
@@ -51,7 +53,8 @@ object Settings {
     "com.typesafe.slick" %% "slick" % versions.slick,
     "com.typesafe.slick" %% "slick-codegen" % versions.slick,
     "com.typesafe.slick" %% "slick-hikaricp" % versions.slick,
-    "org.slf4j" % "slf4j-nop" % "1.7.12"
+    "com.typesafe.scala-logging" %% "scala-logging" % versions.scalaLogging,
+    "ch.qos.logback" % "logback-classic" % versions.logback
   ))
 
   val sharedDependencies = Def.setting(Seq(
