@@ -3,6 +3,7 @@ package com.tripPlanner.webapp.pages
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.tripPlanner.webapp.Page
+import com.tripPlanner.webapp.util.UserContext
 import com.typesafe.scalalogging.LazyLogging
 
 /**
@@ -13,7 +14,9 @@ trait PasswordChangFormPage extends Page with LazyLogging {
     get {
       extractRequestContext { implicit ctx => {
 
-        val ajaxPasswordChangeFormView = new PasswordChangeFormView("a.a@gmail.com")
+
+
+        val ajaxPasswordChangeFormView = new PasswordChangeFormView(UserContext.getCurrentUser.email)
         complete(ajaxPasswordChangeFormView.apply())
       }
       }

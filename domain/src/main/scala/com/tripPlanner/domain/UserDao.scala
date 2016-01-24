@@ -41,7 +41,7 @@ case class UserDao(db: Database)(implicit ec: ExecutionContext){
 
     val userId = java.util.UUID.randomUUID().toString
 
-    val result = Users += UserRow(userId, user.fName, user.lName, new java.sql.Date(dateFromString.getTime))
+    val result = Users += UserRow(userId, user.fName, user.lName, user.email, new java.sql.Date(dateFromString.getTime))
 
     db.run(result) map {
       result =>
@@ -63,14 +63,22 @@ case class UserDao(db: Database)(implicit ec: ExecutionContext){
 
   }
 
-  def getUserById(userId: String): Future[Seq[User]] = {
+  def getUserById(userId: String): User = {
     val query = Users.filter(_.id === userId)
     val action = query.result
 
-    db.run(action) map {
+    val resultFuture = db.run(action) map {
       userList => for {
         u <- userList
-      } yield User(u.id, u.firstName, u.lastName, Some(u.registrationDate.toString))
+      } yield User(u.id, u.firstName, u.lastName, u.emailAddress, Some(u.registrationDate.toString))
     }
+
+    val result = Await.result(resultFuture, 10 seconds)
+
+    if (result.size > 1)
+      throw new IllegalStateException("there is more than one user with the same ID")
+
+    result(0)
+
   }
 }

@@ -50,4 +50,13 @@ case class AddressDao(db:Database)(implicit ec:ExecutionContext) {
     }
   }
 
+  def deleteByAddressId(addressId: String) = {
+    val query = Addresses.filter(_.id === addressId)
+
+    val delete = query.delete
+    db.run(delete) map {
+      result => result
+    }
+  }
+
 }

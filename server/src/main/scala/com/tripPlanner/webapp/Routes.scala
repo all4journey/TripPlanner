@@ -58,6 +58,15 @@ object Routes extends Page {
       path("profile") {
         ProfilePage()
       } ~
+      path("multiformProfile" / "password") {
+        PasswordChangFormPage()
+      } ~
+      path("multiformProfile" / "vehicle") {
+        VehicleInfoFormPage()
+      } ~
+      path("multiformProfile" / "personal") {
+        PersonalInfoFormPage()
+      } ~
       path("log") {
         LogAppender()
       }

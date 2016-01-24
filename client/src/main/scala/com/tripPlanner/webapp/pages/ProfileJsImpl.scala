@@ -135,7 +135,7 @@ object ProfileJsImpl extends ProfileJs {
 
                 val firstName = $("#firstName").value().toString.trim
                 val lastName = $("#lastName").value().toString.trim
-                val user: User = new User(fName = firstName, lName = lastName, registrationDate = None)
+                val user: User = new User(fName = firstName, lName = lastName, email = "a.a@testmail.com", registrationDate = None)
 
                 val userStateId = $("#userState :selected").value().toString.trim
                 val userStateDescription = $("#userState :selected").text().toString.trim

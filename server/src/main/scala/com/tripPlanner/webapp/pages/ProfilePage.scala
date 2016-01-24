@@ -19,7 +19,7 @@ import scala.concurrent.duration._
 /**
   * Created by aabreu on 12/6/15.
   */
-
+@deprecated
 trait ProfilePage extends Page with LazyLogging {
   def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
     get {
@@ -50,9 +50,9 @@ trait ProfilePage extends Page with LazyLogging {
       }
   }
 }
-
+@deprecated
 object ProfilePage extends ProfilePage
-
+@deprecated
 object ProfileLogic extends LazyLogging {
   def save(profileInfo: Profile): Unit = {
     val userDao = UserDao(DomainSupport.db)
