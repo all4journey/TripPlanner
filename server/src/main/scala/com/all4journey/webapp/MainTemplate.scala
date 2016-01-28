@@ -17,7 +17,7 @@ object MainTemplate extends View {
     html(
       head(
         meta(charset := StandardCharsets.UTF_8.name.toLowerCase),
-        titleTag(s"Trip Planner - $titleText"),
+        titleTag(s"All4Journey - $titleText"),
         scriptPath("/client-fastopt.js"),
         scriptPath("/client-jsdeps.js"),
         scriptPath("/assets/bootstrap/bootstrap.min.js"),

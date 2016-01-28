@@ -11,7 +11,7 @@ import scalatags.Text.all._
 trait IndexView extends View {
   def apply()(implicit ctx: RequestContext) =
     MainTemplate(
-      titleText = "Welcome to Trip Planner",
+      titleText = "Welcome to All4Journey",
       footer = Seq(jsModule[IndexJs])
     )
 }
