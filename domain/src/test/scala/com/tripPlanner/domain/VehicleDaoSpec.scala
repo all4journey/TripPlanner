@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class VehicleDaoSpec extends DomainTestSpec{
   "VehicleDao" should "insert a vehicle" in {
     val userDao = UserDao(db)
-    val user:User = User(fName = "Rob", lName = "Kernick", registrationDate = Some("12/31/2015"))
+    val user:User = User(fName = "Rob", lName = "Kernick", emailAddress=UUID.randomUUID().toString + "rob@tripPlanner.travel", registrationDate = Some("12/31/2015"))
     val userFuture = userDao.create(user)
 
     val userId = Await.result(userFuture, Duration.Inf).getOrElse("")

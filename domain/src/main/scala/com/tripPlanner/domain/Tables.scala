@@ -1,7 +1,7 @@
 package com.tripPlanner.domain
-// $COVERAGE-OFF$
+
 // AUTO-GENERATED Slick data model
-/** Stand-alone Slick data model for immediate use */
+// $COVERAGE-OFF$
 object Tables extends {
   val profile = slick.driver.MySQLDriver
 } with Tables
@@ -15,7 +15,7 @@ trait Tables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = Address.schema ++ SchemaVersion.schema ++ User.schema ++ UsState.schema ++ Vehicle.schema
+  lazy val schema: profile.SchemaDescription = Array(Address.schema, SchemaVersion.schema, Token.schema, User.schema, UsState.schema, Vehicle.schema).reduceLeft(_ ++ _)
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
@@ -115,22 +115,52 @@ trait Tables {
   /** Collection-like TableQuery object for table SchemaVersion */
   lazy val SchemaVersion = new TableQuery(tag => new SchemaVersion(tag))
 
+  /** Entity class storing rows of table Token
+    *  @param id Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true)
+    *  @param userId Database column USER_ID SqlType(VARCHAR), Length(50,true)
+    *  @param token Database column TOKEN SqlType(VARCHAR), Length(50,true) */
+  case class TokenRow(id: String, userId: String, token: String)
+  /** GetResult implicit for fetching TokenRow objects using plain SQL queries */
+  implicit def GetResultTokenRow(implicit e0: GR[String]): GR[TokenRow] = GR{
+    prs => import prs._
+      TokenRow.tupled((<<[String], <<[String], <<[String]))
+  }
+  /** Table description of table TOKEN. Objects of this class serve as prototypes for rows in queries. */
+  class Token(_tableTag: Tag) extends Table[TokenRow](_tableTag, "TOKEN") {
+    def * = (id, userId, token) <> (TokenRow.tupled, TokenRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(id), Rep.Some(userId), Rep.Some(token)).shaped.<>({r=>import r._; _1.map(_=> TokenRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true) */
+    val id: Rep[String] = column[String]("ID", O.PrimaryKey, O.Length(50,varying=true))
+    /** Database column USER_ID SqlType(VARCHAR), Length(50,true) */
+    val userId: Rep[String] = column[String]("USER_ID", O.Length(50,varying=true))
+    /** Database column TOKEN SqlType(VARCHAR), Length(50,true) */
+    val token: Rep[String] = column[String]("TOKEN", O.Length(50,varying=true))
+
+    /** Foreign key referencing User (database name TOKEN_ibfk_1) */
+    lazy val userFk = foreignKey("TOKEN_ibfk_1", userId, User)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.Cascade)
+  }
+  /** Collection-like TableQuery object for table Token */
+  lazy val Token = new TableQuery(tag => new Token(tag))
+
   /** Entity class storing rows of table User
     *  @param id Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true)
     *  @param firstName Database column FIRST_NAME SqlType(VARCHAR), Length(50,true)
     *  @param lastName Database column LAST_NAME SqlType(VARCHAR), Length(50,true)
+    *  @param emailAddress Database column EMAIL_ADDRESS SqlType(VARCHAR), Length(250,true)
     *  @param registrationDate Database column REGISTRATION_DATE SqlType(DATE) */
-  case class UserRow(id: String, firstName: String, lastName: String, registrationDate: java.sql.Date)
+  case class UserRow(id: String, firstName: String, lastName: String, emailAddress: String, registrationDate: java.sql.Date)
   /** GetResult implicit for fetching UserRow objects using plain SQL queries */
   implicit def GetResultUserRow(implicit e0: GR[String], e1: GR[java.sql.Date]): GR[UserRow] = GR{
     prs => import prs._
-      UserRow.tupled((<<[String], <<[String], <<[String], <<[java.sql.Date]))
+      UserRow.tupled((<<[String], <<[String], <<[String], <<[String], <<[java.sql.Date]))
   }
   /** Table description of table USER. Objects of this class serve as prototypes for rows in queries. */
   class User(_tableTag: Tag) extends Table[UserRow](_tableTag, "USER") {
-    def * = (id, firstName, lastName, registrationDate) <> (UserRow.tupled, UserRow.unapply)
+    def * = (id, firstName, lastName, emailAddress, registrationDate) <> (UserRow.tupled, UserRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), Rep.Some(firstName), Rep.Some(lastName), Rep.Some(registrationDate)).shaped.<>({r=>import r._; _1.map(_=> UserRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), Rep.Some(firstName), Rep.Some(lastName), Rep.Some(emailAddress), Rep.Some(registrationDate)).shaped.<>({r=>import r._; _1.map(_=> UserRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true) */
     val id: Rep[String] = column[String]("ID", O.PrimaryKey, O.Length(50,varying=true))
@@ -138,8 +168,13 @@ trait Tables {
     val firstName: Rep[String] = column[String]("FIRST_NAME", O.Length(50,varying=true))
     /** Database column LAST_NAME SqlType(VARCHAR), Length(50,true) */
     val lastName: Rep[String] = column[String]("LAST_NAME", O.Length(50,varying=true))
+    /** Database column EMAIL_ADDRESS SqlType(VARCHAR), Length(250,true) */
+    val emailAddress: Rep[String] = column[String]("EMAIL_ADDRESS", O.Length(250,varying=true))
     /** Database column REGISTRATION_DATE SqlType(DATE) */
     val registrationDate: Rep[java.sql.Date] = column[java.sql.Date]("REGISTRATION_DATE")
+
+    /** Uniqueness Index over (emailAddress) (database name EMAIL_ADDRESS) */
+    val index1 = index("EMAIL_ADDRESS", emailAddress, unique=true)
   }
   /** Collection-like TableQuery object for table User */
   lazy val User = new TableQuery(tag => new User(tag))

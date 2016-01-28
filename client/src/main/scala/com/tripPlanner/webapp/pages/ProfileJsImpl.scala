@@ -79,6 +79,12 @@ object ProfileJsImpl extends ProfileJs {
               input(id := "lastName", name := "lastName", cls := "form-control", `type` := "text")
             )
           ),
+          div(cls:="form-group")(
+            label(cls := "col-lg-3 control-label")("Email address:"),
+            div(cls := "col-lg-8")(
+              input(id := "emailAddress", name := "emailAddress", cls:= "form-control", `type` :="text")
+            )
+          ),
           div(cls := "form-group")(
             label(cls := "col-lg-3 control-label")("Street Address:"),
             div(cls := "col-lg-8")(
@@ -135,7 +141,8 @@ object ProfileJsImpl extends ProfileJs {
 
                 val firstName = $("#firstName").value().toString.trim
                 val lastName = $("#lastName").value().toString.trim
-                val user: User = new User(fName = firstName, lName = lastName, registrationDate = None)
+                val emailAddress = $("#emailAddress").value.toString.trim
+                val user: User = new User(fName = firstName, lName = lastName, emailAddress = emailAddress, registrationDate = None)
 
                 val userStateId = $("#userState :selected").value().toString.trim
                 val userStateDescription = $("#userState :selected").text().toString.trim

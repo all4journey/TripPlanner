@@ -16,6 +16,7 @@ object Settings {
     val log4js = "1.4.9"
     val scalaLogging = "3.1.0"
     val logback = "1.1.3"
+    val scalaBcrypt = "2.5"
   }
 
 
@@ -54,6 +55,7 @@ object Settings {
     "com.typesafe.slick" %% "slick-codegen" % versions.slick,
     "com.typesafe.slick" %% "slick-hikaricp" % versions.slick,
     "com.typesafe.scala-logging" %% "scala-logging" % versions.scalaLogging,
+    "com.github.t3hnar" %% "scala-bcrypt" % versions.scalaBcrypt,
     "ch.qos.logback" % "logback-classic" % versions.logback
   ))
 
