@@ -2,7 +2,7 @@ import sbt._
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 
 object Settings {
-  val organization = "com.tripPlanner"
+  val organization = "com.all4journey"
 
   val version = "0.1.0"
 
