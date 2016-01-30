@@ -1,12 +1,10 @@
 package com.all4journey.shared.domain
 
+import com.github.t3hnar.bcrypt._
 
-/**
-  * Created by rjkj on 11/14/15.
-  */
-
-
-case class User(id: String = "", fName:String = "Default", lName:String, emailAddress:String, registrationDate: Option[String])
+case class User(id: String = "", fName:String = "Default", lName:String, emailAddress:String, password:String, registrationDate: Option[String]) {
+  def withHashedPassword(): User = this.copy(password = password.bcrypt)
+}
 
 case class Profile(user: User, addresses: Seq[Address], vehicles: Seq[Vehicle])
 

@@ -1,4 +1,4 @@
-package com.tripPlanner.webapp.util
+package com.all4journey.webapp.util
 
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.HttpResponse

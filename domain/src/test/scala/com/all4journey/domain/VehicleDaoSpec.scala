@@ -1,5 +1,7 @@
 package com.all4journey.domain
 
+import java.util.UUID
+
 import com.all4journey.shared.domain.{User, Vehicle}
 
 import scala.concurrent.Await
@@ -9,10 +11,10 @@ import scala.concurrent.duration.Duration
 /**
   * Created by rjkj on 1/16/16.
   */
-class VehicleDaoSpec extends DomainTestSpec{
+class VehicleDaoSpec extends DomainTestSpec {
   "VehicleDao" should "insert a vehicle" in {
     val userDao = UserDao(db)
-    val user:User = User(fName = "Rob", lName = "Kernick", emailAddress=UUID.randomUUID().toString + "rob@tripPlanner.travel", registrationDate = Some("12/31/2015"))
+    val user: User = User(fName = "Rob", lName = "Kernick", emailAddress = UUID.randomUUID().toString + "rob@tripPlanner.travel", password = "test123", registrationDate = Some("12/31/2015"))
     val userFuture = userDao.create(user)
 
     val userId = Await.result(userFuture, Duration.Inf).getOrElse("")

@@ -55,13 +55,14 @@ object Settings {
     "com.typesafe.slick" %% "slick-codegen" % versions.slick,
     "com.typesafe.slick" %% "slick-hikaricp" % versions.slick,
     "com.typesafe.scala-logging" %% "scala-logging" % versions.scalaLogging,
-    "com.github.t3hnar" %% "scala-bcrypt" % versions.scalaBcrypt,
+
     "ch.qos.logback" % "logback-classic" % versions.logback
   ))
 
   val sharedDependencies = Def.setting(Seq(
     "com.github.benhutchison" %%% "prickle" % "1.1.10",
     "org.scala-js" %% "scalajs-stubs" % versions.scalaJs,
+    "com.github.t3hnar" %% "scala-bcrypt" % versions.scalaBcrypt,
     "org.scalatest" %% "scalatest" % versions.scalaTest % "test",
     "org.scoverage" %% "scalac-scoverage-runtime" % "1.1.1"
   ))

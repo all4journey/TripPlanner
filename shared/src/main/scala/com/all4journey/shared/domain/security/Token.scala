@@ -1,4 +1,4 @@
-package com.tripPlanner.shared.domain.security
+package com.all4journey.shared.domain.security
 
 import java.util.UUID
 

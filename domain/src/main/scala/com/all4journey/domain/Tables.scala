@@ -1,8 +1,6 @@
 package com.all4journey.domain
 
 // $COVERAGE-OFF$
-// AUTO-GENERATED Slick data model
-/** Stand-alone Slick data model for immediate use */
 object Tables extends {
   val profile = slick.driver.MySQLDriver
 } with Tables
@@ -150,18 +148,19 @@ trait Tables {
     *  @param firstName Database column FIRST_NAME SqlType(VARCHAR), Length(50,true)
     *  @param lastName Database column LAST_NAME SqlType(VARCHAR), Length(50,true)
     *  @param emailAddress Database column EMAIL_ADDRESS SqlType(VARCHAR), Length(250,true)
+    *  @param password Database column PASSWORD SqlType(VARCHAR), Length(250,true)
     *  @param registrationDate Database column REGISTRATION_DATE SqlType(DATE) */
-  case class UserRow(id: String, firstName: String, lastName: String, emailAddress: String, registrationDate: java.sql.Date)
+  case class UserRow(id: String, firstName: String, lastName: String, emailAddress: String, password: String, registrationDate: java.sql.Date)
   /** GetResult implicit for fetching UserRow objects using plain SQL queries */
   implicit def GetResultUserRow(implicit e0: GR[String], e1: GR[java.sql.Date]): GR[UserRow] = GR{
     prs => import prs._
-      UserRow.tupled((<<[String], <<[String], <<[String], <<[String], <<[java.sql.Date]))
+      UserRow.tupled((<<[String], <<[String], <<[String], <<[String], <<[String], <<[java.sql.Date]))
   }
   /** Table description of table USER. Objects of this class serve as prototypes for rows in queries. */
   class User(_tableTag: Tag) extends Table[UserRow](_tableTag, "USER") {
-    def * = (id, firstName, lastName, emailAddress, registrationDate) <> (UserRow.tupled, UserRow.unapply)
+    def * = (id, firstName, lastName, emailAddress, password, registrationDate) <> (UserRow.tupled, UserRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), Rep.Some(firstName), Rep.Some(lastName), Rep.Some(emailAddress), Rep.Some(registrationDate)).shaped.<>({r=>import r._; _1.map(_=> UserRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), Rep.Some(firstName), Rep.Some(lastName), Rep.Some(emailAddress), Rep.Some(password), Rep.Some(registrationDate)).shaped.<>({r=>import r._; _1.map(_=> UserRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get, _6.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true) */
     val id: Rep[String] = column[String]("ID", O.PrimaryKey, O.Length(50,varying=true))
@@ -171,6 +170,8 @@ trait Tables {
     val lastName: Rep[String] = column[String]("LAST_NAME", O.Length(50,varying=true))
     /** Database column EMAIL_ADDRESS SqlType(VARCHAR), Length(250,true) */
     val emailAddress: Rep[String] = column[String]("EMAIL_ADDRESS", O.Length(250,varying=true))
+    /** Database column PASSWORD SqlType(VARCHAR), Length(250,true) */
+    val password: Rep[String] = column[String]("PASSWORD", O.Length(250,varying=true))
     /** Database column REGISTRATION_DATE SqlType(DATE) */
     val registrationDate: Rep[java.sql.Date] = column[java.sql.Date]("REGISTRATION_DATE")
 

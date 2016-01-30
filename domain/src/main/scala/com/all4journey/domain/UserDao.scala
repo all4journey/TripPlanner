@@ -14,13 +14,14 @@ import scala.concurrent.duration._
 /**
   * Created by rjkj on 12/9/15.
   */
-case class UserDao(db: Database)(implicit ec: ExecutionContext){
+case class UserDao(db: Database)(implicit ec: ExecutionContext) {
   /**
     * Updates a user's name
+    *
     * @param user User to be updated
     * @return 1 if successful
     */
-  def update(user: User):Future[Long] = {
+  def update(user: User): Future[Long] = {
     val query = for {
       u <- Users if u.id === user.id
     } yield (u.firstName, u.lastName, u.emailAddress)
@@ -31,7 +32,7 @@ case class UserDao(db: Database)(implicit ec: ExecutionContext){
     }
   }
 
-  def create(user: User):Future[Option[String]] = {
+  def create(user: User): Future[Option[String]] = {
     val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
     val dateFromString: Date = user.registrationDate match {
       case Some(stringDate: String) => dateFormat.parse(stringDate)
@@ -40,11 +41,15 @@ case class UserDao(db: Database)(implicit ec: ExecutionContext){
 
     val userId = java.util.UUID.randomUUID().toString
 
-    val result = Users += UserRow(userId, user.fName, user.lName, user.emailAddress, new java.sql.Date(dateFromString.getTime))
+    val updatedUser = user.withHashedPassword()
+
+    val result = Users += UserRow(
+      userId, updatedUser.fName, updatedUser.lName,
+      updatedUser.emailAddress, updatedUser.password, new java.sql.Date(dateFromString.getTime))
 
     db.run(result) map {
       result =>
-        if(result == 1)
+        if (result == 1)
           Some(userId)
         else
           None
@@ -69,7 +74,7 @@ case class UserDao(db: Database)(implicit ec: ExecutionContext){
     db.run(action) map {
       userList => for {
         u <- userList
-      } yield User(u.id, u.firstName, u.lastName, u.emailAddress, Some(u.registrationDate.toString))
+      } yield User(u.id, u.firstName, u.lastName, u.emailAddress, "", Some(u.registrationDate.toString))
     }
   }
 }

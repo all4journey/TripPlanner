@@ -25,7 +25,7 @@ trait UserContext {
 //      throw new IllegalStateException("there is more than one user with the same ID")
 //
 //    result(0)
-    User("1234-1234-1234-1234", "andy", "andy123", "andy@tripplanner.travel", None)
+    User("1234-1234-1234-1234", "andy", "andy123", "andy@tripplanner.travel", "", None)
   }
 }
 
