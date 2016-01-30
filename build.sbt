@@ -2,7 +2,7 @@ import sbt.Keys._
 import sbt._
 
 lazy val commonSettings = Seq(
-  organization := "com.tripPlanners",
+  organization := "com.all4journey",
   version := "0.1.0",
   scalaVersion := "2.11.7",
   scalaJSStage in Global := FastOptStage,
@@ -26,7 +26,7 @@ lazy val commonTestDeps = Seq(
   "org.scalatest" %% "scalatest" % Settings.versions.scalaTest % "test"
 )
 
-lazy val root = (project in file("."))
+lazy val all4journey = (project in file("."))
   .aggregate(server, client, domain, sharedJvm, sharedJs)
 
 lazy val client = (project in file("client"))
@@ -60,7 +60,7 @@ lazy val domain = (project in file("domain"))
   .settings(
     libraryDependencies ++= Settings.domainDependencies.value,
     libraryDependencies ++= commonTestDeps,
-    flywayUrl := "jdbc:mysql://127.0.0.1:3306/trip_planner",
+    flywayUrl := "jdbc:mysql://127.0.0.1:3306/all4journey",
     flywayUser := "root",
     flywayPassword := sys.props.getOrElse("flyway_password", "password1"),
     coverageExcludedFiles := "Tables.*",
@@ -82,12 +82,12 @@ lazy val sharedJs = shared.js
 lazy val slick = TaskKey[Seq[File]]("gen-tables")
 lazy val slickCodeGenTask = (sourceManaged, dependencyClasspath in Compile, runner in Compile, streams) map { (dir, cp, r, s) =>
   val outputDir = (dir / "generated").getPath
-  val url = "jdbc:mysql://localhost:3306/trip_planner?user=root&password=password1"
+  val url = "jdbc:mysql://localhost:3306/all4journey?user=root&password=password1"
   val jdbcDriver = "com.mysql.jdbc.Driver"
   val slickDriver = "slick.driver.MySQLDriver"
-  val pkg = "com.tripPlanner.domain.generated"
+  val pkg = "com.all4journey.domain.generated"
   toError(r.run("slick.codegen.SourceCodeGenerator", cp.files, Array(slickDriver, jdbcDriver, url, outputDir, pkg), s.log))
-  val fname = s"$outputDir/com/tripPlanner/domain/generated/Tables.scala"
+  val fname = s"$outputDir/com/all4journey/domain/generated/Tables.scala"
   Seq(file(fname))
 }
 
