@@ -28,10 +28,10 @@ trait AjaxHelper {
     ).asInstanceOf[JQueryAjaxSettings])
   }
 
-  def doAjaxPost(partialUrl: String, dataPayload: String, contentType: String, doOnSuccess: (js.Any) => Unit, doOnFailure: () => Unit): Unit = {
+  def doAjaxCall(partialUrl: String, httpMethod: String, dataPayload: String, contentType: String, doOnSuccess: (js.Any) => Unit, doOnFailure: () => Unit): Unit = {
     $.ajax(js.Dynamic.literal(
       url = partialUrl,
-      `type` = "post",
+      `type` = httpMethod,
       data = dataPayload,
       contentType = contentType,
       traditional = true,
@@ -48,8 +48,12 @@ trait AjaxHelper {
     ).asInstanceOf[JQueryAjaxSettings])
   }
 
-  def doAjaxCallWithJson(partialUrl: String, dataPayload: String, doOnSuccess: (js.Any) => Unit, doOnFailure: () => Unit): Unit = {
-    doAjaxPost("/multiformProfile/personal", dataPayload, "application/json; charset=utf-8", doOnSuccess, doOnFailure)
+  def doAjaxPostWithJson(partialUrl: String, dataPayload: String, doOnSuccess: (js.Any) => Unit, doOnFailure: () => Unit): Unit = {
+    doAjaxCall(partialUrl, "post", dataPayload, "application/json; charset=utf-8", doOnSuccess, doOnFailure)
+  }
+
+  def doAjaxGetWithJson(partialUrl: String, dataPayload: String, doOnSuccess: (js.Any) => Unit, doOnFailure: () => Unit): Unit = {
+    doAjaxCall(partialUrl, "get", dataPayload, "application/json; charset=utf-8", doOnSuccess, doOnFailure)
   }
 
 }

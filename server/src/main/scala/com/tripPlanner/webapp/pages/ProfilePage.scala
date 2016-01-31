@@ -60,7 +60,7 @@ object ProfileLogic extends LazyLogging {
 
     val addressDao = AddressDao(DomainSupport.db)
 
-    val vehicleDao = VehicleDao(DomainSupport.db)
+   // val vehicleDao = VehicleDao(DomainSupport.db)
 
     userIdFuture.onSuccess {
       case result =>
@@ -68,7 +68,7 @@ object ProfileLogic extends LazyLogging {
           case Some(id) =>
             //TODO - Set limit on vehicles and Addresses
             profileInfo.addresses foreach (address => addressDao.create(address.copy(userId = id)))
-            profileInfo.vehicles foreach (vehicle => vehicleDao.create(vehicle.copy(userId = id)))
+            //profileInfo.vehicles foreach (vehicle => vehicleDao.create(vehicle.copy(userId = id)))
           case None =>
           //Throw Error
         }

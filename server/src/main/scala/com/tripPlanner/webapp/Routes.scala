@@ -46,8 +46,11 @@ object Routes extends Page {
         path("multiformProfile" / "password") {
           PasswordChangFormPage()
         } ~
-        path("multiformProfile" / "vehicle") {
-          VehicleInfoFormPage()
+        path("multiformProfile" / "places") {
+          PlacesFormPage()
+        } ~
+        path("multiformProfile" / "places" / "get") {
+          GetPlaceFormPage()
         } ~
         path("multiformProfile" / "personal") {
           PersonalInfoFormPage()
@@ -61,9 +64,12 @@ object Routes extends Page {
       path("multiformProfile" / "password") {
         PasswordChangFormPage()
       } ~
-      path("multiformProfile" / "vehicle") {
-        VehicleInfoFormPage()
-      } ~
+//      path("multiformProfile" / "places" / "update") {
+//        UpdatePlaceFormPage()
+//      } ~
+//      path("multiformProfile" / "places" / "new") {
+//        NewPlaceFormPage()
+//      } ~
       path("multiformProfile" / "personal") {
         PersonalInfoFormPage()
       } ~

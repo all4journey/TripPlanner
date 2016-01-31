@@ -4,12 +4,11 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.StatusCodes
 import akka.stream.Materializer
 import com.tripPlanner.domain.{UserDao, AddressDao, StateDaoImpl}
-import com.tripPlanner.shared.domain.{Address, PersonalFormData}
+import com.tripPlanner.shared.domain.{Address, State, PersonalFormData}
 import com.tripPlanner.webapp.Page
 import com.tripPlanner.webapp.util.{UserContext, DomainSupport}
 import com.typesafe.scalalogging.LazyLogging
-import prickle.Unpickle
-import scala.collection.mutable.ListBuffer
+import prickle.{Pickle, Unpickle}
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -24,17 +23,9 @@ trait PersonalInfoFormPage extends Page with LazyLogging {
     get {
       extractRequestContext { implicit ctx => {
 
-        val stateDao = StateDaoImpl(DomainSupport.db)
-        val statesFuture = stateDao.getStates
-        val states = Await.result(statesFuture, 10 seconds)
+        val personalFormData = buildFormData(loadStates = true)
 
-        val user = UserContext.getCurrentUser
-
-        val addressDao = AddressDao(DomainSupport.db)
-        val addressesFuture = addressDao.getAddressesByUserId(user.id)
-        val addresses = Await.result(addressesFuture, 10 seconds)
-
-        val personalInfoFormView = new PersonalInfoFormView(PersonalFormData(user, addresses, Seq[Address](), states))
+        val personalInfoFormView = new PersonalInfoFormView(personalFormData)
         complete(personalInfoFormView.apply())
       }
       }
@@ -45,7 +36,9 @@ trait PersonalInfoFormPage extends Page with LazyLogging {
           Unpickle[PersonalFormData].fromString(profileJsonPayload) match {
             case Success(pfd: PersonalFormData) =>
               handleProfileUpdates(pfd)
-              complete(StatusCodes.OK)
+              val postSuccessFormData = buildFormData(loadStates = false)
+              val pickledPfp = Pickle.intoString(postSuccessFormData)
+              complete(pickledPfp)
             case _ => complete(StatusCodes.BadRequest)
           }
         }
@@ -60,26 +53,56 @@ trait PersonalInfoFormPage extends Page with LazyLogging {
     val userDao = UserDao(DomainSupport.db)
     userDao.update(updatedUser)
 
-    val addressDao = AddressDao(DomainSupport.db)
-    val addressesFuture = addressDao.getAddressesByUserId(user.id)
-    val savedAddresses = Await.result(addressesFuture, 10 seconds)
-
-    if (savedAddresses.isEmpty) {
-      personalFormData.addressListToAdd foreach (address => addressDao.create(address.copy(userId = user.id)))
-    } else {
-
-      personalFormData.addressListToRemove foreach (address =>
-        addressDao.deleteByAddressId(address.id)
-      )
-
-      // handle when an address (or addresses) was (were) updated
-      personalFormData.addressListToAdd foreach (address =>
-        if (address.id.equals("0")) addressDao.create(address.copy(userId = user.id))
-        else  addressDao.update(address)
-
-      )
+    personalFormData.address match {
+      case Some(someAddress) => createOrUpdateAddress(user.id, someAddress.copy(userId = user.id))
+      case _ => return
     }
 
+
+  }
+
+  private def createOrUpdateAddress(userId: String, addressToInsertOrUpdate: Address): Unit = {
+    val addressDao = AddressDao(DomainSupport.db)
+
+    if (addressToInsertOrUpdate.id.equals("0")) {
+      val homeAddressFuture = addressDao.getHomeAddressByUserId(userId)
+      val homeAddressResult = Await.result(homeAddressFuture, 10 seconds)
+
+      if (homeAddressResult.size == 1)
+        throw new IllegalStateException("There is a home address for this user already")
+      else
+        addressDao.create(addressToInsertOrUpdate)
+    }
+
+    else
+      addressDao.update(addressToInsertOrUpdate)
+  }
+
+  private def buildFormData(loadStates: Boolean): PersonalFormData = {
+
+    val user = UserContext.getCurrentUser
+
+    var personalFormData = PersonalFormData(user, None, Seq[State]())
+
+    val addressDao = AddressDao(DomainSupport.db)
+    val homeAddressFuture = addressDao.getHomeAddressByUserId(user.id)
+    val homeAddressResult = Await.result(homeAddressFuture, 10 seconds)
+
+    if (homeAddressResult.size > 1)
+      throw new IllegalStateException("There is more than one home address")
+
+    else if (!homeAddressResult.isEmpty) {
+      personalFormData = personalFormData.copy(address = Some(homeAddressResult(0)))
+    }
+
+    if (loadStates) {
+      val stateDao = StateDaoImpl(DomainSupport.db)
+      val statesFuture = stateDao.getStates
+      val stateList = Await.result(statesFuture, 10 seconds)
+      personalFormData = personalFormData.copy(states = stateList)
+    }
+
+    personalFormData
   }
 }
 

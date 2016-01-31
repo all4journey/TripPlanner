@@ -2,12 +2,16 @@ package com.tripPlanner.domain
 
 import java.util.UUID
 
-import com.tripPlanner.domain.Tables.{Vehicle => Vehicles, VehicleRow}
+//import com.tripPlanner.domain.Tables.{Vehicle => Vehicles, VehicleRow}
 import com.tripPlanner.shared.domain.Vehicle
 import slick.driver.MySQLDriver.api._
 
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+  * This class is not needed right now
+  */
+/*
 case class VehicleDao(db: Database)(implicit ec: ExecutionContext) {
   def update(vehicle: Vehicle): Future[Long] = {
     val query = for {
@@ -32,3 +36,4 @@ case class VehicleDao(db: Database)(implicit ec: ExecutionContext) {
   }
 
 }
+*/

@@ -1,6 +1,6 @@
 package com.tripPlanner.webapp.pages
 
-import com.tripPlanner.shared.domain.{PersonalFormData, Vehicle, State}
+import com.tripPlanner.shared.domain.{PlacesFormData, PersonalFormData, Vehicle, State}
 import com.tripPlanner.webapp.{JsModule, JsModuleWithParams}
 
 trait ProfileJs extends JsModuleWithParams {
@@ -20,4 +20,9 @@ trait VehicleInfoFormJs extends JsModuleWithParams {
 trait PersonalInfoFormJs extends JsModuleWithParams {
   type ParamType = PersonalFormData
 }
+
+trait PlacesFormJs extends JsModuleWithParams {
+  type ParamType = PlacesFormData
+}
+
 trait IndexJs extends JsModule

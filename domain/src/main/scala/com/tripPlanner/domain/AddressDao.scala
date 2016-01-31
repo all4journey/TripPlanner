@@ -23,7 +23,7 @@ case class AddressDao(db:Database)(implicit ec:ExecutionContext) {
   def create(address: Address) = {
     val id = UUID.randomUUID().toString
 
-    val insertAddress = Addresses += AddressRow(id, address.userId, address.street, address.state.id, address.zipCode)
+    val insertAddress = Addresses += AddressRow(id, address.userId, address.street, address.state.id, address.zipCode, address.addressType, address.placeName)
 
     db.run(insertAddress) map {
       result =>
@@ -34,9 +34,8 @@ case class AddressDao(db:Database)(implicit ec:ExecutionContext) {
     }
   }
 
-  def getAddressesByUserId(userId: String): Future[Seq[Address]] = {
-
-    val query = Addresses.filter(_.userId === userId)
+  def getAddressById(addressId: String): Future[Seq[Address]] = {
+    val query = Addresses.filter(_.id === addressId)
 
     db.run(query.result) map {
       addressList => for {
@@ -45,7 +44,30 @@ case class AddressDao(db:Database)(implicit ec:ExecutionContext) {
         val stateDao = StateDaoImpl(db)
         val statesFuture = stateDao.getStateById(a.stateId)
         val stateResult = Await.result(statesFuture, 10 seconds)
-        Address(a.id, a.userId, a.street, stateResult(0), a.zipcode)
+        Address(a.id, a.userId, a.street, stateResult(0), a.zipcode, a.addressType, a.placeName)
+      }
+    }
+  }
+
+  def getHomeAddressByUserId(userId: String): Future[Seq[Address]] = {
+    getAddressesByUserId(userId, Some("HOME"))
+  }
+
+  def getAddressesByUserId(userId: String, addressType: Option[String]): Future[Seq[Address]] = {
+
+    val query = addressType match {
+      case Some(someAddressType) => Addresses.filter(a => a.userId === userId && a.addressType === someAddressType)
+      case None => Addresses.filter(a => a.userId === userId)
+    }
+
+    db.run(query.result) map {
+      addressList => for {
+        a <- addressList
+      } yield {
+        val stateDao = StateDaoImpl(db)
+        val statesFuture = stateDao.getStateById(a.stateId)
+        val stateResult = Await.result(statesFuture, 10 seconds)
+        Address(a.id, a.userId, a.street, stateResult(0), a.zipcode, a.addressType, a.placeName)
       }
     }
   }

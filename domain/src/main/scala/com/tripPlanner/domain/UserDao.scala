@@ -63,22 +63,14 @@ case class UserDao(db: Database)(implicit ec: ExecutionContext){
 
   }
 
-  def getUserById(userId: String): User = {
+  def getUserById(userId: String): Future[Seq[User]] = {
     val query = Users.filter(_.id === userId)
     val action = query.result
 
-    val resultFuture = db.run(action) map {
+    db.run(action) map {
       userList => for {
         u <- userList
       } yield User(u.id, u.firstName, u.lastName, u.emailAddress, Some(u.registrationDate.toString))
     }
-
-    val result = Await.result(resultFuture, 10 seconds)
-
-    if (result.size > 1)
-      throw new IllegalStateException("there is more than one user with the same ID")
-
-    result(0)
-
   }
 }

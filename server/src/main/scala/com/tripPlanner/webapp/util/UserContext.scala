@@ -18,7 +18,14 @@ trait UserContext {
 
   def getCurrentUser: User = {
     val userDao = UserDao(DomainSupport.db)
-    userDao.getUserById("3770b302-84b1-4099-9957-cf6ca52b50cf")
+    val userFuture = userDao.getUserById("3770b302-84b1-4099-9957-cf6ca52b50cf")
+
+    val result = Await.result(userFuture, 10 seconds)
+
+    if (result.size > 1)
+      throw new IllegalStateException("there is more than one user with the same ID")
+
+    result(0)
   }
 }
 
