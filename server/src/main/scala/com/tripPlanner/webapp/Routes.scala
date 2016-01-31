@@ -64,12 +64,12 @@ object Routes extends Page {
       path("multiformProfile" / "password") {
         PasswordChangFormPage()
       } ~
-//      path("multiformProfile" / "places" / "update") {
-//        UpdatePlaceFormPage()
-//      } ~
-//      path("multiformProfile" / "places" / "new") {
-//        NewPlaceFormPage()
-//      } ~
+      path("multiformProfile" / "places" / "update") {
+        UpdatePlaceFormPage()
+      } ~
+      path("multiformProfile" / "places" / "new") {
+        NewPlaceFormPage()
+      } ~
       path("multiformProfile" / "personal") {
         PersonalInfoFormPage()
       } ~

@@ -16,6 +16,7 @@ import scalatags.JsDom.all._
   */
 object PlacesFormJsImpl extends PlacesFormJs with NavPills {
 
+  val AddNewPlaceIndicator = "Add New Place"
   @JSExport
   val emptyAddress = Address("0", "0", None, State("NONE", "Choose a state"), "", "PLACE", "")
 
@@ -28,7 +29,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
     }
 
     val content = dom.document.getElementById("content")
-    content.appendChild(personalInfoForm(formData.address).render)
+    content.appendChild(personalInfoForm.render)
 
     buildStatesDropDown(formData.states)
     buildPlacesDropDown(formData.addresses)
@@ -54,6 +55,10 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
   def buildPlacesDropDown(addresses: Seq[Address]): Unit = {
 
     val placesDropdown = dom.document.getElementById("places")
+    val option = dom.document.createElement("option")
+    option.textContent = AddNewPlaceIndicator
+    option.setAttribute("value", AddNewPlaceIndicator)
+    placesDropdown.appendChild(option)
 
     for (addressItem <- addresses) {
       val option = dom.document.createElement("option")
@@ -64,7 +69,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
   }
 
   @JSExport
-  def personalInfoForm(place: Option[Address]) = div(cls := "container")(
+  def personalInfoForm = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
         getNavPills("placesLink")
@@ -91,14 +96,14 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
       div(cls := "col-md-10 col-md-offset-1 personal-info")(
         form(cls := "form-horizontal", role := "form")(
             h3("Your Places"),
-            div(id := "placeFieldsDiv", "addressUuid".attr := place.getOrElse(emptyAddress).id)(
+            div(id := "placeFieldsDiv")(
               div(id := "placeDiv", cls := "form-group")(
                 label(cls := "col-lg-3 control-label")("Place:"),
                 div(cls := "col-lg-8")(
                   div(cls := "ui-select")(
                     select(id := "places", name := "places", cls := "form-control partOfStateList", onchange := { () =>
                       val placeId = $("#places").value().toString.trim
-                      if (!placeId.equals("New Place")) {
+                      if (!placeId.equals(AddNewPlaceIndicator)) {
                         AjaxHelper.doAjaxGetWithJson(s"/multiformProfile/places/get?id=$placeId", "", refreshForm, showErrorBanner)
                       } else {
                         $("#placeName").value("")
@@ -107,7 +112,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
                         $("#zipCode").value("")
                       }
                     })(
-                      option(value := "New Place", selected := "selected")("New Place")
+                      //option(value := AddNewPlaceIndicator, selected := "selected")(AddNewPlaceIndicator)
                     )
                   )
                 )
@@ -115,13 +120,13 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
               div(id := "placeNameDiv", cls := "form-group")(
                 label(cls := "col-lg-3 control-label")("Place Name:"),
                 div(cls := "col-lg-8")(
-                  input(id := "placeName", name := "placeName", cls := "form-control", `type` := "text", value := place.getOrElse(emptyAddress).placeName)
+                  input(id := "placeName", name := "placeName", cls := "form-control", `type` := "text")
                 )
               ),
               div(id := "streetAddressDiv", cls := "form-group")(
                 label(cls := "col-lg-3 control-label")("Street Address:"),
                 div(cls := "col-lg-8")(
-                  input(id := "streetAddress", name := "streetAddress", cls := "form-control", `type` := "text", value := place.getOrElse(emptyAddress).street.getOrElse(""))
+                  input(id := "streetAddress", name := "streetAddress", cls := "form-control", `type` := "text")
                 )
               ),
               div(id := "stateDiv", cls := "form-group")(
@@ -129,7 +134,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
                 div(cls := "col-lg-8")(
                   div(cls := "ui-select")(
                     select(id := "userState", name := "userState", cls := "form-control partOfStateList")(
-                      option(value := place.getOrElse(emptyAddress).state.id, selected := "selected")(place.getOrElse(emptyAddress).state.description)
+                      option(value := "NONE", selected := "selected")("Choose a state")
                     )
                   )
                 )
@@ -137,7 +142,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
               div(id := "zipCodeDiv", cls := "form-group")(
                 label(cls := "col-lg-3 control-label")("Zip code:"),
                 div(cls := "col-lg-8")(
-                  input(id := "zipCode", name := "zipCode", cls := "form-control partOfZipCodeList", `type` := "text", value := place.getOrElse(emptyAddress).zipCode)
+                  input(id := "zipCode", name := "zipCode", cls := "form-control partOfZipCodeList", `type` := "text")
                 )
               )
             )
@@ -148,21 +153,24 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
               div(cls := "col-md-7")(
                 input(id := "saveButton", `type` := "button", cls := "btn btn-primary", value := "Save", onclick := { () =>
 
-                  val addressUuid = $("#placeFieldsDiv").attr("addressUuid").toString.trim
+                  //val addressUuid = $("#placeFieldsDiv").attr("addressUuid").toString.trim
+                  val addressUuid = $("#places").value().toString.trim
+                  val placeName = $("#placeName").value().toString.trim
                   val streetAddress = $("#streetAddress").value().toString.trim
                   val stateId = $("#userState").value().toString.trim
                   val zipCode = $("#zipCode").value().toString.trim
 
-                  val address = new Address(addressUuid, "0", Some(streetAddress), State(stateId, ""), zipCode, "HOME", "Home")
+
+                  val address = new Address(addressUuid, "0", Some(streetAddress), State(stateId, ""), zipCode, "PLACE", placeName)
 
                   val placesFormPayload = new PlacesFormData(Some(address), Seq[Address](), Seq[State]())
                   val pickledPfp = Pickle.intoString(placesFormPayload)
 
                   val placeAction = $("#places").value().toString.trim
-                  if (placeAction.equals("New Place")) {
-                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/new", pickledPfp, refreshForm, showErrorBanner)
+                  if (placeAction.equals(AddNewPlaceIndicator)) {
+                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/new", pickledPfp, refreshFormAndPlacesDropDown, showErrorBanner)
                   } else {
-                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/update", pickledPfp, refreshForm, showErrorBanner)
+                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/update", pickledPfp, refreshFormAndPlacesDropDown, showErrorBanner)
                   }
                 }),
                 span(),
@@ -178,14 +186,28 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
   )
 
   private def refreshForm(data: js.Any): Unit = {
-//    val content = dom.document.getElementById("content")
-//    content.appendChild(p(s"$data").render)
     Unpickle[Address].fromString(s"$data") match {
       case Success(someAddress) =>
-        $("#placeName").value(someAddress.placeName)
-        $("#streetAddress").value(someAddress.street.getOrElse(""))
-        $("#userState").value(someAddress.state.id).change()
-        $("#zipCode").value(someAddress.zipCode)
+        refreshAddressFields(someAddress)
+      case _ =>
+        $("#errorBanner").show()
+    }
+  }
+
+  private def refreshAddressFields(someAddress: Address): Unit = {
+    $("#placeName").value(someAddress.placeName)
+    $("#streetAddress").value(someAddress.street.getOrElse(""))
+    $("#userState").value(someAddress.state.id).change()
+    $("#zipCode").value(someAddress.zipCode)
+  }
+
+  private def refreshFormAndPlacesDropDown(data: js.Any): Unit = {
+    Unpickle[PlacesFormData].fromString(s"$data") match {
+      case Success(someFormData: PlacesFormData) =>
+        $("#places").empty()
+        buildPlacesDropDown(someFormData.addresses)
+        $("#places").value(someFormData.address.getOrElse(emptyAddress).id).change()
+        $("#successBanner").show()
       case _ =>
         $("#errorBanner").show()
     }

@@ -10,7 +10,7 @@ class PasswordChangeFormView(emailAddress: String) extends View {
   val myEmailAddress = emailAddress
   def apply()(implicit ctx: RequestContext) =
     MainTemplate(
-      titleText = "Edit Profile",
+      titleText = "Profile",
       footer = Seq(jsModuleWithParams[PasswordChangeFormJs](myEmailAddress))
     )
 }

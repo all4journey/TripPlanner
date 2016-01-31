@@ -163,6 +163,13 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
   )
 
   private def refreshForm(data: js.Any): Unit = {
+    Unpickle[PersonalFormData].fromString(s"$data") match {
+      case Success(somePersonalFormData) =>
+        $("#homeAddressFieldsDiv").attr("addressUuid", somePersonalFormData.address.getOrElse(emptyAddress).id)
+      case _ =>
+        $("#errorBanner").show()
+    }
+
     $("#successBanner").show()
   }
 

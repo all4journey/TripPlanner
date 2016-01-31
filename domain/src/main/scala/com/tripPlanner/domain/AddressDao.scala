@@ -12,15 +12,15 @@ case class AddressDao(db:Database)(implicit ec:ExecutionContext) {
   def update(address:Address) = {
     val query = for {
       a <- Addresses if a.id === address.id
-    } yield (a.street, a.stateId, a.zipcode)
+    } yield (a.street, a.stateId, a.zipcode, a.placeName)
 
-    val update = query.update(address.street, address.state.id, address.zipCode)
+    val update = query.update(address.street, address.state.id, address.zipCode, address.placeName)
     db.run(update) map {
       result => result
     }
   }
 
-  def create(address: Address) = {
+  def create(address: Address): String = {
     val id = UUID.randomUUID().toString
 
     val insertAddress = Addresses += AddressRow(id, address.userId, address.street, address.state.id, address.zipCode, address.addressType, address.placeName)
@@ -32,6 +32,8 @@ case class AddressDao(db:Database)(implicit ec:ExecutionContext) {
         else
           None
     }
+
+    id
   }
 
   def getAddressById(addressId: String): Future[Seq[Address]] = {

@@ -11,7 +11,7 @@ trait NavPills {
       a(href := "/multiformProfile/personal")("Personal Info")
     ),
     li(id := "placesLink", role := "presentation", if(active.equalsIgnoreCase("placesLink")) cls := "active" else "")(
-      a(href := "/multiformProfile/places")("Places")
+      a(href := "/multiformProfile/places")("Your Places")
     ),
     li(id := "passwordChangeLink", role := "presentation", if(active.equalsIgnoreCase("passwordChangeLink")) cls := "active" else "")(
       a(href := "/multiformProfile/password")("Change Password")

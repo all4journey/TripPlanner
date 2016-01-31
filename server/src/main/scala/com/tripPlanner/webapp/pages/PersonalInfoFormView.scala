@@ -11,7 +11,7 @@ class PersonalInfoFormView(formData: PersonalFormData) extends View {
   val myFormData = formData
   def apply()(implicit ctx: RequestContext) =
     MainTemplate(
-      titleText = "Edit Profile",
+      titleText = "Profile",
       footer = Seq(jsModuleWithParams[PersonalInfoFormJs](myFormData))
     )
 }

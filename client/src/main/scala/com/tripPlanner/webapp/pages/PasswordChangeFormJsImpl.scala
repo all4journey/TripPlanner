@@ -65,7 +65,7 @@ object PasswordChangeFormJsImpl extends PasswordChangeFormJs with NavPills{
           div(cls := "form-group")(
             label(cls := "col-lg-5 control-label")(),
             div(cls := "col-md-7")(
-              input(id := "saveButton", `type` := "button", cls := "btn btn-primary", value := "Save Changes"),
+              input(id := "saveButton", `type` := "button", cls := "btn btn-primary", value := "Save"),
               span(),
               input(id := "cancelButton", `type` := "reset", cls := "btn btn-default", value := "Cancel")
             )

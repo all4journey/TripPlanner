@@ -12,7 +12,7 @@ class PlacesFormView(formData: PlacesFormData) extends View {
   val myFormData = formData
   def apply()(implicit ctx: RequestContext) =
     MainTemplate(
-      titleText = "Places",
+      titleText = "Profile",
       footer = Seq(jsModuleWithParams[PlacesFormJs](myFormData))
     )
 }
