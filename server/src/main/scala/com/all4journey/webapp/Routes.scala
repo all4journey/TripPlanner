@@ -27,12 +27,12 @@ object Routes extends Page {
         path("client-fastopt.js")(getFromResource("client-fastopt.js")) ~
         path("client-launcher.js")(getFromResource("client-launcher.js")) ~
         path("client-jsdeps.js")(getFromResource("client-jsdeps.js")) ~
-        path("assets" / "fonts" / Rest){ fontFile => //bootstrap fonts route
-            Try(webJarLocator.getFullPath("bootstrap",s"dist/fonts/$fontFile")) match {
-                case Success(path) => getFromResource(path)
-                case _ => complete(StatusCodes.NotFound)
-            }
-        }~
+        path("assets" / "fonts" / Rest) { fontFile => //bootstrap fonts route
+          Try(webJarLocator.getFullPath("bootstrap", s"dist/fonts/$fontFile")) match {
+            case Success(path) => getFromResource(path)
+            case _ => complete(StatusCodes.NotFound)
+          }
+        } ~
         path("assets" / Segment / Rest) { (webjar, partialPath) =>
           Try(webJarLocator.getFullPath(webjar, partialPath)) match {
             case Success(path) => getFromResource(path)
@@ -43,6 +43,9 @@ object Routes extends Page {
         path("profile") {
           ProfilePage()
         } ~
+        path("login"){
+          LoginPage()
+        }~
         path("multiformProfile" / "password") {
           PasswordChangFormPage()
         } ~
@@ -53,14 +56,17 @@ object Routes extends Page {
           PersonalInfoFormPage()
         }
     } ~
-    getFromResource("web") ~
-    post {
-      path("profile") {
-        ProfilePage()
-      } ~
-      path("log") {
-        LogAppender()
+      getFromResource("web") ~
+      post {
+        path("profile") {
+          ProfilePage()
+        } ~
+          path("log") {
+            LogAppender()
+          } ~
+          path("login") {
+            LoginPage()
+          }
       }
-    }
   }
 }

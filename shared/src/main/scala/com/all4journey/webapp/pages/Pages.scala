@@ -21,3 +21,5 @@ trait PersonalInfoFormJs extends JsModuleWithParams {
   type ParamType = PersonalFormData
 }
 trait IndexJs extends JsModule
+
+trait LoginJs extends JsModule
