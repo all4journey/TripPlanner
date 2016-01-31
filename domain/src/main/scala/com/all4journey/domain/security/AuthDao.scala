@@ -2,6 +2,7 @@ package com.all4journey.domain.security
 
 import java.util.UUID
 
+import com.all4journey.domain.UserDao
 import com.all4journey.shared.domain.User
 import com.all4journey.shared.domain.security.Token
 import com.all4journey.domain.Tables.{Token => tokens, User => users, UserRow, TokenRow}
@@ -19,10 +20,18 @@ class AuthDao(db:Database){
       users.find(user => password.bcrypt == user.password) match {
         case Some(user) => db.run(tokens.filter(_.userId === user.id).result.headOption).flatMap {
           case Some(token) => Future.successful(Some(Token(token.id, token.userId, token.token)))
-          case None => createToken(user).map(token => Some(token))
+          case None => createToken(user.id).map(token => Some(token))
         }
         case None => Future.successful(None)
       }
+    }
+  }
+
+  def signUp(newUser:User): Future[Token] = {
+    val userDao = UserDao(db)
+    userDao.create(newUser) flatMap{
+      case Some(userId) => createToken(userId)
+      case None => Future.successful[Token](Token.empty)
     }
   }
 
@@ -40,8 +49,8 @@ class AuthDao(db:Database){
     }
   }
 
-  def createToken(user: UserRow):Future[Token] = {
-    val token = Token(id = UUID.randomUUID().toString, userId = user.id)
+  def createToken(userId: String):Future[Token] = {
+    val token = Token(id = UUID.randomUUID().toString, userId = userId)
 
     db.run(tokens returning tokens += TokenRow(token.id, token.userId, token.token)) map {
       result => Token(result.id, result.userId, result.token)
