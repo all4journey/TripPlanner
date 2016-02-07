@@ -6,7 +6,7 @@ services:
 install:
     - npm install phantomjs
 before_install:
-    - mysql -e "create database IF NOT EXISTS trip_planner;" -uroot
+    - mysql -e "create database IF NOT EXISTS all4journey;" -uroot
     - sbt domain/flywayMigrate -Dflyway_password=""
 jdk:
     - oraclejdk8

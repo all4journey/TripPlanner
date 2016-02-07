@@ -1,4 +1,4 @@
-# TripPlanner
+# All4Journey
 
 ## Running the server
 
@@ -18,7 +18,7 @@
 >Need to have docker installed - https://docs.docker.com/engine/installation/
 >
 >Once Docker is installed run command:
->>docker run --name tripPlannerMysql -e MYSQL_ROOT_PASSWORD=password1 -e MYSQL_DATABASE=trip_planner  -v /mysql/datadir:/var/lib/mysql -p 3306:3306 -d mysql:latest
+>>docker run --name all4journeyMysql -e MYSQL_ROOT_PASSWORD=password1 -e MYSQL_DATABASE=all4journey  -v /mysql/datadir:/var/lib/mysql -p 3306:3306 -d mysql:latest
 >
 >This will create the database with the user root and password: password1
 >
