@@ -16,7 +16,7 @@ trait Tables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = Address.schema ++ SchemaVersion.schema ++ User.schema ++ UsState.schema ++ Vehicle.schema
+  lazy val schema: profile.SchemaDescription = Address.schema ++ AddressType.schema ++ SchemaVersion.schema ++ User.schema ++ UsState.schema
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
@@ -25,18 +25,20 @@ trait Tables {
     *  @param userId Database column USER_ID SqlType(VARCHAR), Length(50,true)
     *  @param street Database column STREET SqlType(VARCHAR), Length(100,true), Default(None)
     *  @param stateId Database column STATE_ID SqlType(VARCHAR), Length(2,true)
-    *  @param zipcode Database column ZIPCODE SqlType(VARCHAR), Length(10,true) */
-  case class AddressRow(id: String, userId: String, street: Option[String] = None, stateId: String, zipcode: String)
+    *  @param zipcode Database column ZIPCODE SqlType(VARCHAR), Length(10,true)
+    *  @param addressType Database column ADDRESS_TYPE SqlType(VARCHAR), Length(10,true)
+    *  @param placeName Database column PLACE_NAME SqlType(VARCHAR), Length(10,true) */
+  case class AddressRow(id: String, userId: String, street: Option[String] = None, stateId: String, zipcode: String, addressType: String, placeName: String)
   /** GetResult implicit for fetching AddressRow objects using plain SQL queries */
   implicit def GetResultAddressRow(implicit e0: GR[String], e1: GR[Option[String]]): GR[AddressRow] = GR{
     prs => import prs._
-      AddressRow.tupled((<<[String], <<[String], <<?[String], <<[String], <<[String]))
+      AddressRow.tupled((<<[String], <<[String], <<?[String], <<[String], <<[String], <<[String], <<[String]))
   }
   /** Table description of table ADDRESS. Objects of this class serve as prototypes for rows in queries. */
   class Address(_tableTag: Tag) extends Table[AddressRow](_tableTag, "ADDRESS") {
-    def * = (id, userId, street, stateId, zipcode) <> (AddressRow.tupled, AddressRow.unapply)
+    def * = (id, userId, street, stateId, zipcode, addressType, placeName) <> (AddressRow.tupled, AddressRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), Rep.Some(userId), street, Rep.Some(stateId), Rep.Some(zipcode)).shaped.<>({r=>import r._; _1.map(_=> AddressRow.tupled((_1.get, _2.get, _3, _4.get, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), Rep.Some(userId), street, Rep.Some(stateId), Rep.Some(zipcode), Rep.Some(addressType), Rep.Some(placeName)).shaped.<>({r=>import r._; _1.map(_=> AddressRow.tupled((_1.get, _2.get, _3, _4.get, _5.get, _6.get, _7.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true) */
     val id: Rep[String] = column[String]("ID", O.PrimaryKey, O.Length(50,varying=true))
@@ -48,7 +50,13 @@ trait Tables {
     val stateId: Rep[String] = column[String]("STATE_ID", O.Length(2,varying=true))
     /** Database column ZIPCODE SqlType(VARCHAR), Length(10,true) */
     val zipcode: Rep[String] = column[String]("ZIPCODE", O.Length(10,varying=true))
+    /** Database column ADDRESS_TYPE SqlType(VARCHAR), Length(10,true) */
+    val addressType: Rep[String] = column[String]("ADDRESS_TYPE", O.Length(10,varying=true))
+    /** Database column PLACE_NAME SqlType(VARCHAR), Length(10,true) */
+    val placeName: Rep[String] = column[String]("PLACE_NAME", O.Length(10,varying=true))
 
+    /** Foreign key referencing AddressType (database name ADDRESS_ibfk_3) */
+    lazy val addressTypeFk = foreignKey("ADDRESS_ibfk_3", addressType, AddressType)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.Cascade)
     /** Foreign key referencing User (database name ADDRESS_ibfk_1) */
     lazy val userFk = foreignKey("ADDRESS_ibfk_1", userId, User)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.Cascade)
     /** Foreign key referencing UsState (database name ADDRESS_ibfk_2) */
@@ -56,6 +64,29 @@ trait Tables {
   }
   /** Collection-like TableQuery object for table Address */
   lazy val Address = new TableQuery(tag => new Address(tag))
+
+  /** Entity class storing rows of table AddressType
+    *  @param id Database column ID SqlType(VARCHAR), PrimaryKey, Length(10,true)
+    *  @param description Database column DESCRIPTION SqlType(VARCHAR), Length(50,true) */
+  case class AddressTypeRow(id: String, description: String)
+  /** GetResult implicit for fetching AddressTypeRow objects using plain SQL queries */
+  implicit def GetResultAddressTypeRow(implicit e0: GR[String]): GR[AddressTypeRow] = GR{
+    prs => import prs._
+      AddressTypeRow.tupled((<<[String], <<[String]))
+  }
+  /** Table description of table ADDRESS_TYPE. Objects of this class serve as prototypes for rows in queries. */
+  class AddressType(_tableTag: Tag) extends Table[AddressTypeRow](_tableTag, "ADDRESS_TYPE") {
+    def * = (id, description) <> (AddressTypeRow.tupled, AddressTypeRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(id), Rep.Some(description)).shaped.<>({r=>import r._; _1.map(_=> AddressTypeRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column ID SqlType(VARCHAR), PrimaryKey, Length(10,true) */
+    val id: Rep[String] = column[String]("ID", O.PrimaryKey, O.Length(10,varying=true))
+    /** Database column DESCRIPTION SqlType(VARCHAR), Length(50,true) */
+    val description: Rep[String] = column[String]("DESCRIPTION", O.Length(50,varying=true))
+  }
+  /** Collection-like TableQuery object for table AddressType */
+  lazy val AddressType = new TableQuery(tag => new AddressType(tag))
 
   /** Entity class storing rows of table SchemaVersion
     *  @param versionRank Database column version_rank SqlType(INT)
@@ -120,18 +151,19 @@ trait Tables {
     *  @param id Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true)
     *  @param firstName Database column FIRST_NAME SqlType(VARCHAR), Length(50,true)
     *  @param lastName Database column LAST_NAME SqlType(VARCHAR), Length(50,true)
+    *  @param emailAddress Database column EMAIL_ADDRESS SqlType(VARCHAR), Length(50,true)
     *  @param registrationDate Database column REGISTRATION_DATE SqlType(DATE) */
-  case class UserRow(id: String, firstName: String, lastName: String, registrationDate: java.sql.Date)
+  case class UserRow(id: String, firstName: String, lastName: String, emailAddress: String, registrationDate: java.sql.Date)
   /** GetResult implicit for fetching UserRow objects using plain SQL queries */
   implicit def GetResultUserRow(implicit e0: GR[String], e1: GR[java.sql.Date]): GR[UserRow] = GR{
     prs => import prs._
-      UserRow.tupled((<<[String], <<[String], <<[String], <<[java.sql.Date]))
+      UserRow.tupled((<<[String], <<[String], <<[String], <<[String], <<[java.sql.Date]))
   }
   /** Table description of table USER. Objects of this class serve as prototypes for rows in queries. */
   class User(_tableTag: Tag) extends Table[UserRow](_tableTag, "USER") {
-    def * = (id, firstName, lastName, registrationDate) <> (UserRow.tupled, UserRow.unapply)
+    def * = (id, firstName, lastName, emailAddress, registrationDate) <> (UserRow.tupled, UserRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), Rep.Some(firstName), Rep.Some(lastName), Rep.Some(registrationDate)).shaped.<>({r=>import r._; _1.map(_=> UserRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), Rep.Some(firstName), Rep.Some(lastName), Rep.Some(emailAddress), Rep.Some(registrationDate)).shaped.<>({r=>import r._; _1.map(_=> UserRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true) */
     val id: Rep[String] = column[String]("ID", O.PrimaryKey, O.Length(50,varying=true))
@@ -139,6 +171,8 @@ trait Tables {
     val firstName: Rep[String] = column[String]("FIRST_NAME", O.Length(50,varying=true))
     /** Database column LAST_NAME SqlType(VARCHAR), Length(50,true) */
     val lastName: Rep[String] = column[String]("LAST_NAME", O.Length(50,varying=true))
+    /** Database column EMAIL_ADDRESS SqlType(VARCHAR), Length(50,true) */
+    val emailAddress: Rep[String] = column[String]("EMAIL_ADDRESS", O.Length(50,varying=true))
     /** Database column REGISTRATION_DATE SqlType(DATE) */
     val registrationDate: Rep[java.sql.Date] = column[java.sql.Date]("REGISTRATION_DATE")
   }
@@ -167,40 +201,5 @@ trait Tables {
   }
   /** Collection-like TableQuery object for table UsState */
   lazy val UsState = new TableQuery(tag => new UsState(tag))
-
-  /** Entity class storing rows of table Vehicle
-    *  @param id Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true)
-    *  @param userId Database column USER_ID SqlType(VARCHAR), Length(50,true)
-    *  @param year Database column YEAR SqlType(VARCHAR), Length(4,true), Default(None)
-    *  @param make Database column MAKE SqlType(VARCHAR), Length(10,true), Default(None)
-    *  @param model Database column MODEL SqlType(VARCHAR), Length(10,true), Default(None) */
-  case class VehicleRow(id: String, userId: String, year: Option[String] = None, make: Option[String] = None, model: Option[String] = None)
-  /** GetResult implicit for fetching VehicleRow objects using plain SQL queries */
-  implicit def GetResultVehicleRow(implicit e0: GR[String], e1: GR[Option[String]]): GR[VehicleRow] = GR{
-    prs => import prs._
-      VehicleRow.tupled((<<[String], <<[String], <<?[String], <<?[String], <<?[String]))
-  }
-  /** Table description of table VEHICLE. Objects of this class serve as prototypes for rows in queries. */
-  class Vehicle(_tableTag: Tag) extends Table[VehicleRow](_tableTag, "VEHICLE") {
-    def * = (id, userId, year, make, model) <> (VehicleRow.tupled, VehicleRow.unapply)
-    /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), Rep.Some(userId), year, make, model).shaped.<>({r=>import r._; _1.map(_=> VehicleRow.tupled((_1.get, _2.get, _3, _4, _5)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
-
-    /** Database column ID SqlType(VARCHAR), PrimaryKey, Length(50,true) */
-    val id: Rep[String] = column[String]("ID", O.PrimaryKey, O.Length(50,varying=true))
-    /** Database column USER_ID SqlType(VARCHAR), Length(50,true) */
-    val userId: Rep[String] = column[String]("USER_ID", O.Length(50,varying=true))
-    /** Database column YEAR SqlType(VARCHAR), Length(4,true), Default(None) */
-    val year: Rep[Option[String]] = column[Option[String]]("YEAR", O.Length(4,varying=true), O.Default(None))
-    /** Database column MAKE SqlType(VARCHAR), Length(10,true), Default(None) */
-    val make: Rep[Option[String]] = column[Option[String]]("MAKE", O.Length(10,varying=true), O.Default(None))
-    /** Database column MODEL SqlType(VARCHAR), Length(10,true), Default(None) */
-    val model: Rep[Option[String]] = column[Option[String]]("MODEL", O.Length(10,varying=true), O.Default(None))
-
-    /** Foreign key referencing User (database name VEHICLE_ibfk_1) */
-    lazy val userFk = foreignKey("VEHICLE_ibfk_1", userId, User)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.Cascade)
-  }
-  /** Collection-like TableQuery object for table Vehicle */
-  lazy val Vehicle = new TableQuery(tag => new Vehicle(tag))
 }
 // $COVERAGE-ON$

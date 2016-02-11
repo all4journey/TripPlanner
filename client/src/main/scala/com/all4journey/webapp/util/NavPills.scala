@@ -10,8 +10,8 @@ trait NavPills {
     li(id := "personalInfoLink", role := "presentation", if(active.equalsIgnoreCase("personalInfoLink")) cls := "active" else "")(
       a(href := "/multiformProfile/personal")("Personal Info")
     ),
-    li(id := "vehicleInfoLink", role := "presentation", if(active.equalsIgnoreCase("vehicleinfolink")) cls := "active" else "")(
-      a(href := "/multiformProfile/vehicle")("Vehicle Info")
+    li(id := "placesLink", role := "presentation", if(active.equalsIgnoreCase("placesLink")) cls := "active" else "")(
+      a(href := "/multiformProfile/places")("Your Places")
     ),
     li(id := "passwordChangeLink", role := "presentation", if(active.equalsIgnoreCase("passwordChangeLink")) cls := "active" else "")(
       a(href := "/multiformProfile/password")("Change Password")

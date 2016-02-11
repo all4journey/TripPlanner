@@ -135,7 +135,7 @@ object ProfileJsImpl extends ProfileJs {
 
                 val firstName = $("#firstName").value().toString.trim
                 val lastName = $("#lastName").value().toString.trim
-                val user: User = new User(fName = firstName, lName = lastName, registrationDate = None)
+                val user: User = new User(fName = firstName, lName = lastName, email = "a.a@testmail.com", registrationDate = None)
 
                 val userStateId = $("#userState :selected").value().toString.trim
                 val userStateDescription = $("#userState :selected").text().toString.trim
@@ -143,7 +143,7 @@ object ProfileJsImpl extends ProfileJs {
 
                 val streetAddress = $("#streetAddress").value().toString.trim
                 val zipCode = $("#zipCode").value().toString.trim
-                val address = new Address(street = Option(streetAddress), state = state, zipCode = zipCode)
+                val address = new Address(street = Option(streetAddress), state = state, zipCode = zipCode, addressType = "HOME", placeName = "Home")
                 val addresses: Seq[Address] = List(address)
 
                 val userVehicleYear = $("#userVehicleYear :selected").value().toString.trim

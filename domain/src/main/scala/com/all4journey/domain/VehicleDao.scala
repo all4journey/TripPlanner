@@ -1,13 +1,15 @@
 package com.all4journey.domain
 
 import java.util.UUID
-
-import com.all4journey.domain.Tables.{Vehicle => Vehicles, VehicleRow}
+//import com.all4journey.domain.Tables.{Vehicle => Vehicles, VehicleRow}
 import com.all4journey.shared.domain.Vehicle
 import slick.driver.MySQLDriver.api._
-
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+  * This class is not needed right now
+  */
+/*
 case class VehicleDao(db: Database)(implicit ec: ExecutionContext) {
   def update(vehicle: Vehicle): Future[Long] = {
     val query = for {
@@ -32,3 +34,4 @@ case class VehicleDao(db: Database)(implicit ec: ExecutionContext) {
   }
 
 }
+*/

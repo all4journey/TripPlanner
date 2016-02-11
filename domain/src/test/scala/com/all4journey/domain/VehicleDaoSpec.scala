@@ -8,7 +8,10 @@ import scala.concurrent.duration.Duration
 
 /**
   * Created by rjkj on 1/16/16.
+  *
+  * NOT NEEDED RIGHT NOW
   */
+/*
 class VehicleDaoSpec extends DomainTestSpec{
   "VehicleDao" should "insert a vehicle" in {
     val userDao = UserDao(db)
@@ -30,3 +33,4 @@ class VehicleDaoSpec extends DomainTestSpec{
 
   }
 }
+*/

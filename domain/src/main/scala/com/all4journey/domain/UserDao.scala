@@ -40,7 +40,7 @@ case class UserDao(db: Database)(implicit ec: ExecutionContext){
 
     val userId = java.util.UUID.randomUUID().toString
 
-    val result = Users += UserRow(userId, user.fName, user.lName, new java.sql.Date(dateFromString.getTime))
+    val result = Users += UserRow(userId, user.fName, user.lName, user.email, new java.sql.Date(dateFromString.getTime))
 
     db.run(result) map {
       result =>
@@ -69,7 +69,7 @@ case class UserDao(db: Database)(implicit ec: ExecutionContext){
     db.run(action) map {
       userList => for {
         u <- userList
-      } yield User(u.id, u.firstName, u.lastName, Some(u.registrationDate.toString))
+      } yield User(u.id, u.firstName, u.lastName, u.emailAddress, Some(u.registrationDate.toString))
     }
   }
 }
