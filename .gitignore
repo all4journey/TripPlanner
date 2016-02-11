@@ -6,12 +6,23 @@
 .history
 .lib/
 dist/*
-target/
+*target/
 lib_managed/
 src_managed/
 project/boot/
 project/plugins/project/
+project/target
+project/project/target
+
 
 # Scala-IDE specific
 .scala_dependencies
 .worksheet
+
+#ScalaJs
+node_modules/
+
+
+#intellij
+*.iml
+.idea
