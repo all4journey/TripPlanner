@@ -1,12 +1,16 @@
 package com.all4journey.shared.domain
 
+import javax.validation.constraints.Size
+
+import scala.annotation.meta.field
+
 
 /**
   * Created by rjkj on 11/14/15.
   */
 
 
-case class User(id: String = "", fName:String = "Default", lName:String, email: String, registrationDate: Option[String])
+case class User(id: String = "", @(Size@field)(max = 10)fName:String = "Default", lName:String, email: String, registrationDate: Option[String])
 
 case class Profile(user: User, addresses: Seq[Address], vehicles: Seq[Vehicle])
 
