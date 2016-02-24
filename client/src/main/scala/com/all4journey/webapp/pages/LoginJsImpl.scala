@@ -46,6 +46,19 @@ object LoginJsImpl extends LoginJs{
               success = { (data:js.Any, jqXHR: JQueryXHR) =>
                 val content = dom.document.getElementById("content")
                 content.appendChild(p(s"$data").render)
+              },
+              failure = {
+                (data:js.Any, jqXHR: JQueryXHR) =>
+                  val content = dom.document.getElementById("content")
+                  content.appendChild(p("Username or Password incorrect").render)
+              },
+              error = {(qXHR: JQueryXHR, textStatus: String, errorThrow: String) =>
+                textStatus match {
+                  case _ =>
+                    val content = dom.document.getElementById("content")
+                    content.appendChild(p(s"$textStatus").render)
+                }
+
               }
             ).asInstanceOf[JQueryAjaxSettings])
           })

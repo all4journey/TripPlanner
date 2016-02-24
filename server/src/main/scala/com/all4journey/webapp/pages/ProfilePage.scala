@@ -12,6 +12,7 @@ import prickle.Unpickle
 
 import scala.concurrent.{Future, Await}
 import scala.concurrent.duration.DurationInt
+import scala.language.postfixOps
 import scala.util.Success
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -24,7 +25,7 @@ trait ProfilePage extends Page with LazyLogging {
 
         val myList = Await.result(states, 10 seconds) //TODO: look into removing Await
 
-        val profileView = new ProfileView(myList)
+        val profileView = new ProfileView("token", myList)
         complete(profileView.apply())
       }
       }

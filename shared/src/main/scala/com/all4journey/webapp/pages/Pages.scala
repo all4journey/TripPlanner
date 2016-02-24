@@ -4,7 +4,7 @@ import com.all4journey.shared.domain.{PersonalFormData, Vehicle, State}
 import com.all4journey.webapp.{JsModule, JsModuleWithParams}
 
 trait ProfileJs extends JsModuleWithParams {
-  type ParamType = Seq[State]
+  type ParamType = Tuple2[String,Seq[State]]
 }
 
 trait MultiFormProfileJs extends JsModule

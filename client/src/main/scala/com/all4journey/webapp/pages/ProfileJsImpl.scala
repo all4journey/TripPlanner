@@ -17,7 +17,7 @@ import scala.util.Success
 @deprecated
 object ProfileJsImpl extends ProfileJs {
 
-  def run(params: Seq[State]): Unit = {}
+  def run(params: (String, Seq[State])): Unit = {}
 
   def runWithParams(params: Any): Unit = {
     val content = dom.document.getElementById("content")
@@ -28,7 +28,7 @@ object ProfileJsImpl extends ProfileJs {
     val stateDropdown = dom.document.getElementById("userState")
 
     Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
-      case Success(states: Seq[State]) =>
+      case Success((token:String, states: Seq[State])) =>
         for (stateItem <- states) {
           val option = dom.document.createElement("option")
           option.textContent = stateItem.description
