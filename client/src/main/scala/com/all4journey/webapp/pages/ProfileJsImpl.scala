@@ -17,7 +17,7 @@ import scala.util.Success
 @deprecated
 object ProfileJsImpl extends ProfileJs {
 
-  def run(params: (String, Seq[State])): Unit = {}
+  def run(): Unit = {}
 
   def runWithParams(params: Any): Unit = {
     val content = dom.document.getElementById("content")

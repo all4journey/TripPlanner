@@ -19,12 +19,12 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
   @JSExport
   val emptyAddress = Address("0", "0", None, State("NONE", "Choose a state"), "", "HOME", "Home")
 
-  def run(params: PersonalFormData): Unit = {}
+  def run(): Unit = {}
 
   def runWithParams(params: Any): Unit = {
 
-    val formData = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
-      case Success(successPersonalFormData: PersonalFormData) => successPersonalFormData
+    val (token, formData) = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
+      case Success((token:String, fd: PersonalFormData)) => (token, fd)
       case _ => throw new IllegalStateException("the backend didn't send any form data")
     }
 
@@ -94,7 +94,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
             div(cls := "form-group")(
               label(cls := "col-lg-3 control-label")("Email address:"),
               div(cls := "col-lg-8")(
-                input(id := "email", name := "email", cls := "form-control", `type` := "text", value := user.email, disabled)
+                input(id := "email", name := "email", cls := "form-control", `type` := "text", value := user.emailAddress, disabled)
               )
             ),
             h3("Home Address"),
@@ -133,7 +133,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
                   val lastName =  $("#lastName").value().toString.trim
                   val emailAddress = $("#email").value().toString.trim
 
-                  val user = new User("0", firstName, lastName, emailAddress, None)
+                  val user = new User("0", firstName, lastName, emailAddress, "", None)
 
                   val addressUuid = $("#homeAddressFieldsDiv").attr("addressUuid").toString.trim
                   val streetAddress = $("#streetAddress").value().toString.trim

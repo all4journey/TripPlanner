@@ -14,6 +14,7 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Await
+import scala.language.postfixOps
 import scala.util.Success
 
 /**
@@ -26,7 +27,7 @@ trait PersonalInfoFormPage extends Page with LazyLogging {
 
         val personalFormData = buildFormData(loadStates = true)
 
-        val personalInfoFormView = new PersonalInfoFormView(personalFormData)
+        val personalInfoFormView = new PersonalInfoFormView("token", personalFormData)
         complete(personalInfoFormView.apply())
       }
       }
@@ -56,7 +57,7 @@ trait PersonalInfoFormPage extends Page with LazyLogging {
 
     personalFormData.address match {
       case Some(someAddress) => createOrUpdateAddress(user.id, someAddress.copy(userId = user.id))
-      case _ => return
+      case _ =>
     }
 
 
@@ -92,8 +93,8 @@ trait PersonalInfoFormPage extends Page with LazyLogging {
     if (homeAddressResult.size > 1)
       throw new IllegalStateException("There is more than one home address")
 
-    else if (!homeAddressResult.isEmpty) {
-      personalFormData = personalFormData.copy(address = Some(homeAddressResult(0)))
+    else if (homeAddressResult.nonEmpty) {
+      personalFormData = personalFormData.copy(address = Some(homeAddressResult.head))
     }
 
     if (loadStates) {

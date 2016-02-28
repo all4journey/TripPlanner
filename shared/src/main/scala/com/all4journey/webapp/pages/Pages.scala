@@ -10,15 +10,15 @@ trait ProfileJs extends JsModuleWithParams {
 trait MultiFormProfileJs extends JsModule
 
 trait PasswordChangeFormJs extends JsModuleWithParams {
-  type ParamType = String
+  type ParamType = Tuple2[String, String]
 }
 
 trait VehicleInfoFormJs extends JsModuleWithParams {
-  type ParamType = Seq[Vehicle]
+  type ParamType = Tuple2[String, Seq[Vehicle]]
 }
 
 trait PersonalInfoFormJs extends JsModuleWithParams {
-  type ParamType = PersonalFormData
+  type ParamType = Tuple2[String, PersonalFormData]
 }
 
 trait PlacesFormJs extends JsModuleWithParams {

@@ -12,7 +12,7 @@ class VehicleFormView(vehicles: Seq[Vehicle]) extends View {
   def apply()(implicit ctx: RequestContext) =
     MainTemplate(
       titleText = "Edit Profile",
-      footer = Seq(jsModuleWithParams[VehicleInfoFormJs](myVehicles))
+      footer = Seq(jsModuleWithParams[VehicleInfoFormJs]("token", myVehicles))
     )
 
 }

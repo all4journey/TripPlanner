@@ -19,16 +19,19 @@ import scalatags.JsDom.all._
 object VehicleInfoFormJsImpl extends VehicleInfoFormJs with NavPills{
 
   var formIndex = 1
-  var vehicles: Seq[Vehicle] = null
+  var vehicles: Seq[Vehicle] = Seq.empty[Vehicle]
+  var token:String = ""
 
-  def run(params: Seq[Vehicle]): Unit = {}
+  def run(): Unit = {}
 
   def runWithParams(params: Any): Unit = {
 
-    vehicles = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
-      case Success(vs: Seq[Vehicle]) => vs
-      case _ => Seq[Vehicle]()
+    val(_token, _vehicles) = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
+      case Success((tk, vs)) => (tk,vs)
+      case _ => ("", Seq[Vehicle]())
     }
+    vehicles = _vehicles
+    token = _token
 
     val content = dom.document.getElementById("content")
     content.appendChild(vehicleForm.render)

@@ -15,19 +15,19 @@ import scala.concurrent.duration.Duration
   */
 class VehicleDaoSpec extends DomainTestSpec{
   ignore should "insert a vehicle" in {
-    val userDao = UserDao(db)
-    val user: User = User(fName = "Rob", lName = "Kernick", emailAddress = UUID.randomUUID().toString + "rob@tripPlanner.travel", password = "test123", registrationDate = Some("12/31/2015"))
-    val userFuture = userDao.create(user)
-
-    val userId = Await.result(userFuture, Duration.Inf).getOrElse("")
-    userId should not be empty
-
-    val dao = VehicleDao(db)
-    val vehicle = Vehicle(userId = userId, year = Option("1999"), make = Some("Toyota"), model = Some("Camry"))
-    val future = dao.create(vehicle)
-
-    val id = Await.result(future, Duration.Inf).getOrElse("")
-    id should not be empty
+//    val userDao = UserDao(db)
+//    val user: User = User(fName = "Rob", lName = "Kernick", emailAddress = UUID.randomUUID().toString + "rob@tripPlanner.travel", password = "test123", registrationDate = Some("12/31/2015"))
+//    val userFuture = userDao.create(user)
+//
+//    val userId = Await.result(userFuture, Duration.Inf).getOrElse("")
+//    userId should not be empty
+//
+//    val dao = VehicleDao(db)
+//    val vehicle = Vehicle(userId = userId, year = Option("1999"), make = Some("Toyota"), model = Some("Camry"))
+//    val future = dao.create(vehicle)
+//
+//    val id = Await.result(future, Duration.Inf).getOrElse("")
+//    id should not be empty
   }
 
   ignore should "update a vehicle" in {

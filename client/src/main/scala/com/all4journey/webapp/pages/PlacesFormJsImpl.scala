@@ -20,7 +20,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
   @JSExport
   val emptyAddress = Address("0", "0", None, State("NONE", "Choose a state"), "", "PLACE", "")
 
-  def run(params: PlacesFormData): Unit = {}
+  def run(): Unit = {}
 
   def runWithParams(params: Any): Unit = {
     val formData = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
