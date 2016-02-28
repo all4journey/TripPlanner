@@ -1,10 +1,9 @@
 package com.all4journey.webapp.pages
 
-import com.all4journey.shared.domain.{PersonalFormData, State, Address}
-import com.all4journey.webapp.util.NavPills
+import com.all4journey.shared.domain.{PersonalFormData, State, Address, User}
+import com.all4journey.webapp.util.{AjaxHelper, NavPills}
 import org.scalajs.dom
-import org.scalajs.dom.raw.HTMLElement
-import prickle.Unpickle
+import prickle.{Pickle, Unpickle}
 import org.scalajs.jquery.{jQuery => $, JQueryXHR, JQueryAjaxSettings}
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
@@ -16,62 +15,34 @@ import scalatags.JsDom.all._
   */
 // $COVERAGE-OFF$
 object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
-  var formIndex:Int = 1
-  var formData: PersonalFormData = null
+
+  @JSExport
+  val emptyAddress = Address("0", "0", None, State("NONE", "Choose a state"), "", "HOME", "Home")
 
   def run(params: PersonalFormData): Unit = {}
 
   def runWithParams(params: Any): Unit = {
 
-    formData = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
-      case Success(fd: PersonalFormData) => fd
-      case _ => PersonalFormData(None, Seq[Address](), Seq[State]())
+    val formData = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
+      case Success(successPersonalFormData: PersonalFormData) => successPersonalFormData
+      case _ => throw new IllegalStateException("the backend didn't send any form data")
     }
 
     val content = dom.document.getElementById("content")
-    content.appendChild(personalInfoForm.render)
+    content.appendChild(personalInfoForm(formData.user, formData.address).render)
 
-    if (formData.addresses.isEmpty) {
-      addAddressPanelWithAddButton(None)
-    }
-    else {
-      val numberOfAddresses = formData.addresses.size - 1
-      for (x <- 0 until numberOfAddresses) {
-        addAddressPanelWithMinusButton(formData.addresses(x))
-      }
+    buildStatesDropDown(formData.states)
 
-      addAddressPanelWithAddButton(Some(formData.addresses.last))
-    }
-
-    $(".btn-add").click(addMoreAddressFields _)
+    $("#successBanner").hide()
+    $("#errorBanner").hide()
   }
 
   @JSExport
-  def addAddressPanelWithAddButton(address: Option[Address]): Unit = {
-    val mainFormGroup = dom.document.getElementById("main-form-group")
-    mainFormGroup.appendChild(addressTextFields("btn btn-success btn-add", "glyphicon glyphicon-plus", "has-success", 0).render)
+  def buildStatesDropDown(states: Seq[State]): Unit = {
 
-    buildStatesDropDown(0)
+    val stateDropdown = dom.document.getElementById("userState")
 
-    //formIndex += 1
-  }
-
-  @JSExport
-  def addAddressPanelWithMinusButton(address: Address): Unit = {
-    val mainFormGroup = dom.document.getElementById("main-form-group")
-    mainFormGroup.appendChild(addressTextFields("btn btn-danger btn-sub", "glyphicon glyphicon-minus", "has-error", formIndex).render)
-
-    buildStatesDropDown(formIndex)
-
-    formIndex += 1
-  }
-
-  @JSExport
-  def buildStatesDropDown(dropDownIndex: Int): Unit = {
-
-    val stateDropdown = dom.document.getElementById("userState" + dropDownIndex)
-
-    for (stateItem <- formData.states) {
+    for (stateItem <- states) {
       val option = dom.document.createElement("option")
       option.textContent = stateItem.description
       option.setAttribute("value", stateItem.id)
@@ -80,80 +51,76 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
   }
 
   @JSExport
-  def addMoreAddressFields(): Unit = {
-    $("#streetAddressDiv0").before(addressTextFields("btn btn-danger btn-sub", "glyphicon glyphicon-minus", "has-error", formIndex).render)
-    $("#plusMinusButton" + formIndex).click({ (hTMLElement: HTMLElement) =>
-      val index = $(hTMLElement).attr("index")
-      $("#addressFieldsDiv" + index).remove()
-    } : js.ThisFunction)
-
-    buildStatesDropDown(formIndex)
-
-    formIndex += 1
-  }
-
-  @JSExport
-  def addressTextFields(buttonClass: String, glyphClass: String,  highlightClass:String, formIndex: Int) = div(id := "addressFieldsDiv" + formIndex)(
-    div(id := "streetAddressDiv" + formIndex, cls := "form-group")(
-    label(cls := "col-lg-3 control-label")("Street Address:"),
-    div(cls := "col-lg-8")(
-      div(cls := "input-group")(
-        input(id := "streetAddress" + formIndex, name := "streetAddress" + formIndex, cls := "form-control", `type` := "text"),
-        span(cls := "input-group-btn")(
-          button(id := "plusMinusButton" + formIndex, cls := buttonClass, `type` := "button", onmouseover := { () =>
-            $("#streetAddressDiv" + formIndex).addClass(highlightClass)
-            $("#stateDiv" + formIndex).addClass(highlightClass)
-            $("#zipCodeDiv" + formIndex).addClass(highlightClass)
-          }, onmouseout := { () =>
-            $("#streetAddressDiv" + formIndex).removeClass(highlightClass)
-            $("#stateDiv" + formIndex).removeClass(highlightClass)
-            $("#zipCodeDiv" + formIndex).removeClass(highlightClass)
-          }, "index".attr := formIndex)(
-          span(cls := glyphClass, style := "font-size:1.45em;"))
-        )
-      )
-    )
-  ),
-  div(id := "stateDiv"+ formIndex, cls := "form-group")(
-    label(cls := "col-lg-3 control-label")("State:"),
-    div(cls := "col-lg-8")(
-      div(cls := "ui-select")(
-        select(id := "userState" + formIndex, name := "userState" + formIndex, cls := "form-control")(
-          option(value := "NONE", selected := "selected")("Choose a state")
-        )
-      )
-    )
-  ),
-  div(id := "zipCodeDiv" + formIndex, cls := "form-group")(
-    label(cls := "col-lg-3 control-label")("Zip code:"),
-    div(cls := "col-lg-8")(
-      input(id := "zipCode" + formIndex, name := "zipCode" + formIndex, cls := "form-control", `type` := "text")
-    )
-  )
-  )
-
-  @JSExport
-  def personalInfoForm = div(cls := "container")(
+  def personalInfoForm(user: User, homeAddress: Option[Address]) = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
         getNavPills("personalInfoLink")
       )
     ),
     h1(cls := "page-header"),
+    div(id := "successBanner", cls := "alert alert-info alert-dismissable")(
+      span(cls := "glyphicon glyphicon-ok", "aria-hidden".attr := "true")(),
+      a(cls := "panel-close close", onclick := { () =>
+        $("#successBanner").hide();
+      })("×"),
+      i(cls := "fa fa-coffee")(),
+      strong(" Success!"), " profile was saved successfully"
+    ),
+    div(id := "errorBanner", cls := "alert alert-danger alert-dismissable")(
+      span(cls := "glyphicon glyphicon-exclamation-sign", "aria-hidden".attr := "true")(),
+      a(cls := "panel-close close", onclick := { () =>
+        $("#errorBanner").hide();
+      })("×"),
+      i(cls := "fa fa-coffee")(),
+      strong(" Error!"), " profile was ", strong("not"), " saved successfully"
+    ),
     div(cls := "row")(
       div(cls := "col-md-10 col-md-offset-1 personal-info")(
         form(cls := "form-horizontal", role := "form")(
+          h3("Personal Info"),
           div(id := "main-form-group")(
             div(cls := "form-group")(
               label(cls := "col-lg-3 control-label")("First name:"),
               div(cls := "col-lg-8")(
-                input(id := "firstName", name := "firstName", cls := "form-control", `type` := "text")
+                input(id := "firstName", name := "firstName", cls := "form-control", `type` := "text", value := user.fName)
               )
             ),
             div(cls := "form-group")(
               label(cls := "col-lg-3 control-label")("Last name:"),
               div(cls := "col-lg-8")(
-                input(id := "lastName", name := "lastName", cls := "form-control", `type` := "text")
+                input(id := "lastName", name := "lastName", cls := "form-control", `type` := "text", value := user.lName)
+              )
+            ),
+            div(cls := "form-group")(
+              label(cls := "col-lg-3 control-label")("Email address:"),
+              div(cls := "col-lg-8")(
+                input(id := "email", name := "email", cls := "form-control", `type` := "text", value := user.email, disabled)
+              )
+            ),
+            h3("Home Address"),
+            div(id := "homeAddressFieldsDiv", "addressUuid".attr := homeAddress.getOrElse(emptyAddress).id)(
+
+              div(id := "streetAddressDiv", cls := "form-group")(
+                label(cls := "col-lg-3 control-label")("Street Address:"),
+                div(cls := "col-lg-8")(
+                  input(id := "streetAddress", name := "streetAddress", cls := "form-control", `type` := "text", value := homeAddress.getOrElse(emptyAddress).street.getOrElse(""))
+                )
+              ),
+              div(id := "stateDiv", cls := "form-group")(
+                label(cls := "col-lg-3 control-label")("State:"),
+                div(cls := "col-lg-8")(
+                  div(cls := "ui-select")(
+                    select(id := "userState", name := "userState", cls := "form-control partOfStateList")(
+                      option(value := homeAddress.getOrElse(emptyAddress).state.id, selected := "selected")(homeAddress.getOrElse(emptyAddress).state.description)
+                    )
+                  )
+                )
+              ),
+              div(id := "zipCodeDiv", cls := "form-group")(
+                label(cls := "col-lg-3 control-label")("Zip code:"),
+                div(cls := "col-lg-8")(
+                  input(id := "zipCode", name := "zipCode", cls := "form-control partOfZipCodeList", `type` := "text", value := homeAddress.getOrElse(emptyAddress).zipCode)
+                )
               )
             )
           ),
@@ -161,9 +128,30 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
             div(cls := "form-group")(
               label(cls := "col-lg-5 control-label")(),
               div(cls := "col-md-7")(
-                input(id := "saveButton", `type` := "button", cls := "btn btn-primary", value := "Save Changes"),
+                input(id := "saveButton", `type` := "button", cls := "btn btn-primary", value := "Save", onclick := { () =>
+                  val firstName = $("#firstName").value().toString.trim
+                  val lastName =  $("#lastName").value().toString.trim
+                  val emailAddress = $("#email").value().toString.trim
+
+                  val user = new User("0", firstName, lastName, emailAddress, None)
+
+                  val addressUuid = $("#homeAddressFieldsDiv").attr("addressUuid").toString.trim
+                  val streetAddress = $("#streetAddress").value().toString.trim
+                  val stateId = $("#userState").value().toString.trim
+                  val zipCode = $("#zipCode").value().toString.trim
+
+                  val address = new Address(addressUuid, "0", Some(streetAddress), State(stateId, ""), zipCode, "HOME", "Home")
+
+                  val personalFormPayload = new PersonalFormData(user, Some(address), Seq[State]())
+                  val pickledPfp = Pickle.intoString(personalFormPayload)
+
+                  AjaxHelper.doAjaxPostWithJson("/multiformProfile/personal", pickledPfp, refreshForm, showErrorBanner)
+
+                }),
                 span(),
-                input(id := "cancelButton", `type` := "reset", cls := "btn btn-default", value := "Cancel")
+                input(id := "cancelButton", `type` := "reset", cls := "btn btn-default", value := "Cancel", onclick := { () =>
+                  dom.window.location.reload(true);
+                })
               )
             )
           )
@@ -173,5 +161,20 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
     )
 
   )
+
+  private def refreshForm(data: js.Any): Unit = {
+    Unpickle[PersonalFormData].fromString(s"$data") match {
+      case Success(somePersonalFormData) =>
+        $("#homeAddressFieldsDiv").attr("addressUuid", somePersonalFormData.address.getOrElse(emptyAddress).id)
+      case _ =>
+        $("#errorBanner").show()
+    }
+
+    $("#successBanner").show()
+  }
+
+  private def showErrorBanner(): Unit = {
+    $("#errorBanner").show()
+  }
 }
 // $COVERAGE-ON$

@@ -17,15 +17,15 @@ import scala.concurrent.duration._
 trait UserContext {
 
   def getCurrentUser: User = {
-//    val userDao = UserDao(DomainSupport.db)
-//    val userFuture = userDao.getUserById("1234-1234-1234-1234")
-//    val result = Await.result(userFuture, 10 seconds)
-//
-//    if (result.size > 1)
-//      throw new IllegalStateException("there is more than one user with the same ID")
-//
-//    result(0)
-    User("1234-1234-1234-1234", "andy", "andy123", "andy@tripplanner.travel", "", None)
+    val userDao = UserDao(DomainSupport.db)
+    val userFuture = userDao.getUserById("3770b302-84b1-4099-9957-cf6ca52b50cf")
+
+    val result = Await.result(userFuture, 10 seconds)
+
+    if (result.size > 1)
+      throw new IllegalStateException("there is more than one user with the same ID")
+
+    result(0)
   }
 }
 

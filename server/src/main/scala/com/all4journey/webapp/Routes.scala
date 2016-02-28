@@ -47,26 +47,41 @@ object Routes extends Page {
           LoginPage()
         }~
         path("multiformProfile" / "password") {
-          PasswordChangFormPage()
+          PasswordChangeFormPage()
         } ~
-        path("multiformProfile" / "vehicle") {
-          VehicleInfoFormPage()
+        path("multiformProfile" / "places") {
+          PlacesFormPage()
+        } ~
+        path("multiformProfile" / "places" / "get") {
+          GetPlaceFormPage()
         } ~
         path("multiformProfile" / "personal") {
           PersonalInfoFormPage()
         }
     } ~
-      getFromResource("web") ~
-      post {
-        path("profile") {
-          ProfilePage()
-        } ~
-          path("log") {
-            LogAppender()
-          } ~
-          path("login") {
-            LoginPage()
-          }
+    getFromResource("web") ~
+    post {
+      path("profile") {
+        ProfilePage()
+      } ~
+      path("multiformProfile" / "password") {
+        PasswordChangeFormPage()
+      } ~
+      path("multiformProfile" / "places" / "update") {
+        UpdatePlaceFormPage()
+      } ~
+      path("multiformProfile" / "places" / "new") {
+        NewPlaceFormPage()
+      } ~
+      path("multiformProfile" / "personal") {
+        PersonalInfoFormPage()
+      } ~
+      path("log") {
+        LogAppender()
+      } ~
+      path("login") {
+        LoginPage()
       }
+    }
   }
 }

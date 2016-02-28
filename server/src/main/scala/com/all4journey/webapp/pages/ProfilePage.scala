@@ -3,19 +3,24 @@ package com.all4journey.webapp.pages
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.StatusCodes
 import akka.stream.Materializer
-import com.all4journey.domain.{StateDaoImpl, VehicleDao, AddressDao, UserDao}
+import com.all4journey.domain.{StateDaoImpl, AddressDao, UserDao}
 import com.all4journey.shared.domain.{State, Profile}
 import com.all4journey.webapp.Page
 import com.all4journey.webapp.util.DomainSupport
 import com.typesafe.scalalogging.LazyLogging
 import prickle.Unpickle
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Await}
 import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
 import scala.util.Success
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
+
+/**
+  * Created by aabreu on 12/6/15.
+  */
+@deprecated
 trait ProfilePage extends Page with LazyLogging {
   def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
     get {
@@ -46,9 +51,9 @@ trait ProfilePage extends Page with LazyLogging {
       }
   }
 }
-
+@deprecated
 object ProfilePage extends ProfilePage
-
+@deprecated
 object ProfileLogic extends LazyLogging {
   def save(profileInfo: Profile): Unit = {
     val userDao = UserDao(DomainSupport.db)
@@ -56,7 +61,7 @@ object ProfileLogic extends LazyLogging {
 
     val addressDao = AddressDao(DomainSupport.db)
 
-    val vehicleDao = VehicleDao(DomainSupport.db)
+   // val vehicleDao = VehicleDao(DomainSupport.db)
 
     userIdFuture.onSuccess {
       case result =>
@@ -64,7 +69,7 @@ object ProfileLogic extends LazyLogging {
           case Some(id) =>
             //TODO - Set limit on vehicles and Addresses
             profileInfo.addresses foreach (address => addressDao.create(address.copy(userId = id)))
-            profileInfo.vehicles foreach (vehicle => vehicleDao.create(vehicle.copy(userId = id)))
+            //profileInfo.vehicles foreach (vehicle => vehicleDao.create(vehicle.copy(userId = id)))
           case None =>
           //Throw Error
         }

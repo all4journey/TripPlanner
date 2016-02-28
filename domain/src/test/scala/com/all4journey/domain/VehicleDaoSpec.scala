@@ -10,9 +10,11 @@ import scala.concurrent.duration.Duration
 
 /**
   * Created by rjkj on 1/16/16.
+  *
+  * NOT NEEDED RIGHT NOW
   */
-class VehicleDaoSpec extends DomainTestSpec {
-  "VehicleDao" should "insert a vehicle" in {
+class VehicleDaoSpec extends DomainTestSpec{
+  ignore should "insert a vehicle" in {
     val userDao = UserDao(db)
     val user: User = User(fName = "Rob", lName = "Kernick", emailAddress = UUID.randomUUID().toString + "rob@tripPlanner.travel", password = "test123", registrationDate = Some("12/31/2015"))
     val userFuture = userDao.create(user)
@@ -28,7 +30,7 @@ class VehicleDaoSpec extends DomainTestSpec {
     id should not be empty
   }
 
-  it should "update a vehicle" in {
+  ignore should "update a vehicle" in {
 
   }
 }

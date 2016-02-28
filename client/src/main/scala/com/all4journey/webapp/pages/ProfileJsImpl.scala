@@ -150,7 +150,7 @@ object ProfileJsImpl extends ProfileJs {
 
                 val streetAddress = $("#streetAddress").value().toString.trim
                 val zipCode = $("#zipCode").value().toString.trim
-                val address = new Address(street = Option(streetAddress), state = state, zipCode = zipCode)
+                val address = new Address(street = Option(streetAddress), state = state, zipCode = zipCode, addressType = "HOME", placeName = "Home")
                 val addresses: Seq[Address] = List(address)
 
                 val userVehicleYear = $("#userVehicleYear :selected").value().toString.trim

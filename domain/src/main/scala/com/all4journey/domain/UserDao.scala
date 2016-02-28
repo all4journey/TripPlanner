@@ -17,7 +17,6 @@ import scala.concurrent.duration._
 case class UserDao(db: Database)(implicit ec: ExecutionContext) {
   /**
     * Updates a user's name
-    *
     * @param user User to be updated
     * @return 1 if successful
     */
