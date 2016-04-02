@@ -164,41 +164,15 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
 
                   val addressUuid = $("#homeAddressFieldsDiv").attr("addressUuid").toString.trim
                   val streetAddress = $("#streetAddress").value().toString.trim
-                  val optionStreetAddress = streetAddress match {
-                    case "" => None
-                    case _ => Some(streetAddress)
-                  }
                   val stateId = $("#userState").value().toString.trim
                   val zipCode = $("#zipCode").value().toString.trim
 
-                  val address = new Address(addressUuid, "0", optionStreetAddress, State(stateId, ""), zipCode, "HOME", "Home")
+                  val address = new Address(addressUuid, "0", Option(streetAddress), State(stateId, ""), zipCode, "HOME", "Home")
 
-                  val addressValidationResult = validate(address)
+                  val addressViolations = validateAddress(address)
+                  setUiViolationPrompts(addressViolations)
 
-                  val validAddress = addressValidationResult match {
-                    case ValidationSuccess => true
-                    case Failure(failureList) =>
-//                      val content = dom.document.getElementById("content")
-//                      for (v <- failureList)
-//                        content.appendChild(p(v.description).render)
-                      failureList.foreach(violation =>
-                        if (violation.description.getOrElse("").contains("street")) {
-                          $("#streetAddressDiv").addClass("has-error")
-                          val streetAddressHelpBlock = dom.document.getElementById("streetAddressHelpBlock")
-                          streetAddressHelpBlock.appendChild(span(cls := "help-block")("invalid street address format").render)
-                        }
-                        else if (violation.description.getOrElse("").contains("state")) {
-                          showHelpBlock("#stateDiv", "stateHelpBlock", "please choose a state")
-                        }
-                        else if (violation.description.getOrElse("").contains("zipCode")) {
-                          showHelpBlock("#zipCodeDiv", "zipCodeHelpBlock", "invalid zip code format")
-
-                        }
-                      )
-                      false
-                  }
-
-                  if (validUser && validAddress) {
+                  if (validUser && addressViolations.isEmpty) {
                     val personalFormPayload = new PersonalFormData(user, Some(address), Seq[State]())
                     val pickledPfp = Pickle.intoString(personalFormPayload)
 
@@ -218,6 +192,56 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
     )
 
   )
+
+  private def setUiViolationPrompts(violations: Set[Violation]) = {
+    if (!violations.isEmpty) {
+      //                      val content = dom.document.getElementById("content")
+      //                      for (v <- failureList)
+      //                        content.appendChild(p(v.description).render)
+      violations.foreach(violation =>
+        if (violation.description.getOrElse("").contains("street")) {
+          $("#streetAddressDiv").addClass("has-error")
+          val streetAddressHelpBlock = dom.document.getElementById("streetAddressHelpBlock")
+          streetAddressHelpBlock.appendChild(span(cls := "help-block")("invalid street address format").render)
+        }
+        else if (violation.description.getOrElse("").contains("state")) {
+          showHelpBlock("#stateDiv", "stateHelpBlock", "please choose a state")
+        }
+        else if (violation.description.getOrElse("").contains("zipCode")) {
+          showHelpBlock("#zipCodeDiv", "zipCodeHelpBlock", "invalid zip code format")
+
+        }
+      )
+    }
+  }
+
+  private def validateAddress(address: Address): Set[Violation] = {
+    var violations = Set.empty[Violation]
+    val isFullAddressValid = validate(address)(Address.validatorWithStreet) match {
+      case ValidationSuccess   => true
+      case Failure(failureSet) =>
+        violations = failureSet
+        false
+    }
+
+    if (!isFullAddressValid) {
+      val partialAddressValidationResult = if (address.street.getOrElse("").isEmpty && !address.state.id.equals("NONE"))
+        validate(address)(Address.validatorNoStreetWithState)
+      else if (address.street.getOrElse("").isEmpty && address.state.id.equals("NONE") && (address.zipCode != null && !address.zipCode.isEmpty))
+        validate(address)(Address.validatorNoStreetNoStateWithZip)
+      else if (address.street.getOrElse("").isEmpty && address.state.id.equals("NONE") && (address.zipCode == null || address.zipCode.isEmpty))
+      // an empty address is a valid address
+        ValidationSuccess
+
+      violations = partialAddressValidationResult match {
+        case ValidationSuccess   => Set.empty[Violation]
+        case Failure(failureSet) => failureSet
+        case _ => violations
+      }
+    }
+
+    violations
+  }
 
   private def showHelpBlock(divName: String, helpBlockName: String, helpBlockMessage: String): Unit = {
     val containsErrorClass = $(divName).hasClass("has-error")

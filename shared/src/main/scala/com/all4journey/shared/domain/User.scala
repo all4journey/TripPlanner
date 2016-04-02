@@ -24,26 +24,28 @@ case class Profile(user: User, addresses: Seq[Address], vehicles: Seq[Vehicle])
 case class Address(id: String = "", userId: String = "", street: Option[String], state: State, zipCode: String, addressType: String , placeName: String)
 
 case object Address {
-  implicit val addressValidator = validator[Address] { addressToValidate =>
-    // this code doesn't work quite right for some reason, it chokes on empty addresses (which need to be valid as to not require the user to enter them)...
-    addressToValidate.street match {
-      // if a street address is entered then the street address, state and zipcode values must match the validation criteria below
-      case Some(streetAddress) =>
-        // for some reason streetAddress couldn't be used for validation so I had to call .get here
-        //addressToValidate.street.get should matchRegex("""[0-9]?[A-Za-z0-9\s]?""")
-        addressToValidate.state.id.length should be == 2
-        addressToValidate.zipCode should matchRegex("^\\d{5}(?:[-\\s]\\d{4})?$")
-      case None =>
-        // if a street address is not entered then there are two options, if a state is chosen then a zipcode must be entered, if no state is chosen, the user can still
-        // enter a zipcode or leave it empty
-        addressToValidate.state.id match {
-          case "NONE" =>
-            (addressToValidate.zipCode should matchRegex("^\\d{5}(?:[-\\s]\\d{4})?$")) or (addressToValidate.zipCode is equalTo(""))
-          case _ =>
-            addressToValidate.state.id.length should be == 2
-            addressToValidate.zipCode should matchRegex("^\\d{5}(?:[-\\s]\\d{4})?$")
-        }
-    }
+  // if a street address is entered then the street address, state and zipcode values must match the validation criteria below
+  val validatorWithStreet = validator[Address] { addressToValidate =>
+    addressToValidate.street.getOrElse("").length should be > 0
+    addressToValidate.street.getOrElse("") should matchRegex("^\\d{1,}\\s{1}[A-Za-z0-9\\s]?")
+    addressToValidate.state.id.length should be == 2
+    addressToValidate.zipCode should matchRegex("^\\d{5}(?:[-\\s]\\d{4})?$")
+  }
+
+  /**
+    * if a street address is not entered then there are two options, if a state is chosen then a zipcode must be entered, if no state is chosen, the user can still
+     enter a zipcode or leave it empty
+    */
+
+  val validatorNoStreetNoStateWithZip = validator[Address] { addressToValidate =>
+    addressToValidate.street.getOrElse("").length should be == 0
+    addressToValidate.state.id is equalTo("NONE")
+    addressToValidate.zipCode should matchRegex("^\\d{5}(?:[-\\s]\\d{4})?$")
+  }
+
+  val validatorNoStreetWithState = validator[Address] { addressToValidate =>
+    addressToValidate.state.id.length should be == 2
+    addressToValidate.zipCode should matchRegex("^\\d{5}(?:[-\\s]\\d{4})?$")
   }
 }
 
