@@ -5,9 +5,9 @@ import com.wix.accord._
 
 class ValidationSpec extends SharedTestSpec {
 
-  val validAddressEmpty = Address("0", "0", Some(""), State("NONE", ""), "", "HOME", "Home")
+  val invalidAddressWithStreet = Address("0", "0", Some("123 street"), State("NONE", ""), "", "HOME", "Home")
 
-  "Address validator" should "succeed on a valid address" in {
-      validate(validAddressEmpty) shouldBe Success
+  "Address.validatorWithStreet" should "fail with street address populated but state and zip are empty" in {
+      validate(invalidAddressWithStreet)(Address.validatorWithStreet) shouldBe Failure
   }
 }
