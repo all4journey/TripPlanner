@@ -61,6 +61,10 @@ object Settings {
     "com.github.benhutchison" %%% "prickle" % "1.1.10",
     "org.scala-js" %% "scalajs-stubs" % versions.scalaJs,
     "org.scalatest" %% "scalatest" % versions.scalaTest % "test",
-    "org.scoverage" %% "scalac-scoverage-runtime" % "1.1.1"
+    "org.scoverage" %% "scalac-scoverage-runtime" % "1.1.1",
+    // for the JVM
+    "com.wix" %% "accord-core" % "0.5",
+    // for scala.js
+    "com.wix" %%% "accord-core" % "0.5"
   ))
 }
