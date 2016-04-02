@@ -3,8 +3,6 @@ scala:
     - 2.11.7
 services:
     - mysql
-install:
-    - npm install phantomjs
 before_install:
     - mysql -e "create database IF NOT EXISTS all4journey;" -uroot
     - sbt domain/flywayMigrate -Dflyway_password=""
