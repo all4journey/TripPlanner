@@ -129,7 +129,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
                     select(id := "places", name := "places", cls := "form-control partOfStateList", onchange := { () =>
                       val placeId = $("#places").value().toString.trim
                       if (!placeId.equals("0")) {
-                        AjaxHelper.doAjaxGetWithJson(s"/multiformProfile/places/get?id=$placeId", "", refreshForm, showErrorBanner)
+                        AjaxHelper.doAjaxGetWithJson(s"/multiformProfile/places/get?id=$placeId", "", "", refreshForm, showErrorBanner)
                       } else {
                         $("#placeName").value("")
                         $("#streetAddress").value("")
@@ -193,9 +193,9 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
 
 
                   if (addressUuid.equals("0")) {
-                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/new", pickledPfp, refreshFormAndPlacesDropDown, showErrorBanner)
+                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/new", pickledPfp, "", refreshFormAndPlacesDropDown, showErrorBanner)
                   } else {
-                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/update", pickledPfp, refreshFormAndPlacesDropDown, showErrorBanner)
+                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/update", pickledPfp, "", refreshFormAndPlacesDropDown, showErrorBanner)
                   }
                 }),
                 span(),

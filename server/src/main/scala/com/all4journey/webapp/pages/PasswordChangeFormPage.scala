@@ -16,7 +16,7 @@ trait PasswordChangeFormPage extends Page with LazyLogging {
 
 
 
-        val ajaxPasswordChangeFormView = new PasswordChangeFormView("token", UserContext.getCurrentUser.emailAddress)
+        val ajaxPasswordChangeFormView = new PasswordChangeFormView("token", UserContext.getCurrentUser.email)
         complete(ajaxPasswordChangeFormView.apply())
       }
       }

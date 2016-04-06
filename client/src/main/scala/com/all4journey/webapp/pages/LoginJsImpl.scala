@@ -1,5 +1,6 @@
 package com.all4journey.webapp.pages
 
+import com.all4journey.webapp.util.AjaxHelper
 import com.all4journey.shared.domain.security.LoginCredentials
 import org.scalajs.dom
 import org.scalajs.jquery.{jQuery => $, JQueryXHR, JQueryAjaxSettings}
@@ -9,7 +10,7 @@ import scala.scalajs.js.annotation.JSExport
 import scalatags.JsDom.all._
 
 // $COVERAGE-OFF$
-object LoginJsImpl extends LoginJs{
+object LoginJsImpl extends LoginJs with AjaxHelper{
   override def run(): Unit = {
     val content = dom.document.getElementById("content")
     content.appendChild(loginForm.render)
@@ -37,30 +38,27 @@ object LoginJsImpl extends LoginJs{
             val password = $("#password").value().toString.trim
             val loginCredentials = LoginCredentials(userName, password)
             val pickledLogin = Pickle.intoString(loginCredentials)
-            $.ajax(js.Dynamic.literal(
-              url = "login",
-              `type` = "post",
-              data = pickledLogin,
-              contentType = "application/json; charset=utf-8",
-              traditional = true,
-              success = { (data:js.Any, jqXHR: JQueryXHR) =>
+            doAjaxPostWithJson(
+              partialUrl = "login",
+              dataPayload = pickledLogin,
+              doOnSuccess = { data:js.Any =>
                 val content = dom.document.getElementById("content")
                 content.appendChild(p(s"$data").render)
               },
-              failure = {
-                (data:js.Any, jqXHR: JQueryXHR) =>
+              doOnFailure = {
+                () =>
                   val content = dom.document.getElementById("content")
                   content.appendChild(p("Username or Password incorrect").render)
-              },
-              error = {(qXHR: JQueryXHR, textStatus: String, errorThrow: String) =>
-                textStatus match {
-                  case _ =>
-                    val content = dom.document.getElementById("content")
-                    content.appendChild(p(s"$textStatus").render)
-                }
-
               }
-            ).asInstanceOf[JQueryAjaxSettings])
+//              error = {(qXHR: JQueryXHR, textStatus: String, errorThrow: String) =>
+//                textStatus match {
+//                  case _ =>
+//                    val content = dom.document.getElementById("content")
+//                    content.appendChild(p(s"$textStatus").render)
+//                }
+//
+//              }
+            )
           })
         )
       )

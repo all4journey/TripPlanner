@@ -16,7 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class AuthDaoSpec extends DomainTestSpec{
   it should "signUp a User" in {
-    val user = User(fName="Test", lName = "User", emailAddress = UUID.randomUUID().toString+ "test@testing.com", password = "password123", registrationDate= None)
+    val user = User(fName="Test", lName = "User", email = UUID.randomUUID().toString+ "test@testing.com", password = "password123", registrationDate= None)
     val dao = AuthDao(db)
     val token = dao.signUp(user)
 
@@ -27,7 +27,7 @@ class AuthDaoSpec extends DomainTestSpec{
   }
 
   it should "signIn a user with a valid token" in {
-    val user = User(fName="Test", lName = "User", emailAddress = UUID.randomUUID().toString+ "test@testing.com", password = "password123", registrationDate= None)
+    val user = User(fName="Test", lName = "User", email = UUID.randomUUID().toString+ "test@testing.com", password = "password123", registrationDate= None)
     val dao = AuthDao(db)
     val tokenFuture = dao.signUp(user)
 
@@ -36,7 +36,7 @@ class AuthDaoSpec extends DomainTestSpec{
     token.userId should not be empty
     token.token should not be empty
 
-    val result = dao.signIn(user.emailAddress, user.password)
+    val result = dao.signIn(user.email, user.password)
 
     val tokenFromDb = Await.result(result, Duration.Inf)
     tokenFromDb should not be None
@@ -46,7 +46,7 @@ class AuthDaoSpec extends DomainTestSpec{
   }
 
   it should "authenticate a user" in {
-    val user = User(fName="Test", lName = "User", emailAddress = UUID.randomUUID().toString+ "test@testing.com", password = "password123", registrationDate= None)
+    val user = User(fName="Test", lName = "User", email = UUID.randomUUID().toString+ "test@testing.com", password = "password123", registrationDate= None)
     val dao = AuthDao(db)
     val token = dao.signUp(user)
 
@@ -61,7 +61,7 @@ class AuthDaoSpec extends DomainTestSpec{
     validatedUser should not be None
     validatedUser.get.fName shouldEqual user.fName
     validatedUser.get.lName shouldEqual user.lName
-    validatedUser.get.emailAddress shouldEqual user.emailAddress
+    validatedUser.get.email shouldEqual user.email
     validatedUser.get.password shouldBe empty
     validatedUser.get.registrationDate should not be empty
   }

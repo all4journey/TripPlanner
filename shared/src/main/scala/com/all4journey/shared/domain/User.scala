@@ -3,7 +3,7 @@ package com.all4journey.shared.domain
 import com.github.t3hnar.bcrypt._
 import com.wix.accord.dsl._
 
-case class User(id: String = "", fName:String = "Default", lName:String, emailAddress:String, password:String, registrationDate: Option[String]) {
+case class User(id: String = "", fName:String = "Default", lName:String, email:String, password:String, registrationDate: Option[String]) {
   def withHashedPassword(): User = this.copy(password = password.bcrypt)
 }
 

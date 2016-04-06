@@ -31,7 +31,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
     }
 
     val content = dom.document.getElementById("content")
-    content.appendChild(personalInfoForm(formData.user, formData.address).render)
+    content.appendChild(personalInfoForm(formData.user, formData.address, token).render)
 
     buildStatesDropDown(formData.states)
 
@@ -53,7 +53,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
   }
 
   @JSExport
-  def personalInfoForm(user: User, homeAddress: Option[Address]) = div(cls := "container")(
+  def personalInfoForm(user: User, homeAddress: Option[Address], token:String) = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
         getNavPills("personalInfoLink")
@@ -98,7 +98,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
             div(cls := "form-group")(
               label(cls := "col-lg-3 control-label")("Email address:"),
               div(cls := "col-lg-8")(
-                input(id := "email", name := "email", cls := "form-control", `type` := "text", value := user.emailAddress, disabled)
+                input(id := "email", name := "email", cls := "form-control", `type` := "text", value := user.email, disabled)
               )
             ),
             h3("Home Address"),
@@ -176,7 +176,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
                     val personalFormPayload = new PersonalFormData(user, Some(address), Seq[State]())
                     val pickledPfp = Pickle.intoString(personalFormPayload)
 
-                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/personal", pickledPfp, refreshForm, showErrorBanner)
+                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/personal", pickledPfp, token, refreshForm, showErrorBanner)
                   }
                 }),
                 span(),

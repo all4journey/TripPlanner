@@ -3,6 +3,7 @@ package com.all4journey.webapp.pages
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpHeader, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server.directives.HeaderDirectives._
 import akka.stream.Materializer
 import com.all4journey.domain.security.AuthDao
 import com.all4journey.shared.domain.security.LoginCredentials
@@ -27,18 +28,21 @@ class LoginPage extends Page with LazyLogging{
       }}
     } ~
     post {
-      extractRequestContext {implicit ctx =>
-        entity(as[String]) {loginJsonPlayload =>
-          Unpickle[LoginCredentials].fromString(loginJsonPlayload) match {
-            case Success(loginCredentials) =>
-              logger.info(s"username: ${loginCredentials.emailAddress}, password: ${loginCredentials.password}")
-              val future = login(loginCredentials) map {
-                case Some(token) => complete(StatusCodes.OK)
-                case None => complete(StatusCodes.Unauthorized)
-              }
-              Await.result(future, 5 seconds)
-//              complete(StatusCodes.OK)
-            case _ => complete(StatusCodes.BadRequest)
+      extractRequestContext { implicit ctx =>
+        entity(as[String]) { loginJsonPlayload =>
+          headerValueByName("Token") { requestToken =>
+            logger.info(s"token: $requestToken")
+            Unpickle[LoginCredentials].fromString(loginJsonPlayload) match {
+              case Success(loginCredentials) =>
+                logger.info(s"username: ${loginCredentials.emailAddress}, password: ${loginCredentials.password}")
+                val future = login(loginCredentials) map {
+                  case Some(token) => complete(StatusCodes.OK)
+                  case None => complete(StatusCodes.Unauthorized)
+                }
+                Await.result(future, 5 seconds)
+              //              complete(StatusCodes.OK)
+              case _ => complete(StatusCodes.Conflict)
+            }
           }
         }
       }

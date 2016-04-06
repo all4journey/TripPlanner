@@ -17,6 +17,7 @@ import scala.concurrent.duration._
 case class UserDao(db: Database)(implicit ec: ExecutionContext) {
   /**
     * Updates a user's name
+ *
     * @param user User to be updated
     * @return 1 if successful
     */
@@ -25,7 +26,7 @@ case class UserDao(db: Database)(implicit ec: ExecutionContext) {
       u <- Users if u.id === user.id
     } yield (u.firstName, u.lastName, u.emailAddress)
 
-    val update = query.update(user.fName, user.lName, user.emailAddress)
+    val update = query.update(user.fName, user.lName, user.email)
     db.run(update) map {
       result => result
     }
@@ -44,7 +45,7 @@ case class UserDao(db: Database)(implicit ec: ExecutionContext) {
 
     val result = Users += UserRow(
       userId, updatedUser.fName, updatedUser.lName,
-      updatedUser.emailAddress, updatedUser.password, new java.sql.Date(dateFromString.getTime))
+      updatedUser.email, updatedUser.password, new java.sql.Date(dateFromString.getTime))
 
     db.run(result) map {
       result =>

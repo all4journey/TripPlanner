@@ -15,8 +15,9 @@ class UserDaoSpec extends DomainTestSpec{
 
   "UserDaoImpl" should "insert a User" in {
     val dao = UserDao(db)
-    val user:User = User(fName = "Rob", lName = "Kernick", emailAddress=UUID.randomUUID().toString + "rob@tripPlanner.travel", password = "test123", registrationDate = Some("12/31/2015"))
-    val future = dao.create(user)
+    val user:User = User(fName = "Rob", lName = "Kernick", email=UUID.randomUUID().toString + "rob@tripPlanner.travel", password = "password1", registrationDate = Some("12/31/2015"))
+    val updated = user.withHashedPassword()
+    val future = dao.create(updated)
 
     val id = Await.result(future, Duration.Inf).getOrElse("")
     id should not be ""
@@ -24,7 +25,7 @@ class UserDaoSpec extends DomainTestSpec{
 
   it should "insert a User with no date set" in {
     val dao = UserDao(db)
-    val user:User = User(fName =  "Rob", lName = "Kernick", emailAddress=UUID.randomUUID().toString + "rob@tripPlanner.travel", password = "test123", registrationDate = None)
+    val user:User = User(fName =  "Rob", lName = "Kernick", email=UUID.randomUUID().toString + "rob@tripPlanner.travel", password = "test123", registrationDate = None)
     val future = dao.create(user)
 
     val id = Await.result(future, Duration.Inf).getOrElse("")
@@ -34,7 +35,7 @@ class UserDaoSpec extends DomainTestSpec{
 
   it should "update a user" in {
     val dao = UserDao(db)
-    val user:User = User(fName =  "Rob", lName = "Kernick", emailAddress=UUID.randomUUID().toString + "rob@tripPlanner.travel", password = "test123", registrationDate = None)
+    val user:User = User(fName =  "Rob", lName = "Kernick", email=UUID.randomUUID().toString + "rob@tripPlanner.travel", password = "test123", registrationDate = None)
     val future = dao.create(user)
 
     val id = Await.result(future, Duration.Inf).getOrElse("")
@@ -49,7 +50,7 @@ class UserDaoSpec extends DomainTestSpec{
 
   it should "delete a User" in {
     val dao = UserDao(db)
-    val user:User = User(fName =  "Rob", lName = "Kernick", emailAddress=UUID.randomUUID().toString + "rob@tripPlanner.travel", password = "test123", registrationDate = None)
+    val user:User = User(fName =  "Rob", lName = "Kernick", email=UUID.randomUUID().toString + "rob@tripPlanner.travel", password = "test123", registrationDate = None)
     val future = dao.create(user)
 
     val id = Await.result(future, Duration.Inf).getOrElse("")

@@ -11,7 +11,7 @@ object Settings {
     val scalaTest = "2.2.1"
     val akka = "2.4.1"
     val akkaStreamsAndHttp = "2.0.2"
-    val scalaJs = "0.6.5"
+    val scalaJs = "0.6.7"
     val slick = "3.1.1"
     val log4js = "1.4.9"
     val scalaLogging = "3.1.0"
@@ -21,7 +21,7 @@ object Settings {
 
 
   val jsDependencies = Def.setting(Seq(
-    "org.webjars.bower" % "bootstrap" % "3.3.4" / "bootstrap.js" commonJSName "bootstrap" minified "bootstrap.min.js"
+    "org.webjars.bower" % "bootstrap" % "3.3.6" / "bootstrap.js" commonJSName "bootstrap" minified "bootstrap.min.js"
   ))
 
   val clientDependencies = Def.setting(Seq(
