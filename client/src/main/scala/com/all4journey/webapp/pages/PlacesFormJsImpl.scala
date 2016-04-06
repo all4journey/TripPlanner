@@ -3,12 +3,15 @@ package com.all4journey.webapp.pages
 import com.all4journey.shared.domain.{State, Address, PlacesFormData}
 import com.all4journey.webapp.util.{NavPills, AjaxHelper}
 import org.scalajs.dom
+import org.scalajs.dom.raw.Element
 import org.scalajs.jquery.{jQuery => $}
 import prickle.{Pickle, Unpickle}
 
+import scala.collection.mutable.ListBuffer
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 import scala.util.Success
+import scala.util.control.Breaks
 import scalatags.JsDom.all._
 
 /**
@@ -17,8 +20,11 @@ import scalatags.JsDom.all._
 object PlacesFormJsImpl extends PlacesFormJs with NavPills {
 
   val AddNewPlaceIndicator = "Add New Place"
+  val HomeAddressType = "HOME"
+  val PlaceAddressType = "PLACE"
+
   @JSExport
-  val emptyAddress = Address("0", "0", None, State("NONE", "Choose a state"), "", "PLACE", "")
+  val emptyAddress = Address("0", "0", None, State("NONE", "Choose a state"), "", PlaceAddressType, "")
 
   def run(): Unit = {}
 
@@ -55,17 +61,36 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
   def buildPlacesDropDown(addresses: Seq[Address]): Unit = {
 
     val placesDropdown = dom.document.getElementById("places")
-    val option = dom.document.createElement("option")
-    option.textContent = AddNewPlaceIndicator
-    option.setAttribute("value", "0")
-    placesDropdown.appendChild(option)
 
-    for (addressItem <- addresses) {
-      val option = dom.document.createElement("option")
-      option.textContent = addressItem.placeName
-      option.setAttribute("value", addressItem.id)
-      placesDropdown.appendChild(option)
+    // find the HOME place and add it to the top
+    var listWithoutHomeType = new ListBuffer[Address]()
+      for (addressItem <- addresses) {
+        if (addressItem.addressType.equals(HomeAddressType)) {
+          buildDropwDownOption(placesDropdown, addressItem.placeName, addressItem.id)
+
+          refreshAddressFields(addressItem)
+        }
+
+        else {
+          listWithoutHomeType += addressItem
+        }
+      }
+
+
+    for (addressItem <- listWithoutHomeType) {
+      buildDropwDownOption(placesDropdown, addressItem.placeName, addressItem.id)
     }
+
+    buildDropwDownOption(placesDropdown, AddNewPlaceIndicator, "0")
+
+  }
+
+  @JSExport
+  def buildDropwDownOption(dropDown: Element, textContent: String, optionIndex: String): Unit = {
+    val option = dom.document.createElement("option")
+    option.textContent = textContent
+    option.setAttribute("value", optionIndex)
+    dropDown.appendChild(option)
   }
 
   @JSExport

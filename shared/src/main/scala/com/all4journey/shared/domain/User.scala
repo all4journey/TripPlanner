@@ -1,14 +1,51 @@
 package com.all4journey.shared.domain
 
 import com.github.t3hnar.bcrypt._
+import com.wix.accord.dsl._
 
 case class User(id: String = "", fName:String = "Default", lName:String, emailAddress:String, password:String, registrationDate: Option[String]) {
   def withHashedPassword(): User = this.copy(password = password.bcrypt)
 }
 
+// the validator needs to go in the same file where the case class is defined otherwise, the compiler throws a fit
+case object User {
+  implicit val userValidator = validator[User] { userToValidate =>
+    userToValidate.fName.length should be < 50
+    userToValidate.lName.length should be < 50
+    userToValidate.email.length should be < 50
+    userToValidate.email should matchRegex("""^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$""")
+  }
+}
+
 case class Profile(user: User, addresses: Seq[Address], vehicles: Seq[Vehicle])
 
 case class Address(id: String = "", userId: String = "", street: Option[String], state: State, zipCode: String, addressType: String , placeName: String)
+
+case object Address {
+  // if a street address is entered then the street address, state and zipcode values must match the validation criteria below
+  val validatorWithStreet = validator[Address] { addressToValidate =>
+    addressToValidate.street.getOrElse("").length should be > 0
+    addressToValidate.street.getOrElse("") should matchRegex("^\\d{1,}\\s{1}[A-Za-z0-9\\s]?")
+    addressToValidate.state.id.length should be == 2
+    addressToValidate.zipCode should matchRegex("^\\d{5}(?:[-\\s]\\d{4})?$")
+  }
+
+  /**
+    * if a street address is not entered then there are two options, if a state is chosen then a zipcode must be entered, if no state is chosen, the user can still
+     enter a zipcode or leave it empty
+    */
+
+  val validatorNoStreetNoStateWithZip = validator[Address] { addressToValidate =>
+    addressToValidate.street.getOrElse("").length should be == 0
+    addressToValidate.state.id is equalTo("NONE")
+    addressToValidate.zipCode should matchRegex("^\\d{5}(?:[-\\s]\\d{4})?$")
+  }
+
+  val validatorNoStreetWithState = validator[Address] { addressToValidate =>
+    addressToValidate.state.id.length should be == 2
+    addressToValidate.zipCode should matchRegex("^\\d{5}(?:[-\\s]\\d{4})?$")
+  }
+}
 
 case class State(id: String, description: String)
 

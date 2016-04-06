@@ -18,6 +18,7 @@ lazy val commonSettings = Seq(
     "Sonatype staging" at "http://oss.sonatype.org/content/repositories/staging",
     "Java.net Maven2 Repository" at "http://download.java.net/maven/2/",
     "Twitter Repository" at "http://maven.twttr.com",
+    "Flyway" at "https://flywaydb.org/repo",
     Resolver.bintrayRepo("websudos", "oss-releases")
   )
 )
@@ -56,12 +57,13 @@ lazy val server = (project in file("server"))
 
 lazy val domain = (project in file("domain"))
   .settings(commonSettings: _*)
-  .settings(flywaySettings: _*)
+//  .settings(flywayBaseSettings: _*)
   .settings(
     libraryDependencies ++= Settings.domainDependencies.value,
     libraryDependencies ++= commonTestDeps,
     flywayUrl := "jdbc:mysql://127.0.0.1:3306/all4journey",
     flywayUser := "root",
+    flywayLocations += "db/migration",
     flywayPassword := sys.props.getOrElse("flyway_password", "password1"),
     coverageExcludedFiles := "Tables.*",
     slick <<= slickCodeGenTask
