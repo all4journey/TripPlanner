@@ -6,7 +6,6 @@ import com.wix.accord.dsl._
   * Created by rjkj on 11/14/15.
   */
 
-
 case class User(id: String = "", fName:String = "Default", lName:String, email: String, registrationDate: Option[String])
 
 // the validator needs to go in the same file where the case class is defined otherwise, the compiler throws a fit
@@ -23,13 +22,18 @@ case class Profile(user: User, addresses: Seq[Address], vehicles: Seq[Vehicle])
 
 case class Address(id: String = "", userId: String = "", street: Option[String], state: State, zipCode: String, addressType: String , placeName: String)
 
+
 case object Address {
+  val StreetRegex = "^\\d{1,}\\s{1}[A-Za-z0-9\\s]?"
+  val ZipRegex = "^\\d{5}(?:[-\\s]\\d{4})?$"
+  val EmptyStateId = "NONE"
+
   // if a street address is entered then the street address, state and zipcode values must match the validation criteria below
   val validatorWithStreet = validator[Address] { addressToValidate =>
     addressToValidate.street.getOrElse("").length should be > 0
-    addressToValidate.street.getOrElse("") should matchRegex("^\\d{1,}\\s{1}[A-Za-z0-9\\s]?")
+    addressToValidate.street.getOrElse("") should matchRegex(StreetRegex)
     addressToValidate.state.id.length should be == 2
-    addressToValidate.zipCode should matchRegex("^\\d{5}(?:[-\\s]\\d{4})?$")
+    addressToValidate.zipCode should matchRegex(ZipRegex)
   }
 
   /**
@@ -39,13 +43,14 @@ case object Address {
 
   val validatorNoStreetNoStateWithZip = validator[Address] { addressToValidate =>
     addressToValidate.street.getOrElse("").length should be == 0
-    addressToValidate.state.id is equalTo("NONE")
-    addressToValidate.zipCode should matchRegex("^\\d{5}(?:[-\\s]\\d{4})?$")
+    addressToValidate.state.id is equalTo(EmptyStateId)
+    addressToValidate.zipCode should matchRegex(ZipRegex)
   }
 
   val validatorNoStreetWithState = validator[Address] { addressToValidate =>
+    addressToValidate.street.getOrElse("").length should be == 0
     addressToValidate.state.id.length should be == 2
-    addressToValidate.zipCode should matchRegex("^\\d{5}(?:[-\\s]\\d{4})?$")
+    addressToValidate.zipCode should matchRegex(ZipRegex)
   }
 }
 
