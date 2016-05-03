@@ -16,7 +16,7 @@ import com.wix.accord._
   * Created by aabreu on 1/17/16.
   */
 // $COVERAGE-OFF$
-object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills with AddressForm with AddressTypePickler {
+object PersonalInfoFormJsImpl extends PersonalInfoFormJs  with AddressTypePickler {
 
   def run(params: PersonalFormData): Unit = {}
 
@@ -52,7 +52,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills with Addr
   def personalInfoForm(user: User, homeAddress: Option[Address]) = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
-        getNavPills("personalInfoLink")
+        NavPills.load("personalInfoLink")
       )
     ),
     h1(cls := "page-header"),
@@ -98,7 +98,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills with Addr
               )
             ),
             h3("Home Address"),
-            getAddressForm(homeAddress)
+            AddressForm.load(homeAddress)
           ),
           div(
             div(cls := "form-group")(
@@ -131,16 +131,16 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills with Addr
                       false
                   }
 
-                  val address = buildAddressFromForm()
+                  val address = AddressForm.buildObjectFromForm()
 
-                  val addressViolations = validateAddress(address)
-                  setUiViolationPrompts(addressViolations)
+                  val addressViolations = AddressForm.doValidation(address)
+                  AddressForm.setViolationPrompts(addressViolations)
 
                   if (validUser && addressViolations.isEmpty) {
                     val personalFormPayload = new PersonalFormData(user, Some(address), Seq[State]())
                     val pickledPfp = Pickle.intoString(personalFormPayload)
 
-                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/personal", pickledPfp, refreshAddressUuid, HtmlHelper.showErrorBanner)
+                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/personal", pickledPfp, AddressForm.refreshUuid, HtmlHelper.showErrorBanner)
                   }
                 }),
                 span(),

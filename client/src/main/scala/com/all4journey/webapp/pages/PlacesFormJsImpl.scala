@@ -16,7 +16,7 @@ import scalatags.JsDom.all._
 /**
   * Created by aabreu on 1/30/16.
   */
-object PlacesFormJsImpl extends PlacesFormJs with NavPills with AddressForm with AddressTypePickler {
+object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
 
   val AddNewPlaceIndicator = "Add New Place"
 
@@ -62,7 +62,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills with AddressForm with
         if (addressItem.addressType.equals(HomeAddressType)) {
           buildDropwDownOption(placesDropdown, addressItem.placeName, addressItem.id)
 
-          refreshAddressFields(addressItem)
+          AddressForm.refreshFields(addressItem)
         }
 
         else {
@@ -91,7 +91,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills with AddressForm with
   def placesForm(defaultAddress: Option[Address]) = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
-        getNavPills("placesLink")
+        NavPills.load("placesLink")
       )
     ),
     h1(cls := "page-header"),
@@ -123,7 +123,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills with AddressForm with
                     select(id := "places", name := "places", cls := "form-control partOfStateList", onchange := { () =>
                       val placeId = $("#places").value().toString.trim
                       if (!placeId.equals("0")) {
-                        AjaxHelper.doAjaxGetWithJson(s"/multiformProfile/places/get?id=$placeId", "", refreshAddressForm, HtmlHelper.showErrorBanner)
+                        AjaxHelper.doAjaxGetWithJson(s"/multiformProfile/places/get?id=$placeId", "", AddressForm.refresh, HtmlHelper.showErrorBanner)
                       } else {
                         $("#placeName").value("")
                         $("#streetAddress").value("")
@@ -142,7 +142,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills with AddressForm with
                   input(id := "placeName", name := "placeName", cls := "form-control", `type` := "text")
                 )
               ),
-              getAddressForm(defaultAddress)
+              AddressForm.load(defaultAddress)
             )
           ),
           div(
@@ -157,11 +157,11 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills with AddressForm with
                   val addressUuid = $("#places").value().toString.trim
                   val pn = $("#placeName").value().toString.trim
 
-                  var address = buildAddressFromForm()
+                  var address = AddressForm.buildObjectFromForm()
                   address = address.copy(id = addressUuid, addressType = PlaceAddressType, placeName = pn)
 
-                  val addressViolations = validateAddress(address)
-                  setUiViolationPrompts(addressViolations)
+                  val addressViolations = AddressForm.doValidation(address)
+                  AddressForm.setViolationPrompts(addressViolations)
 
                   if (addressViolations.isEmpty) {
                     val placesFormPayload = new PlacesFormData(Some(address), Seq[Address](), Seq[State]())
@@ -191,7 +191,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills with AddressForm with
       case Success(someFormData: PlacesFormData) =>
         $("#places").empty()
         buildPlacesDropDown(someFormData.addresses)
-        $("#places").value(someFormData.address.getOrElse(emptyAddress).id).change()
+        $("#places").value(someFormData.address.getOrElse(AddressForm.emptyAddress).id).change()
         HtmlHelper.showSuccessBanner()
       case _ =>
         HtmlHelper.showErrorBanner()

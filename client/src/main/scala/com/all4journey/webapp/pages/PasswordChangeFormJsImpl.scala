@@ -12,7 +12,7 @@ import scalatags.JsDom.all._
   * Created by aabreu on 1/17/16.
   */
 // $COVERAGE-OFF$
-object PasswordChangeFormJsImpl extends PasswordChangeFormJs with NavPills{
+object PasswordChangeFormJsImpl extends PasswordChangeFormJs {
   def run(params: String): Unit = {}
 
   def runWithParams(params: Any): Unit = {
@@ -29,7 +29,7 @@ object PasswordChangeFormJsImpl extends PasswordChangeFormJs with NavPills{
   def passwordChangeForm(emailAddress: String) = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
-        getNavPills("passwordChangeLink")
+        NavPills.load("passwordChangeLink")
       )
     ),
     h1(cls := "page-header"),
