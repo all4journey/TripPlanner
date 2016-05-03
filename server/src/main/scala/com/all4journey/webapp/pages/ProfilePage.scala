@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.StatusCodes
 import akka.stream.Materializer
 import com.all4journey.domain.{StateDaoImpl, AddressDao, UserDao}
-import com.all4journey.shared.domain.{State, Profile}
+import com.all4journey.shared.domain.{AddressTypePickler, State, Profile}
 import com.all4journey.webapp.Page
 import com.all4journey.webapp.util.DomainSupport
 import com.typesafe.scalalogging.LazyLogging
@@ -20,7 +20,7 @@ import scala.concurrent.duration._
   * Created by aabreu on 12/6/15.
   */
 @deprecated
-trait ProfilePage extends Page with LazyLogging {
+trait ProfilePage extends Page with LazyLogging with AddressTypePickler {
   def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
     get {
       extractRequestContext { implicit ctx => {
@@ -53,7 +53,7 @@ trait ProfilePage extends Page with LazyLogging {
 @deprecated
 object ProfilePage extends ProfilePage
 @deprecated
-object ProfileLogic extends LazyLogging {
+object ProfileLogic extends LazyLogging with AddressTypePickler {
   def save(profileInfo: Profile): Unit = {
     val userDao = UserDao(DomainSupport.db)
     val userIdFuture = userDao.create(profileInfo.user)

@@ -1,8 +1,11 @@
 package com.all4journey.webapp.util
 
+import org.scalajs.dom
 import org.scalajs.jquery.{jQuery => $, JQueryXHR, JQueryAjaxSettings}
 
 import scala.scalajs.js
+import scalatags.JsDom.all._
+
 // $COVERAGE-OFF$
 /**
   * Created by aabreu on 1/10/16.
@@ -59,5 +62,30 @@ trait AjaxHelper {
 }
 
 object AjaxHelper extends AjaxHelper
+
+trait HtmlHelper {
+  def showHelpBlock(divName: String, helpBlockName: String, helpBlockMessage: String): Unit = {
+    val containsErrorClass = $(divName).hasClass("has-error")
+    if (!containsErrorClass) {
+      $(divName).addClass("has-error")
+      val helpBlock = dom.document.getElementById(helpBlockName)
+      helpBlock.appendChild(span(cls := "help-block")(helpBlockMessage).render)
+    }
+  }
+
+  def showErrorBanner(): Unit = {
+    $("#errorBanner").show()
+    $("#successBanner").hide()
+  }
+
+  def showSuccessBanner(): Unit = {
+    $("#successBanner").show()
+    $("#errorBanner").hide()
+  }
+}
+
+object HtmlHelper extends HtmlHelper
+
+
 
 // $COVERAGE-ON$

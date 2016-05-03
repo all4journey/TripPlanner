@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.StatusCodes
 import akka.stream.Materializer
 import com.all4journey.domain.{StateDaoImpl, AddressDao}
-import com.all4journey.shared.domain.{PlacesFormData, Address, State}
+import com.all4journey.shared.domain.{AddressTypePickler, PlacesFormData, Address, State}
 import com.all4journey.webapp.Page
 import com.all4journey.webapp.util.{DomainSupport, UserContext}
 import com.typesafe.scalalogging.LazyLogging
@@ -17,7 +17,7 @@ import scala.util.Success
 /**
   * Created by aabreu on 1/31/16.
   */
-trait UpdatePlaceFormPage extends Page with LazyLogging {
+trait UpdatePlaceFormPage extends Page with LazyLogging with AddressTypePickler {
   def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
     post {
       extractRequestContext { implicit ctx =>

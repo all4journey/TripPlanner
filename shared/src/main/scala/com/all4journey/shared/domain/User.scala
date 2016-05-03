@@ -1,6 +1,7 @@
 package com.all4journey.shared.domain
 
 import com.wix.accord.dsl._
+import prickle.{CompositePickler, PicklerPair}
 
 /**
   * Created by rjkj on 11/14/15.
@@ -20,7 +21,31 @@ case object User {
 
 case class Profile(user: User, addresses: Seq[Address], vehicles: Seq[Vehicle])
 
-case class Address(id: String = "", userId: String = "", street: Option[String], state: State, zipCode: String, addressType: String , placeName: String)
+
+sealed abstract class AddressType(var id: String, var description: String) {
+  override def equals(anyAddressType: Any) = anyAddressType match {
+    case thatAddressType: AddressType => thatAddressType.id.equals(this.id) && thatAddressType.description.equals(this.description)
+    case _ => false
+  }
+}
+
+case object HomeAddressType extends AddressType("HOME", "Primary Home Address")
+case object PlaceAddressType extends AddressType("PLACE", "An Arbitrary place that you love")
+
+trait AddressTypePickler {
+  implicit val addressTypePickler: PicklerPair[AddressType] = CompositePickler[AddressType].concreteType[HomeAddressType.type].
+    concreteType[PlaceAddressType.type]
+}
+
+object AddressTypeFactory {
+  def buildAddressTypeFromString(addressTypeAsString: String): AddressType = addressTypeAsString match {
+    case "HOME" => HomeAddressType
+    case "PLACE" => PlaceAddressType
+    case _ => throw new IllegalArgumentException("the string passed to the factory does not map to any address type")
+  }
+}
+
+case class Address(id: String = "", userId: String = "", street: Option[String], state: State, zipCode: String, addressType: AddressType , placeName: String)
 
 
 case object Address {

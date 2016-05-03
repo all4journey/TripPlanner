@@ -1,10 +1,10 @@
 package com.all4journey.webapp.pages
 
-import com.all4journey.shared.domain.{PersonalFormData, State, Address, User}
-import com.all4journey.webapp.util.{AjaxHelper, NavPills}
+import com.all4journey.shared.domain._
+import com.all4journey.webapp.util.{HtmlHelper, AddressForm, AjaxHelper, NavPills}
 import org.scalajs.dom
-import prickle.{Pickle, Unpickle}
-import org.scalajs.jquery.{jQuery => $, JQueryXHR, JQueryAjaxSettings}
+import prickle._
+import org.scalajs.jquery.{jQuery => $}
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 import scala.util.Success
@@ -16,18 +16,14 @@ import com.wix.accord._
   * Created by aabreu on 1/17/16.
   */
 // $COVERAGE-OFF$
-object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
-
-  @JSExport
-  val emptyAddress = Address("0", "0", None, State("NONE", "Choose a state"), "", "HOME", "Home")
+object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills with AddressForm with AddressTypePickler {
 
   def run(params: PersonalFormData): Unit = {}
 
   def runWithParams(params: Any): Unit = {
-
     val formData = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
       case Success(successPersonalFormData: PersonalFormData) => successPersonalFormData
-      case _ => throw new IllegalStateException("the backend didn't send any form data")
+      case _ => throw new IllegalStateException("the back end didn't send any form data")
     }
 
     val content = dom.document.getElementById("content")
@@ -102,34 +98,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
               )
             ),
             h3("Home Address"),
-            div(id := "homeAddressFieldsDiv", "addressUuid".attr := homeAddress.getOrElse(emptyAddress).id)(
-
-              div(id := "streetAddressDiv", cls := "form-group")(
-                label(cls := "col-lg-3 control-label")("Street Address:"),
-                div(cls := "col-lg-8")(
-                  div(id := "streetAddressHelpBlock"),
-                  input(id := "streetAddress", name := "streetAddress", cls := "form-control", `type` := "text", value := homeAddress.getOrElse(emptyAddress).street.getOrElse(""))
-                )
-              ),
-              div(id := "stateDiv", cls := "form-group")(
-                label(cls := "col-lg-3 control-label")("State:"),
-                div(cls := "col-lg-8")(
-                  div(id := "stateHelpBlock"),
-                  div(cls := "ui-select")(
-                    select(id := "userState", name := "userState", cls := "form-control partOfStateList")(
-                      option(value := homeAddress.getOrElse(emptyAddress).state.id, selected := "selected")(homeAddress.getOrElse(emptyAddress).state.description)
-                    )
-                  )
-                )
-              ),
-              div(id := "zipCodeDiv", cls := "form-group")(
-                label(cls := "col-lg-3 control-label")("Zip code:"),
-                div(cls := "col-lg-8")(
-                  div(id := "zipCodeHelpBlock"),
-                  input(id := "zipCode", name := "zipCode", cls := "form-control partOfZipCodeList", `type` := "text", value := homeAddress.getOrElse(emptyAddress).zipCode)
-                )
-              )
-            )
+            getAddressForm(homeAddress)
           ),
           div(
             div(cls := "form-group")(
@@ -153,21 +122,16 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
                     case Failure(failureList) =>
                       failureList.foreach(violation =>
                         if (violation.description.getOrElse("").contains("fName")) {
-                          showHelpBlock("#firstNameDiv", "firstNameHelpBlock", "first name must be less than 50 characters")
+                          HtmlHelper.showHelpBlock("#firstNameDiv", "firstNameHelpBlock", "first name must be less than 50 characters")
                         }
                         else if(violation.description.getOrElse("").contains("lName")) {
-                          showHelpBlock("#lastNameDiv", "lastNameHelpBlock", "last name must be less than 50 characters")
+                          HtmlHelper.showHelpBlock("#lastNameDiv", "lastNameHelpBlock", "last name must be less than 50 characters")
                         }
                       )
                       false
                   }
 
-                  val addressUuid = $("#homeAddressFieldsDiv").attr("addressUuid").toString.trim
-                  val streetAddress = $("#streetAddress").value().toString.trim
-                  val stateId = $("#userState").value().toString.trim
-                  val zipCode = $("#zipCode").value().toString.trim
-
-                  val address = new Address(addressUuid, "0", Option(streetAddress), State(stateId, ""), zipCode, "HOME", "Home")
+                  val address = buildAddressFromForm()
 
                   val addressViolations = validateAddress(address)
                   setUiViolationPrompts(addressViolations)
@@ -176,7 +140,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
                     val personalFormPayload = new PersonalFormData(user, Some(address), Seq[State]())
                     val pickledPfp = Pickle.intoString(personalFormPayload)
 
-                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/personal", pickledPfp, refreshForm, showErrorBanner)
+                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/personal", pickledPfp, refreshAddressUuid, HtmlHelper.showErrorBanner)
                   }
                 }),
                 span(),
@@ -192,84 +156,5 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
     )
 
   )
-
-  private def setUiViolationPrompts(violations: Set[Violation]) = {
-    if (!violations.isEmpty) {
-      //                      val content = dom.document.getElementById("content")
-      //                      for (v <- failureList)
-      //                        content.appendChild(p(v.description).render)
-      violations.foreach(violation =>
-        if (violation.description.getOrElse("").contains("street")) {
-          $("#streetAddressDiv").addClass("has-error")
-          val streetAddressHelpBlock = dom.document.getElementById("streetAddressHelpBlock")
-          streetAddressHelpBlock.appendChild(span(cls := "help-block")("invalid street address format").render)
-        }
-        else if (violation.description.getOrElse("").contains("state")) {
-          showHelpBlock("#stateDiv", "stateHelpBlock", "please choose a state")
-        }
-        else if (violation.description.getOrElse("").contains("zipCode")) {
-          showHelpBlock("#zipCodeDiv", "zipCodeHelpBlock", "invalid zip code format")
-
-        }
-      )
-    }
-  }
-
-  private def validateAddress(address: Address): Set[Violation] = {
-    var violations = Set.empty[Violation]
-    val isFullAddressValid = validate(address)(Address.validatorWithStreet) match {
-      case ValidationSuccess   => true
-      case Failure(failureSet) =>
-        violations = failureSet
-        false
-    }
-
-    if (!isFullAddressValid) {
-      val partialAddressValidationResult = if (address.street.getOrElse("").isEmpty && !address.state.id.equals("NONE"))
-        validate(address)(Address.validatorNoStreetWithState)
-      else if (address.street.getOrElse("").isEmpty && address.state.id.equals("NONE") && (address.zipCode != null && !address.zipCode.isEmpty))
-        validate(address)(Address.validatorNoStreetNoStateWithZip)
-      else if (address.street.getOrElse("").isEmpty && address.state.id.equals("NONE") && (address.zipCode == null || address.zipCode.isEmpty))
-      // an empty address is a valid address
-        ValidationSuccess
-
-      violations = partialAddressValidationResult match {
-        case ValidationSuccess   => Set.empty[Violation]
-        case Failure(failureSet) => failureSet
-        case _ => violations
-      }
-    }
-
-    violations
-  }
-
-  private def showHelpBlock(divName: String, helpBlockName: String, helpBlockMessage: String): Unit = {
-    val containsErrorClass = $(divName).hasClass("has-error")
-    if (!containsErrorClass) {
-      $(divName).addClass("has-error")
-      val helpBlock = dom.document.getElementById(helpBlockName)
-      helpBlock.appendChild(span(cls := "help-block")(helpBlockMessage).render)
-    }
-  }
-
-  private def refreshForm(data: js.Any): Unit = {
-    Unpickle[PersonalFormData].fromString(s"$data") match {
-      case Success(somePersonalFormData) =>
-        $("#homeAddressFieldsDiv").attr("addressUuid", somePersonalFormData.address.getOrElse(emptyAddress).id)
-        showSuccessBanner
-      case _ =>
-        showErrorBanner
-    }
-  }
-
-  private def showErrorBanner(): Unit = {
-    $("#errorBanner").show()
-    $("#successBanner").hide()
-  }
-
-  private def showSuccessBanner(): Unit = {
-    $("#successBanner").show()
-    $("#errorBanner").hide()
-  }
 }
 // $COVERAGE-ON$
