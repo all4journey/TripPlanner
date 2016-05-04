@@ -4,21 +4,21 @@ import com.all4journey.shared.domain.{PlacesFormData, PersonalFormData, Vehicle,
 import com.all4journey.webapp.{JsModule, JsModuleWithParams}
 
 trait ProfileJs extends JsModuleWithParams {
-  type ParamType = Seq[State]
+  type ParamType = Tuple2[String,Seq[State]]
 }
 
 trait MultiFormProfileJs extends JsModule
 
 trait PasswordChangeFormJs extends JsModuleWithParams {
-  type ParamType = String
+  type ParamType = Tuple2[String, String]
 }
 
 trait VehicleInfoFormJs extends JsModuleWithParams {
-  type ParamType = Seq[Vehicle]
+  type ParamType = Tuple2[String, Seq[Vehicle]]
 }
 
 trait PersonalInfoFormJs extends JsModuleWithParams {
-  type ParamType = PersonalFormData
+  type ParamType = Tuple2[String, PersonalFormData]
 }
 
 trait PlacesFormJs extends JsModuleWithParams {
@@ -26,3 +26,5 @@ trait PlacesFormJs extends JsModuleWithParams {
 }
 
 trait IndexJs extends JsModule
+
+trait LoginJs extends JsModule

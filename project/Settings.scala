@@ -11,16 +11,17 @@ object Settings {
     val scalaTest = "2.2.1"
     val akka = "2.4.1"
     val akkaStreamsAndHttp = "2.0.2"
-    val scalaJs = "0.6.5"
+    val scalaJs = "0.6.7"
     val slick = "3.1.1"
     val log4js = "1.4.9"
     val scalaLogging = "3.1.0"
     val logback = "1.1.3"
+    val scalaBcrypt = "2.5"
   }
 
 
   val jsDependencies = Def.setting(Seq(
-    "org.webjars.bower" % "bootstrap" % "3.3.4" / "bootstrap.js" commonJSName "bootstrap" minified "bootstrap.min.js"
+    "org.webjars.bower" % "bootstrap" % "3.3.6" / "bootstrap.js" commonJSName "bootstrap" minified "bootstrap.min.js"
   ))
 
   val clientDependencies = Def.setting(Seq(
@@ -33,9 +34,9 @@ object Settings {
   ))
 
   val serverDependencies = Def.setting(Seq(
-    "com.typesafe.akka" %% "akka-http-core-experimental" % versions.akkaStreamsAndHttp,
-    "com.typesafe.akka" %% "akka-http-xml-experimental" % versions.akkaStreamsAndHttp,
-    "com.typesafe.akka" %% "akka-http-experimental" % versions.akkaStreamsAndHttp,
+    "com.typesafe.akka"     %% "akka-http-core-experimental" % versions.akkaStreamsAndHttp,
+    "com.typesafe.akka"     %% "akka-http-xml-experimental" % versions.akkaStreamsAndHttp,
+    "com.typesafe.akka"     %% "akka-http-experimental" % versions.akkaStreamsAndHttp,
     "org.scala-lang.modules" %% "scala-xml" % "1.0.5",
     "com.lihaoyi" %% "scalatags" % "0.5.3",
     "com.github.japgolly.scalacss" %% "core" % "0.3.1",
@@ -43,6 +44,7 @@ object Settings {
     "com.typesafe.scala-logging" %% "scala-logging" % versions.scalaLogging,
     "ch.qos.logback" % "logback-classic" % versions.logback,
     "com.typesafe.akka" %% "akka-http-spray-json-experimental" % versions.akkaStreamsAndHttp,
+    "de.svenkubiak" %  "jBCrypt" % "0.4",
     "org.scalatest" %% "scalatest" % versions.scalaTest % "test",
     "com.typesafe.akka" %% "akka-http-testkit-experimental" % versions.akkaStreamsAndHttp % "test"
   ))
@@ -53,13 +55,14 @@ object Settings {
     "com.typesafe.slick" %% "slick-codegen" % versions.slick,
     "com.typesafe.slick" %% "slick-hikaricp" % versions.slick,
     "com.typesafe.scala-logging" %% "scala-logging" % versions.scalaLogging,
-    "ch.qos.logback" % "logback-classic" % versions.logback
 
+    "ch.qos.logback" % "logback-classic" % versions.logback
   ))
 
   val sharedDependencies = Def.setting(Seq(
     "com.github.benhutchison" %%% "prickle" % "1.1.10",
     "org.scala-js" %% "scalajs-stubs" % versions.scalaJs,
+    "com.github.t3hnar" %% "scala-bcrypt" % versions.scalaBcrypt,
     "org.scalatest" %% "scalatest" % versions.scalaTest % "test",
     "org.scoverage" %% "scalac-scoverage-runtime" % "1.1.1",
     // for the JVM

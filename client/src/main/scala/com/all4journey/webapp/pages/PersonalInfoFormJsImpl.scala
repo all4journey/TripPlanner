@@ -21,17 +21,17 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
   @JSExport
   val emptyAddress = Address("0", "0", None, State("NONE", "Choose a state"), "", "HOME", "Home")
 
-  def run(params: PersonalFormData): Unit = {}
+  def run(): Unit = {}
 
   def runWithParams(params: Any): Unit = {
 
-    val formData = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
-      case Success(successPersonalFormData: PersonalFormData) => successPersonalFormData
+    val (token, formData) = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
+      case Success((token:String, fd: PersonalFormData)) => (token, fd)
       case _ => throw new IllegalStateException("the backend didn't send any form data")
     }
 
     val content = dom.document.getElementById("content")
-    content.appendChild(personalInfoForm(formData.user, formData.address).render)
+    content.appendChild(personalInfoForm(formData.user, formData.address, token).render)
 
     buildStatesDropDown(formData.states)
 
@@ -53,7 +53,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
   }
 
   @JSExport
-  def personalInfoForm(user: User, homeAddress: Option[Address]) = div(cls := "container")(
+  def personalInfoForm(user: User, homeAddress: Option[Address], token:String) = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
         getNavPills("personalInfoLink")
@@ -144,7 +144,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
                   val lastName =  $("#lastName").value().toString.trim
                   val emailAddress = $("#email").value().toString.trim
 
-                  val user = new User("0", firstName, lastName, emailAddress, None)
+                  val user = new User("0", firstName, lastName, emailAddress, "", None)
 
                   val userValidationResult = validate(user)
 
@@ -176,7 +176,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs with NavPills{
                     val personalFormPayload = new PersonalFormData(user, Some(address), Seq[State]())
                     val pickledPfp = Pickle.intoString(personalFormPayload)
 
-                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/personal", pickledPfp, refreshForm, showErrorBanner)
+                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/personal", pickledPfp, token, refreshForm, showErrorBanner)
                   }
                 }),
                 span(),

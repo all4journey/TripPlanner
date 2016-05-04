@@ -6,7 +6,7 @@ import com.wix.accord.{Success => ValidationSuccess}
 
 class ValidationSpec extends SharedTestSpec {
 
-  val testUser = User("", "", "", "", None)
+  val testUser = User("", "", "", "", "", None)
 
   "user validation" should "fail with first name greater than 50 characters" in {
     val invalidUserFnameGT50 = testUser.copy(fName = "12345678901234567890123456789012345678901234567890")

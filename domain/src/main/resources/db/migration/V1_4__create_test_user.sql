@@ -3,5 +3,6 @@ INSERT INTO USER values (
   "TestUser",
   "TestUser123",
   "testuser@testmail.com",
+  "$2a$10$FbWHBq8lZ67oUWjSsXO1F.E32WXi9YzYq9YYPexQCzq5pc6zhjbZW",
   CURDATE()
 );
