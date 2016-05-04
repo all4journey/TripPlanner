@@ -1,13 +1,12 @@
 package com.all4journey.shared.domain
 
+import com.github.t3hnar.bcrypt._
 import com.wix.accord.dsl._
 import prickle.{CompositePickler, PicklerPair}
 
-/**
-  * Created by rjkj on 11/14/15.
-  */
-
-case class User(id: String = "", fName:String = "Default", lName:String, email: String, registrationDate: Option[String])
+case class User(id: String = "", fName:String = "Default", lName:String, email:String, password:String, registrationDate: Option[String]) {
+  def withHashedPassword(): User = this.copy(password = password.bcrypt)
+}
 
 // the validator needs to go in the same file where the case class is defined otherwise, the compiler throws a fit
 case object User {

@@ -20,7 +20,7 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
 
   val AddNewPlaceIndicator = "Add New Place"
 
-  def run(params: PlacesFormData): Unit = {}
+  def run(): Unit = {}
 
   def runWithParams(params: Any): Unit = {
     val formData = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
@@ -123,7 +123,7 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
                     select(id := "places", name := "places", cls := "form-control partOfStateList", onchange := { () =>
                       val placeId = $("#places").value().toString.trim
                       if (!placeId.equals("0")) {
-                        AjaxHelper.doAjaxGetWithJson(s"/multiformProfile/places/get?id=$placeId", "", AddressForm.refresh, HtmlHelper.showErrorBanner)
+                        AjaxHelper.doAjaxGetWithJson(s"/multiformProfile/places/get?id=$placeId", "", "", AddressForm.refresh, HtmlHelper.showErrorBanner)
                       } else {
                         $("#placeName").value("")
                         $("#streetAddress").value("")
@@ -168,9 +168,9 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
                     val pickledPfp = Pickle.intoString(placesFormPayload)
 
                     if (addressUuid.equals("0")) {
-                      AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/new", pickledPfp, refreshFormAndPlacesDropDown, HtmlHelper.showErrorBanner)
+                      AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/new", pickledPfp, "", refreshFormAndPlacesDropDown, HtmlHelper.showErrorBanner)
                     } else {
-                      AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/update", pickledPfp, refreshFormAndPlacesDropDown, HtmlHelper.showErrorBanner)
+                      AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/update", pickledPfp, "", refreshFormAndPlacesDropDown, HtmlHelper.showErrorBanner)
                     }
                   }
                 }),

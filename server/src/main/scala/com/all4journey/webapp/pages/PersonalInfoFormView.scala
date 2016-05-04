@@ -7,11 +7,11 @@ import com.all4journey.shared.domain.{AddressTypePickler, PersonalFormData}
 /**
   * Created by aabreu on 1/10/16.
   */
-class PersonalInfoFormView(formData: PersonalFormData) extends View with AddressTypePickler {
+class PersonalInfoFormView(token:String, formData: PersonalFormData) extends View  with AddressTypePickler {
   val myFormData = formData
   def apply()(implicit ctx: RequestContext) =
     MainTemplate(
       titleText = "Profile",
-      footer = Seq(jsModuleWithParams[PersonalInfoFormJs](myFormData))
+      footer = Seq(jsModuleWithParams[PersonalInfoFormJs]((token, myFormData)))
     )
 }

@@ -10,5 +10,5 @@ trait JsModuleWithParams {
   @JSExport
   def runWithParams(params: Any): Unit
 
-  def run(params: ParamType): Unit
+  def run(): Unit
 }

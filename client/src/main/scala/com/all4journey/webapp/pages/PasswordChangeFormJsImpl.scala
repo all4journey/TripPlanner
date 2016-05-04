@@ -13,20 +13,21 @@ import scalatags.JsDom.all._
   */
 // $COVERAGE-OFF$
 object PasswordChangeFormJsImpl extends PasswordChangeFormJs {
-  def run(params: String): Unit = {}
+
+  def run(): Unit = {}
 
   def runWithParams(params: Any): Unit = {
 
-    val emailAddress = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
-      case Success(ea: String) => ea
-      case _ => ""
+    val (token, emailAddress) = Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
+      case Success((token:String, ea: String)) => (token, ea)
+      case _ => ("","")
     }
 
     val content = dom.document.getElementById("content")
-    content.appendChild(passwordChangeForm(emailAddress).render)
+    content.appendChild(passwordChangeForm(token, emailAddress).render)
   }
 
-  def passwordChangeForm(emailAddress: String) = div(cls := "container")(
+  def passwordChangeForm(token:String, emailAddress: String) = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
         NavPills.load("passwordChangeLink")

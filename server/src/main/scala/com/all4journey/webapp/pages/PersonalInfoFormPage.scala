@@ -11,40 +11,46 @@ import com.typesafe.scalalogging.LazyLogging
 import prickle.{Pickle, Unpickle}
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import akka.http.scaladsl.server.Route
 
 import scala.concurrent.Await
+import scala.language.postfixOps
 import scala.util.Success
 
 /**
   * Created by aabreu on 1/10/16.
   */
-trait PersonalInfoFormPage extends Page with LazyLogging with AddressTypePickler {
-  def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
-    get {
-      extractRequestContext { implicit ctx => {
+trait PersonalInfoFormPage extends Page with LazyLogging with SecurityDirectives with AddressTypePickler {
+  def apply()(implicit actorSystem: ActorSystem, mat: Materializer) =
+    pathEnd {
+      get {
+        extractRequestContext { implicit ctx => {
+//          authenticate { user =>
+            val personalFormData = buildFormData(loadStates = true)
 
-        val personalFormData = buildFormData(loadStates = true)
-
-        val personalInfoFormView = new PersonalInfoFormView(personalFormData)
-        complete(personalInfoFormView.apply())
-      }
-      }
-    } ~
-    post {
-      extractRequestContext { implicit ctx =>
-        entity(as[String]) { profileJsonPayload =>
-          Unpickle[PersonalFormData].fromString(profileJsonPayload) match {
-            case Success(pfd: PersonalFormData) =>
-              handleProfileUpdates(pfd)
-              val postSuccessFormData = buildFormData(loadStates = false)
-              val pickledPfp = Pickle.intoString(postSuccessFormData)
-              complete(pickledPfp)
-            case _ => complete(StatusCodes.BadRequest)
+            val personalInfoFormView = new PersonalInfoFormView("token", personalFormData)
+            complete(personalInfoFormView.apply())
+//          }
+        }
+        }
+      } ~
+        post {
+          extractRequestContext { implicit ctx =>
+//            authenticate { user =>
+              entity(as[String]) { profileJsonPayload =>
+                Unpickle[PersonalFormData].fromString(profileJsonPayload) match {
+                  case Success(pfd: PersonalFormData) =>
+                    handleProfileUpdates(pfd)
+                    val postSuccessFormData = buildFormData(loadStates = false)
+                    val pickledPfp = Pickle.intoString(postSuccessFormData)
+                    complete(pickledPfp)
+                  case _ => complete(StatusCodes.BadRequest)
+//                }
+              }
+            }
           }
         }
-      }
-      }
-  }
+    }
 
   private def handleProfileUpdates(personalFormData: PersonalFormData): Unit = {
     val user = UserContext.getCurrentUser
@@ -55,7 +61,7 @@ trait PersonalInfoFormPage extends Page with LazyLogging with AddressTypePickler
 
     personalFormData.address match {
       case Some(someAddress) => createOrUpdateAddress(user.id, someAddress.copy(userId = user.id))
-      case _ => return
+      case _ =>
     }
 
 
@@ -91,8 +97,8 @@ trait PersonalInfoFormPage extends Page with LazyLogging with AddressTypePickler
     if (homeAddressResult.size > 1)
       throw new IllegalStateException("There is more than one home address")
 
-    else if (!homeAddressResult.isEmpty) {
-      personalFormData = personalFormData.copy(address = Some(homeAddressResult(0)))
+    else if (homeAddressResult.nonEmpty) {
+      personalFormData = personalFormData.copy(address = Some(homeAddressResult.head))
     }
 
     if (loadStates) {

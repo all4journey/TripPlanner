@@ -16,11 +16,17 @@ import scala.util.Success
   */
 @deprecated
 object ProfileJsImpl extends ProfileJs {
-
+  def run(): Unit = {}
+  def runWithParams(params: Any): Unit = {}
+/*
+<<<<<<< HEAD
   implicit val addressTypePickler: PicklerPair[AddressType] = CompositePickler[AddressType].concreteType[HomeAddressType.type].
     concreteType[PlaceAddressType.type]
 
   def run(params: Seq[State]): Unit = {}
+=======
+  def run(): Unit = {}
+>>>>>>> dev
 
   def runWithParams(params: Any): Unit = {
     val content = dom.document.getElementById("content")
@@ -31,7 +37,7 @@ object ProfileJsImpl extends ProfileJs {
     val stateDropdown = dom.document.getElementById("userState")
 
     Unpickle[ParamType].fromString(js.JSON.stringify(params.asInstanceOf[js.Any])) match {
-      case Success(states: Seq[State]) =>
+      case Success((token:String, states: Seq[State])) =>
         for (stateItem <- states) {
           val option = dom.document.createElement("option")
           option.textContent = stateItem.description
@@ -80,6 +86,12 @@ object ProfileJsImpl extends ProfileJs {
             label(cls := "col-lg-3 control-label")("Last name:"),
             div(cls := "col-lg-8")(
               input(id := "lastName", name := "lastName", cls := "form-control", `type` := "text")
+            )
+          ),
+          div(cls:="form-group")(
+            label(cls := "col-lg-3 control-label")("Email address:"),
+            div(cls := "col-lg-8")(
+              input(id := "emailAddress", name := "emailAddress", cls:= "form-control", `type` :="text")
             )
           ),
           div(cls := "form-group")(
@@ -138,7 +150,8 @@ object ProfileJsImpl extends ProfileJs {
 
                 val firstName = $("#firstName").value().toString.trim
                 val lastName = $("#lastName").value().toString.trim
-                val user: User = new User(fName = firstName, lName = lastName, email = "a.a@testmail.com", registrationDate = None)
+                val emailAddress = $("#emailAddress").value.toString.trim
+                val user: User = new User(fName = firstName, lName = lastName, email = emailAddress, password = "", registrationDate = None)
 
                 val userStateId = $("#userState :selected").value().toString.trim
                 val userStateDescription = $("#userState :selected").text().toString.trim
@@ -184,7 +197,7 @@ object ProfileJsImpl extends ProfileJs {
       )
     )
   )
-
+*/
 }
 
 // $COVERAGE-ON$
