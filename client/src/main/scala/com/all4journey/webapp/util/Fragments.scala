@@ -1,8 +1,7 @@
 package com.all4journey.webapp.util
 
-import com.wix.accord._
-import org.scalajs.dom
 import org.scalajs.jquery.{jQuery => $}
+import com.wix.accord._
 import com.wix.accord.{Success => ValidationSuccess}
 import prickle.Unpickle
 
@@ -84,15 +83,10 @@ trait AddressForm extends AddressTypePickler {
   }
 
   def doValidation(address: Address): Set[Violation] = {
-    var violations = Set.empty[Violation]
-    val isFullAddressValid = validate(address)(Address.validatorWithStreet) match {
-      case ValidationSuccess   => true
-      case Failure(failureSet) =>
-        violations = failureSet
-        false
-    }
+    //val violations = Set.empty[Violation]
+    val fullAddressValidationResult = validate(address)(Address.validatorWithStreet)
 
-    if (!isFullAddressValid) {
+    if (fullAddressValidationResult.isFailure) {
       val partialAddressValidationResult = if (address.street.getOrElse("").isEmpty && !address.state.id.equals("NONE"))
         validate(address)(Address.validatorNoStreetWithState)
       else if (address.street.getOrElse("").isEmpty && address.state.id.equals("NONE") && (!address.zipCode.isEmpty))
@@ -101,14 +95,17 @@ trait AddressForm extends AddressTypePickler {
       // an empty address is a valid address
         ValidationSuccess
 
-      violations = partialAddressValidationResult match {
+      partialAddressValidationResult match {
         case ValidationSuccess   => Set.empty[Violation]
         case Failure(failureSet) => failureSet
-        case _ => violations
+        case _ => fullAddressValidationResult.asInstanceOf[Failure].violations
       }
     }
 
-    violations
+    else
+      Set.empty[Violation]
+
+    //violations
   }
 
   def buildObjectFromForm(): Address = {
