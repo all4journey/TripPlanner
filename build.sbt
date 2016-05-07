@@ -5,7 +5,7 @@ import NativePackagerHelper._
 lazy val commonSettings = Seq(
   organization := "com.all4journey",
   version := "0.1.0",
-  scalaVersion := "2.11.7",
+  scalaVersion := Settings.versions.scala,
   scalaJSStage in Global := FastOptStage,
   skip in packageJSDependencies := false,
   coverageEnabled.in(Test, test) := true,
@@ -57,7 +57,7 @@ lazy val server = (project in file("server"))
     watchSources <++= (watchSources in client)
   )
   .settings(
-      mainClass in Compile := Some("com.tripPlanner.Boot"),
+      mainClass in Compile := Some("com.all4journey.Boot"),
       mappings in Universal ++= {contentOf("/src/main/resources").toMap.mapValues("config/" + _).toSeq},
       scriptClasspath := Seq("../config/") ++ scriptClasspath.value
       )
