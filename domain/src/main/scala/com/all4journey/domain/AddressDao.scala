@@ -3,7 +3,7 @@ package com.all4journey.domain
 import java.util.UUID
 
 import slick.driver.MySQLDriver.api._
-import com.all4journey.shared.domain.{State, Address}
+import com.all4journey.shared.domain.{AddressTypeFactory, State, Address}
 import scala.concurrent.{Await, ExecutionContext, Future}
 import com.all4journey.domain.Tables.{Address => Addresses, AddressRow}
 import scala.concurrent.duration._
@@ -23,7 +23,7 @@ case class AddressDao(db:Database)(implicit ec:ExecutionContext) {
   def create(address: Address): String = {
     val id = UUID.randomUUID().toString
 
-    val insertAddress = Addresses += AddressRow(id, address.userId, address.street, address.state.id, address.zipCode, address.addressType, address.placeName)
+    val insertAddress = Addresses += AddressRow(id, address.userId, address.street, address.state.id, address.zipCode, address.addressType.id, address.placeName)
 
     db.run(insertAddress) map {
       result =>
@@ -46,7 +46,7 @@ case class AddressDao(db:Database)(implicit ec:ExecutionContext) {
         val stateDao = StateDaoImpl(db)
         val statesFuture = stateDao.getStateById(a.stateId)
         val stateResult = Await.result(statesFuture, 10 seconds)
-        Address(a.id, a.userId, a.street, stateResult(0), a.zipcode, a.addressType, a.placeName)
+        Address(a.id, a.userId, a.street, stateResult(0), a.zipcode, AddressTypeFactory.buildAddressTypeFromString(a.addressType), a.placeName)
       }
     }
   }
@@ -69,7 +69,7 @@ case class AddressDao(db:Database)(implicit ec:ExecutionContext) {
         val stateDao = StateDaoImpl(db)
         val statesFuture = stateDao.getStateById(a.stateId)
         val stateResult = Await.result(statesFuture, 10 seconds)
-        Address(a.id, a.userId, a.street, stateResult.head, a.zipcode, a.addressType, a.placeName)
+        Address(a.id, a.userId, a.street, stateResult.head, a.zipcode, AddressTypeFactory.buildAddressTypeFromString(a.addressType), a.placeName)
       }
     }
   }

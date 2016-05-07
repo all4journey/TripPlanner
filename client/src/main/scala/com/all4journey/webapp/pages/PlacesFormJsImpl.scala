@@ -1,7 +1,7 @@
 package com.all4journey.webapp.pages
 
-import com.all4journey.shared.domain.{State, Address, PlacesFormData}
-import com.all4journey.webapp.util.{NavPills, AjaxHelper}
+import com.all4journey.shared.domain._
+import com.all4journey.webapp.util.{HtmlHelper, AddressForm, NavPills, AjaxHelper}
 import org.scalajs.dom
 import org.scalajs.dom.raw.Element
 import org.scalajs.jquery.{jQuery => $}
@@ -11,20 +11,14 @@ import scala.collection.mutable.ListBuffer
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 import scala.util.Success
-import scala.util.control.Breaks
 import scalatags.JsDom.all._
 
 /**
   * Created by aabreu on 1/30/16.
   */
-object PlacesFormJsImpl extends PlacesFormJs with NavPills {
+object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
 
   val AddNewPlaceIndicator = "Add New Place"
-  val HomeAddressType = "HOME"
-  val PlaceAddressType = "PLACE"
-
-  @JSExport
-  val emptyAddress = Address("0", "0", None, State("NONE", "Choose a state"), "", PlaceAddressType, "")
 
   def run(): Unit = {}
 
@@ -35,7 +29,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
     }
 
     val content = dom.document.getElementById("content")
-    content.appendChild(personalInfoForm.render)
+    content.appendChild(placesForm(None).render)
 
     buildStatesDropDown(formData.states)
     buildPlacesDropDown(formData.addresses)
@@ -68,7 +62,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
         if (addressItem.addressType.equals(HomeAddressType)) {
           buildDropwDownOption(placesDropdown, addressItem.placeName, addressItem.id)
 
-          refreshAddressFields(addressItem)
+          AddressForm.refreshFields(addressItem)
         }
 
         else {
@@ -94,10 +88,10 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
   }
 
   @JSExport
-  def personalInfoForm = div(cls := "container")(
+  def placesForm(defaultAddress: Option[Address]) = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
-        getNavPills("placesLink")
+        NavPills.load("placesLink")
       )
     ),
     h1(cls := "page-header"),
@@ -129,7 +123,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
                     select(id := "places", name := "places", cls := "form-control partOfStateList", onchange := { () =>
                       val placeId = $("#places").value().toString.trim
                       if (!placeId.equals("0")) {
-                        AjaxHelper.doAjaxGetWithJson(s"/multiformProfile/places/get?id=$placeId", "", "", refreshForm, showErrorBanner)
+                        AjaxHelper.doAjaxGetWithJson(s"/multiformProfile/places/get?id=$placeId", "", "", AddressForm.refresh, HtmlHelper.showErrorBanner)
                       } else {
                         $("#placeName").value("")
                         $("#streetAddress").value("")
@@ -148,28 +142,7 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
                   input(id := "placeName", name := "placeName", cls := "form-control", `type` := "text")
                 )
               ),
-              div(id := "streetAddressDiv", cls := "form-group")(
-                label(cls := "col-lg-3 control-label")("Street Address:"),
-                div(cls := "col-lg-8")(
-                  input(id := "streetAddress", name := "streetAddress", cls := "form-control", `type` := "text")
-                )
-              ),
-              div(id := "stateDiv", cls := "form-group")(
-                label(cls := "col-lg-3 control-label")("State:"),
-                div(cls := "col-lg-8")(
-                  div(cls := "ui-select")(
-                    select(id := "userState", name := "userState", cls := "form-control partOfStateList")(
-                      option(value := "NONE", selected := "selected")("Choose a state")
-                    )
-                  )
-                )
-              ),
-              div(id := "zipCodeDiv", cls := "form-group")(
-                label(cls := "col-lg-3 control-label")("Zip code:"),
-                div(cls := "col-lg-8")(
-                  input(id := "zipCode", name := "zipCode", cls := "form-control partOfZipCodeList", `type` := "text")
-                )
-              )
+              AddressForm.load(defaultAddress)
             )
           ),
           div(
@@ -178,24 +151,27 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
               div(cls := "col-md-7")(
                 input(id := "saveButton", `type` := "button", cls := "btn btn-primary", value := "Save", onclick := { () =>
 
-                  //val addressUuid = $("#placeFieldsDiv").attr("addressUuid").toString.trim
+                  $(".has-error").removeClass("has-error")
+                  $(".help-block").remove()
+
                   val addressUuid = $("#places").value().toString.trim
-                  val placeName = $("#placeName").value().toString.trim
-                  val streetAddress = $("#streetAddress").value().toString.trim
-                  val stateId = $("#userState").value().toString.trim
-                  val zipCode = $("#zipCode").value().toString.trim
+                  val pn = $("#placeName").value().toString.trim
 
+                  var address = AddressForm.buildObjectFromForm()
+                  address = address.copy(id = addressUuid, addressType = PlaceAddressType, placeName = pn)
 
-                  val address = new Address(addressUuid, "0", Some(streetAddress), State(stateId, ""), zipCode, "PLACE", placeName)
+                  val addressViolations = AddressForm.doValidation(address)
+                  AddressForm.setViolationPrompts(addressViolations)
 
-                  val placesFormPayload = new PlacesFormData(Some(address), Seq[Address](), Seq[State]())
-                  val pickledPfp = Pickle.intoString(placesFormPayload)
+                  if (addressViolations.isEmpty) {
+                    val placesFormPayload = new PlacesFormData(Some(address), Seq[Address](), Seq[State]())
+                    val pickledPfp = Pickle.intoString(placesFormPayload)
 
-
-                  if (addressUuid.equals("0")) {
-                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/new", pickledPfp, "", refreshFormAndPlacesDropDown, showErrorBanner)
-                  } else {
-                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/update", pickledPfp, "", refreshFormAndPlacesDropDown, showErrorBanner)
+                    if (addressUuid.equals("0")) {
+                      AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/new", pickledPfp, "", refreshFormAndPlacesDropDown, HtmlHelper.showErrorBanner)
+                    } else {
+                      AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/update", pickledPfp, "", refreshFormAndPlacesDropDown, HtmlHelper.showErrorBanner)
+                    }
                   }
                 }),
                 span(),
@@ -210,35 +186,15 @@ object PlacesFormJsImpl extends PlacesFormJs with NavPills {
       )
   )
 
-  private def refreshForm(data: js.Any): Unit = {
-    Unpickle[Address].fromString(s"$data") match {
-      case Success(someAddress) =>
-        refreshAddressFields(someAddress)
-      case _ =>
-        $("#errorBanner").show()
-    }
-  }
-
-  private def refreshAddressFields(someAddress: Address): Unit = {
-    $("#placeName").value(someAddress.placeName)
-    $("#streetAddress").value(someAddress.street.getOrElse(""))
-    $("#userState").value(someAddress.state.id).change()
-    $("#zipCode").value(someAddress.zipCode)
-  }
-
   private def refreshFormAndPlacesDropDown(data: js.Any): Unit = {
     Unpickle[PlacesFormData].fromString(s"$data") match {
       case Success(someFormData: PlacesFormData) =>
         $("#places").empty()
         buildPlacesDropDown(someFormData.addresses)
-        $("#places").value(someFormData.address.getOrElse(emptyAddress).id).change()
-        $("#successBanner").show()
+        $("#places").value(someFormData.address.getOrElse(AddressForm.emptyAddress).id).change()
+        HtmlHelper.showSuccessBanner()
       case _ =>
-        $("#errorBanner").show()
+        HtmlHelper.showErrorBanner()
     }
-  }
-
-  private def showErrorBanner(): Unit = {
-    $("#errorBanner").show()
   }
 }

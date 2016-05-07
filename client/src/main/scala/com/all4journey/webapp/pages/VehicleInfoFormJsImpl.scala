@@ -16,7 +16,7 @@ import scalatags.JsDom.all._
   * Created by aabreu on 1/17/16.
   */
 // $COVERAGE-OFF$
-object VehicleInfoFormJsImpl extends VehicleInfoFormJs with NavPills{
+object VehicleInfoFormJsImpl extends VehicleInfoFormJs {
 
   var formIndex = 1
   var vehicles: Seq[Vehicle] = Seq.empty[Vehicle]
@@ -140,7 +140,7 @@ object VehicleInfoFormJsImpl extends VehicleInfoFormJs with NavPills{
   def vehicleForm = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
-        getNavPills("vehicleinfolink")
+        NavPills.load("vehicleinfolink")
       )
     ),
     h1(cls := "page-header"),

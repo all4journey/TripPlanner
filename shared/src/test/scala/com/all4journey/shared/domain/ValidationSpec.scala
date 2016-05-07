@@ -33,7 +33,7 @@ class ValidationSpec extends SharedTestSpec {
     validate(invalidUserEmail) shouldBe ValidationSuccess
   }
 
-  val testAddress = Address("0", "0", None, State("NONE", ""), "", "", "")
+  val testAddress = Address("0", "0", None, State("NONE", ""), "", HomeAddressType, "")
 
   "Address.validatorWithStreet" should "fail with street address set to None" in {
     validate(testAddress)(Address.validatorWithStreet) shouldBe a[Failure]

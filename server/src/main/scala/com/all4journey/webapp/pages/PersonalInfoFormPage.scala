@@ -4,8 +4,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.StatusCodes
 import akka.stream.Materializer
 import com.all4journey.domain.{AddressDao, StateDaoImpl, UserDao}
-import com.all4journey.shared.domain.{Address, State}
-import com.all4journey.shared.domain.PersonalFormData
+import com.all4journey.shared.domain.{AddressTypePickler, Address, State, PersonalFormData}
 import com.all4journey.webapp.Page
 import com.all4journey.webapp.util.{UserContext, DomainSupport}
 import com.typesafe.scalalogging.LazyLogging
@@ -21,7 +20,7 @@ import scala.util.Success
 /**
   * Created by aabreu on 1/10/16.
   */
-trait PersonalInfoFormPage extends Page with LazyLogging with SecurityDirectives {
+trait PersonalInfoFormPage extends Page with LazyLogging with SecurityDirectives with AddressTypePickler {
   def apply()(implicit actorSystem: ActorSystem, mat: Materializer) =
     pathEnd {
       get {

@@ -1,6 +1,6 @@
 package com.all4journey.webapp.pages
 
-import com.all4journey.shared.domain.{User, Profile, Address, State, Vehicle}
+import com.all4journey.shared.domain._
 
 import prickle._
 
@@ -16,8 +16,17 @@ import scala.util.Success
   */
 @deprecated
 object ProfileJsImpl extends ProfileJs {
-
   def run(): Unit = {}
+  def runWithParams(params: Any): Unit = {}
+/*
+<<<<<<< HEAD
+  implicit val addressTypePickler: PicklerPair[AddressType] = CompositePickler[AddressType].concreteType[HomeAddressType.type].
+    concreteType[PlaceAddressType.type]
+
+  def run(params: Seq[State]): Unit = {}
+=======
+  def run(): Unit = {}
+>>>>>>> dev
 
   def runWithParams(params: Any): Unit = {
     val content = dom.document.getElementById("content")
@@ -150,7 +159,7 @@ object ProfileJsImpl extends ProfileJs {
 
                 val streetAddress = $("#streetAddress").value().toString.trim
                 val zipCode = $("#zipCode").value().toString.trim
-                val address = new Address(street = Option(streetAddress), state = state, zipCode = zipCode, addressType = "HOME", placeName = "Home")
+                val address = new Address(street = Option(streetAddress), state = state, zipCode = zipCode, addressType = HomeAddressType, placeName = "Home")
                 val addresses: Seq[Address] = List(address)
 
                 val userVehicleYear = $("#userVehicleYear :selected").value().toString.trim
@@ -188,7 +197,7 @@ object ProfileJsImpl extends ProfileJs {
       )
     )
   )
-
+*/
 }
 
 // $COVERAGE-ON$
