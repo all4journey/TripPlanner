@@ -3,11 +3,15 @@ scala:
     - 2.11.7
 services:
     - mysql
-install:
-    - npm install phantomjs
 before_install:
-    - mysql -e "create database IF NOT EXISTS trip_planner;" -uroot
+    - mysql -e "create database IF NOT EXISTS all4journey;" -uroot
     - sbt domain/flywayMigrate -Dflyway_password=""
 jdk:
     - oraclejdk8
 script: sbt test -Ddb_config="travis-db"
+
+notifications:
+    email:
+        recipients:
+            -rjkernick@gmail.com
+            -andy.abreu@gmail.com
