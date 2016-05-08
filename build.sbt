@@ -1,10 +1,11 @@
 import sbt.Keys._
 import sbt._
+import NativePackagerHelper._
 
 lazy val commonSettings = Seq(
   organization := "com.all4journey",
   version := "0.1.0",
-  scalaVersion := "2.11.7",
+  scalaVersion := Settings.versions.scala,
   scalaJSStage in Global := FastOptStage,
   skip in packageJSDependencies := false,
   coverageEnabled.in(Test, test) := true,
@@ -46,6 +47,7 @@ lazy val client = (project in file("client"))
 
 lazy val server = (project in file("server"))
   .settings(commonSettings: _*)
+  .enablePlugins(JavaServerAppPackaging)
   .dependsOn(sharedJvm, client, domain)
   .settings(libraryDependencies ++= Settings.serverDependencies.value,
     Revolver.settings,
@@ -54,6 +56,11 @@ lazy val server = (project in file("server"))
         map((f1, f2, f3) => Seq(f1.data, f2.data, f3.getAbsoluteFile)),
     watchSources <++= (watchSources in client)
   )
+  .settings(
+      mainClass in Compile := Some("com.all4journey.Boot"),
+      mappings in Universal ++= {contentOf("/src/main/resources").toMap.mapValues("config/" + _).toSeq},
+      scriptClasspath := Seq("../config/") ++ scriptClasspath.value
+      )
 
 lazy val domain = (project in file("domain"))
   .settings(commonSettings: _*)
