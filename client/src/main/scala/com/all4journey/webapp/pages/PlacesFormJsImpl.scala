@@ -7,11 +7,12 @@ import org.scalajs.dom.raw.Element
 import org.scalajs.jquery.{jQuery => $}
 import prickle.{Pickle, Unpickle}
 
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ListBuffer, Set}
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 import scala.util.Success
 import scalatags.JsDom.all._
+
 
 /**
   * Created by aabreu on 1/30/16.
@@ -19,6 +20,8 @@ import scalatags.JsDom.all._
 object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
 
   val AddNewPlaceIndicator = "Add New Place"
+
+  val placeNames = Set.empty[String]
 
   def run(): Unit = {}
 
@@ -54,6 +57,8 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
   @JSExport
   def buildPlacesDropDown(addresses: Seq[Address]): Unit = {
 
+    placeNames.clear
+
     val placesDropdown = dom.document.getElementById("places")
 
     // find the HOME place and add it to the top
@@ -68,6 +73,8 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
         else {
           listWithoutHomeType += addressItem
         }
+
+        placeNames += addressItem.placeName
       }
 
 
@@ -139,6 +146,7 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
               div(id := "placeNameDiv", cls := "form-group")(
                 label(cls := "col-lg-3 control-label")("Place Name:"),
                 div(cls := "col-lg-8")(
+                  div(id := "placeNameHelpBlock"),
                   input(id := "placeName", name := "placeName", cls := "form-control", `type` := "text")
                 )
               ),
@@ -163,7 +171,20 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
                   val addressViolations = AddressForm.doValidation(address)
                   AddressForm.setViolationPrompts(addressViolations)
 
-                  if (addressViolations.isEmpty) {
+                  val isPlacenameTaken = addressUuid match {
+                    case "0" => placeNames.contains(pn)
+                    case _ =>
+                      val placeNameFromDropDown = $("#places option:selected").text().toString.trim
+                      if (pn != placeNameFromDropDown)
+                        placeNames.contains(pn)
+                      else
+                        false
+                  }
+
+                  if (isPlacenameTaken)
+                    setPlacenameDupViolationPrompt
+
+                  if (addressViolations.isEmpty && !isPlacenameTaken) {
                     val placesFormPayload = new PlacesFormData(Some(address), Seq[Address](), Seq[State]())
                     val pickledPfp = Pickle.intoString(placesFormPayload)
 
@@ -196,5 +217,9 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
       case _ =>
         HtmlHelper.showErrorBanner()
     }
+  }
+
+  private def setPlacenameDupViolationPrompt = {
+    HtmlHelper.showHelpBlock("#placeNameDiv", "placeNameHelpBlock", "invalid place name... please choose a different one")
   }
 }

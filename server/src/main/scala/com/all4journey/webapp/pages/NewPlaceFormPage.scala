@@ -45,7 +45,7 @@ trait NewPlaceFormPage extends Page with LazyLogging with AddressTypePickler {
       addressDao.create(address.copy(userId = user.id))
     }
     else
-      throw new IllegalArgumentException("This place can't be added... address type is not zero")
+      throw new IllegalArgumentException("This place can't be added... address ID is not zero")
   }
 
   private def buildFormData(newAddressId:String, loadStates: Boolean): PlacesFormData = {
