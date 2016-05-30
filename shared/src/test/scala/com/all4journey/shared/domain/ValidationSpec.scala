@@ -151,22 +151,22 @@ class ValidationSpec extends SharedTestSpec {
   }
 
   "Address.doValidation" should "fail with just a street address (no zip, no state)" in {
-    val validAddress = testAddress.copy(street = Some("123 street"))
-    Address.doValidation(validAddress).isEmpty shouldBe false
+    val invalidAddress = testAddress.copy(street = Some("123 street"))
+    Address.doValidation(invalidAddress).isEmpty shouldBe false
   }
 
   "Address.doValidation" should "fail with just a street address and a state (no zip)" in {
-    val validAddress = testAddress.copy(street = Some("123 street"), state = State("NY", ""))
-    Address.doValidation(validAddress).isEmpty shouldBe false
+    val invalidAddress = testAddress.copy(street = Some("123 street"), state = State("NY", ""))
+    Address.doValidation(invalidAddress).isEmpty shouldBe false
   }
 
   "Address.doValidation" should "fail with an invalid street address" in {
-    val validAddress = testAddress.copy(street = Some("just the street"), state = State("NY", ""), zipCode = "12345-1234")
-    Address.doValidation(validAddress).isEmpty shouldBe false
+    val invalidAddress = testAddress.copy(street = Some("just the street"), state = State("NY", ""), zipCode = "12345-1234")
+    Address.doValidation(invalidAddress).isEmpty shouldBe false
   }
 
   "Address.doValidation" should "fail with an invalid zip code" in {
-    val validAddress = testAddress.copy(street = Some("123 street"), state = State("NY", ""), zipCode = "12345-12")
-    Address.doValidation(validAddress).isEmpty shouldBe false
+    val invalidAddress = testAddress.copy(street = Some("123 street"), state = State("NY", ""), zipCode = "12345-12")
+    Address.doValidation(invalidAddress).isEmpty shouldBe false
   }
 }
