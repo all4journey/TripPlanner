@@ -1,8 +1,10 @@
 package com.all4journey.shared.domain
 
 import com.github.t3hnar.bcrypt._
+import com.wix.accord._
 import com.wix.accord.dsl._
 import prickle.{CompositePickler, PicklerPair}
+import com.wix.accord.{Success => ValidationSuccess}
 
 case class User(id: String = "", fName:String = "Default", lName:String, email:String, password:String, registrationDate: Option[String]) {
   def withHashedPassword(): User = this.copy(password = password.bcrypt)
@@ -75,6 +77,32 @@ case object Address {
     addressToValidate.street.getOrElse("").length should be == 0
     addressToValidate.state.id.length should be == 2
     addressToValidate.zipCode should matchRegex(ZipRegex)
+  }
+
+  def doValidation(address: Address): Set[Violation] = {
+    //val violations = Set.empty[Violation]
+    val fullAddressValidationResult = validate(address)(Address.validatorWithStreet)
+
+    if (fullAddressValidationResult.isFailure) {
+      val partialAddressValidationResult = if (address.street.getOrElse("").isEmpty && !address.state.id.equals("NONE"))
+        validate(address)(Address.validatorNoStreetWithState)
+      else if (address.street.getOrElse("").isEmpty && address.state.id.equals("NONE") && (!address.zipCode.isEmpty))
+        validate(address)(Address.validatorNoStreetNoStateWithZip)
+      else if (address.street.getOrElse("").isEmpty && address.state.id.equals("NONE") && (address.zipCode.isEmpty))
+      // an empty address is a valid address
+        ValidationSuccess
+
+      partialAddressValidationResult match {
+        case ValidationSuccess   => Set.empty[Violation]
+        case Failure(failureSet) => failureSet
+        case _ => fullAddressValidationResult.asInstanceOf[Failure].violations
+      }
+    }
+
+    else
+      Set.empty[Violation]
+
+    //violations
   }
 }
 

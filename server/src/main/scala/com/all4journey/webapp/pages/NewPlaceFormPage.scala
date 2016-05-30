@@ -6,6 +6,7 @@ import akka.stream.Materializer
 import com.all4journey.domain.{StateDaoImpl, AddressDao}
 import com.all4journey.shared.domain.{AddressTypePickler, PlacesFormData, Address, State}
 import com.all4journey.webapp.Page
+import com.all4journey.webapp.exceptions.{NoAddressException, InvalidAddressException}
 import com.all4journey.webapp.util.{UserContext, DomainSupport}
 import com.typesafe.scalalogging.LazyLogging
 import prickle.{Pickle, Unpickle}
@@ -26,7 +27,7 @@ trait NewPlaceFormPage extends Page with LazyLogging with AddressTypePickler {
             case Success(someFormData: PlacesFormData) =>
               val newAddressId = someFormData.address match {
                 case Some(someAddress) => addNewPlace(someAddress)
-                case None => throw new IllegalArgumentException("there must be an input address in order to process this request")
+                case None => throw NoAddressException
               }
               val postSuccessFormData = buildFormData(newAddressId, loadStates = false)
               val pickledPfp = Pickle.intoString(postSuccessFormData)
@@ -39,13 +40,16 @@ trait NewPlaceFormPage extends Page with LazyLogging with AddressTypePickler {
   }
 
   private def addNewPlace(address: Address): String = {
-    if (address.id.equals("0")) {
+
+    val violations = Address.doValidation(address)
+
+    if (address.id == "0" && violations.isEmpty) {
       val user = UserContext.getCurrentUser
       val addressDao = AddressDao(DomainSupport.db)
       addressDao.create(address.copy(userId = user.id))
     }
     else
-      throw new IllegalArgumentException("This place can't be added... address ID is not zero")
+      throw InvalidAddressException
   }
 
   private def buildFormData(newAddressId:String, loadStates: Boolean): PlacesFormData = {
@@ -77,3 +81,4 @@ trait NewPlaceFormPage extends Page with LazyLogging with AddressTypePickler {
 }
 
 object NewPlaceFormPage extends NewPlaceFormPage
+

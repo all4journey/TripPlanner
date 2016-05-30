@@ -168,7 +168,7 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
                   var address = AddressForm.buildObjectFromForm()
                   address = address.copy(id = addressUuid, addressType = PlaceAddressType, placeName = pn)
 
-                  val addressViolations = AddressForm.doValidation(address)
+                  val addressViolations = Address.doValidation(address)
                   AddressForm.setViolationPrompts(addressViolations)
 
                   val isPlacenameTaken = addressUuid match {

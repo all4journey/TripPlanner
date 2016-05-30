@@ -130,4 +130,43 @@ class ValidationSpec extends SharedTestSpec {
     val validAddress = testAddress.copy(state = State("NY", ""), zipCode = "12345-1234")
     validate(validAddress)(Address.validatorNoStreetWithState) shouldBe ValidationSuccess
   }
+
+  "Address.doValidation" should "pass with an empty address" in {
+    Address.doValidation(testAddress).isEmpty shouldBe true
+  }
+
+  "Address.doValidation" should "pass with a fully populated address with valid info" in {
+    val validAddress = testAddress.copy(street = Some("123 street"), state = State("NY", ""), zipCode = "12345-1234")
+    Address.doValidation(validAddress).isEmpty shouldBe true
+  }
+
+  "Address.doValidation" should "pass with just a valid zip" in {
+    val validAddress = testAddress.copy( zipCode = "12345-1234")
+    Address.doValidation(validAddress).isEmpty shouldBe true
+  }
+
+  "Address.doValidation" should "pass with just a valid state and zip" in {
+    val validAddress = testAddress.copy(state = State("NY", ""), zipCode = "12345-1234")
+    Address.doValidation(validAddress).isEmpty shouldBe true
+  }
+
+  "Address.doValidation" should "fail with just a street address (no zip, no state)" in {
+    val validAddress = testAddress.copy(street = Some("123 street"))
+    Address.doValidation(validAddress).isEmpty shouldBe false
+  }
+
+  "Address.doValidation" should "fail with just a street address and a state (no zip)" in {
+    val validAddress = testAddress.copy(street = Some("123 street"), state = State("NY", ""))
+    Address.doValidation(validAddress).isEmpty shouldBe false
+  }
+
+  "Address.doValidation" should "fail with an invalid street address" in {
+    val validAddress = testAddress.copy(street = Some("just the street"), state = State("NY", ""), zipCode = "12345-1234")
+    Address.doValidation(validAddress).isEmpty shouldBe false
+  }
+
+  "Address.doValidation" should "fail with an invalid zip code" in {
+    val validAddress = testAddress.copy(street = Some("123 street"), state = State("NY", ""), zipCode = "12345-12")
+    Address.doValidation(validAddress).isEmpty shouldBe false
+  }
 }
