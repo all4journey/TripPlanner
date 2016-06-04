@@ -6,6 +6,7 @@ import akka.stream.Materializer
 import com.all4journey.domain.{AddressDao, StateDaoImpl, UserDao}
 import com.all4journey.shared.domain.{AddressTypePickler, Address, State, PersonalFormData}
 import com.all4journey.webapp.Page
+import com.all4journey.webapp.exceptions.{MultipleHomeAddressException, HomeAddressException, InvalidAddressException}
 import com.all4journey.webapp.util.{UserContext, DomainSupport}
 import com.typesafe.scalalogging.LazyLogging
 import prickle.{Pickle, Unpickle}
@@ -68,20 +69,26 @@ trait PersonalInfoFormPage extends Page with LazyLogging with SecurityDirectives
   }
 
   private def createOrUpdateAddress(userId: String, addressToInsertOrUpdate: Address): Unit = {
-    val addressDao = AddressDao(DomainSupport.db)
+    val violations = Address.doValidation(addressToInsertOrUpdate)
 
-    if (addressToInsertOrUpdate.id.equals("0")) {
-      val homeAddressFuture = addressDao.getHomeAddressByUserId(userId)
-      val homeAddressResult = Await.result(homeAddressFuture, 10 seconds)
+    if (violations.isEmpty) {
+      val addressDao = AddressDao(DomainSupport.db)
+      if (addressToInsertOrUpdate.id == "0") {
+        val homeAddressFuture = addressDao.getHomeAddressByUserId(userId)
+        val homeAddressResult = Await.result(homeAddressFuture, 10 seconds)
 
-      if (homeAddressResult.size == 1)
-        throw new IllegalStateException("There is a home address for this user already")
+        if (!homeAddressResult.isEmpty)
+          throw HomeAddressException
+        else
+          addressDao.create(addressToInsertOrUpdate)
+      }
+
       else
-        addressDao.create(addressToInsertOrUpdate)
+        addressDao.update(addressToInsertOrUpdate)
     }
 
     else
-      addressDao.update(addressToInsertOrUpdate)
+      throw InvalidAddressException
   }
 
   private def buildFormData(loadStates: Boolean): PersonalFormData = {
@@ -95,7 +102,7 @@ trait PersonalInfoFormPage extends Page with LazyLogging with SecurityDirectives
     val homeAddressResult = Await.result(homeAddressFuture, 10 seconds)
 
     if (homeAddressResult.size > 1)
-      throw new IllegalStateException("There is more than one home address")
+      throw MultipleHomeAddressException
 
     else if (homeAddressResult.nonEmpty) {
       personalFormData = personalFormData.copy(address = Some(homeAddressResult.head))

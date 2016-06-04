@@ -134,7 +134,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs  with AddressTypePickle
 
                   val address = AddressForm.buildObjectFromForm()
 
-                  val addressViolations = AddressForm.doValidation(address)
+                  val addressViolations = Address.doValidation(address)
                   AddressForm.setViolationPrompts(addressViolations)
 
                   if (validUser && addressViolations.isEmpty) {

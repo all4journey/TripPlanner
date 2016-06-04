@@ -7,7 +7,7 @@ import com.all4journey.shared.domain.User
 
 import com.all4journey.webapp.pages.IndexJsImpl
 
-import google.maps.LatLng
+//import google.maps.LatLng
 
 import scala.scalajs.js.JSApp
 import org.scalajs.dom
@@ -15,7 +15,7 @@ import org.scalajs.dom._
 import dom.document
 import org.scalajs.jquery.jQuery
 
-import google.maps.Data.Feature
+//import google.maps.Data.Feature
 import scala.scalajs.js
 
 // $COVERAGE-OFF$

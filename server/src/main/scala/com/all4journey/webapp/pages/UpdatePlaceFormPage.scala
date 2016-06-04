@@ -6,6 +6,7 @@ import akka.stream.Materializer
 import com.all4journey.domain.{StateDaoImpl, AddressDao}
 import com.all4journey.shared.domain.{AddressTypePickler, PlacesFormData, Address, State}
 import com.all4journey.webapp.Page
+import com.all4journey.webapp.exceptions.{InvalidAddressException, NoAddressException}
 import com.all4journey.webapp.util.{DomainSupport, UserContext}
 import com.typesafe.scalalogging.LazyLogging
 import prickle.{Pickle, Unpickle}
@@ -28,7 +29,7 @@ trait UpdatePlaceFormPage extends Page with LazyLogging with AddressTypePickler 
                 case Some(someAddress) =>
                   updatePlace(someAddress)
                   someAddress
-                case None => throw new IllegalArgumentException("there must be an input address in order to process this request")
+                case None => throw NoAddressException
               }
               val postSuccessFormData = buildFormData(updatedAddress, loadStates = false)
               val pickledPfp = Pickle.intoString(postSuccessFormData)
@@ -65,13 +66,16 @@ trait UpdatePlaceFormPage extends Page with LazyLogging with AddressTypePickler 
   }
 
   private def updatePlace(address: Address): Unit = {
-    val addressDao = AddressDao(DomainSupport.db)
 
-    if (!address.id.equals("0")) {
-      addressDao.update(address)
+    val violations = Address.doValidation(address)
+
+    if (address.id != "0" && violations.isEmpty) {
+      val user = UserContext.getCurrentUser
+      val addressDao = AddressDao(DomainSupport.db)
+      addressDao.update(address.copy(userId = user.id))
     }
     else
-      throw new IllegalArgumentException("This place can't be added...")
+      throw InvalidAddressException
   }
 }
 

@@ -2,7 +2,10 @@ package com.all4journey.webapp
 
 import akka.http.scaladsl.model.ContentTypes._
 import akka.http.scaladsl.model.StatusCodes._
+
 import com.all4journey.webapp.util.{LogAppenderJsonSupport, LogMessage}
+
+
 
 import scala.language.implicitConversions
 
@@ -21,6 +24,34 @@ class RoutesSpec extends ServerTestSpec with LogAppenderJsonSupport{
 
   it should "load profilePage" in {
     Get("/profile") ~> route ~> check {
+      status shouldBe OK
+      contentType shouldBe `text/html(UTF-8)`
+    }
+  }
+
+  it should "load places form" in {
+    Get("/multiformProfile/places") ~> route ~> check {
+      status shouldBe OK
+      contentType shouldBe `text/html(UTF-8)`
+    }
+  }
+
+  it should "load personal info form" in {
+    Get("/multiformProfile/personal") ~> route ~> check {
+      status shouldBe OK
+      contentType shouldBe `text/html(UTF-8)`
+    }
+  }
+
+  it should "load a place by address id" in {
+    Get("/multiformProfile/places/get?id=ec0a0374-9cab-47d3-8803-bcf3243ec423") ~> route ~> check {
+      status shouldBe OK
+      contentType shouldBe `text/plain(UTF-8)`
+    }
+  }
+
+  it should "load password change form" in {
+    Get("/multiformProfile/password") ~> route ~> check {
       status shouldBe OK
       contentType shouldBe `text/html(UTF-8)`
     }

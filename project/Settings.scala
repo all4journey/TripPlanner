@@ -28,8 +28,8 @@ object Settings {
     "be.doeraene" %%% "scalajs-jquery" % "0.8.1",
     "com.lihaoyi" %%% "scalatags" % "0.5.3",
     "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
-    "com.github.japgolly.scalacss" %%% "core" % "0.3.1",
-    "io.surfkit" %%% "scalajs-google-maps" % "0.1-SNAPSHOT"
+    "com.github.japgolly.scalacss" %%% "core" % "0.3.1"
+    //"io.surfkit" %%% "scalajs-google-maps" % "0.1-SNAPSHOT"
   ))
 
   val serverDependencies = Def.setting(Seq(
