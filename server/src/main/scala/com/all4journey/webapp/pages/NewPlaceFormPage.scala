@@ -18,6 +18,7 @@ import scala.util.Success
 /**
   * Created by aabreu on 1/31/16.
   */
+@deprecated
 trait NewPlaceFormPage extends Page with LazyLogging with AddressTypePickler {
   def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
     post {
@@ -25,11 +26,11 @@ trait NewPlaceFormPage extends Page with LazyLogging with AddressTypePickler {
         entity(as[String]) { addressJsonPayload =>
           Unpickle[PlacesFormData].fromString(addressJsonPayload) match {
             case Success(someFormData: PlacesFormData) =>
-              val newAddressId = someFormData.address match {
+              val newAddress = someFormData.place match {
                 case Some(someAddress) => addNewPlace(someAddress)
                 case None => throw NoAddressException
               }
-              val postSuccessFormData = buildFormData(newAddressId, loadStates = false)
+              val postSuccessFormData = buildFormData(newAddress, loadStates = false)
               val pickledPfp = Pickle.intoString(postSuccessFormData)
               complete(pickledPfp)
             case _ => complete(StatusCodes.BadRequest)
@@ -39,46 +40,51 @@ trait NewPlaceFormPage extends Page with LazyLogging with AddressTypePickler {
     }
   }
 
-  private def addNewPlace(address: Address): String = {
+  private def addNewPlace(address: Address): Address = {
 
     val violations = Address.doValidation(address)
 
     if (address.id == "0" && violations.isEmpty) {
       val user = UserContext.getCurrentUser
       val addressDao = AddressDao(DomainSupport.db)
-      addressDao.create(address.copy(userId = user.id))
+
+      val addressToInsert = address.copy(userId = user.id)
+      val newAddressId = addressDao.create(address.copy(userId = user.id))
+      addressToInsert.copy(id = newAddressId)
     }
     else
       throw InvalidAddressException
   }
 
-  private def buildFormData(newAddressId:String, loadStates: Boolean): PlacesFormData = {
+  private def buildFormData(newAddress: Address, loadStates: Boolean): PlacesFormData = {
 
     val user = UserContext.getCurrentUser
-
-    var placesFormData = PlacesFormData(None, Seq[Address](), Seq[State]())
 
     val addressDao = AddressDao(DomainSupport.db)
     val addressesFuture = addressDao.getAddressesByUserId(user.id, None)
     val addressList = Await.result(addressesFuture, 10 seconds)
 
-    placesFormData = placesFormData.copy(addresses = addressList)
+//    var placesFormData = PlacesFormData(None, Seq.empty[Address], Seq.empty[State]
+//    placesFormData = placesFormData.copy(addresses = addressList)
 
-    addressList foreach(addressItem =>
-      if (addressItem.id.equals(newAddressId))
-        placesFormData = placesFormData.copy(address = Some(addressItem))
-    )
+//    addressList foreach(addressItem =>
+//      if (addressItem.id.equals(newAddressId))
+//        placesFormData = placesFormData.copy(address = Some(addressItem))
+//    )
 
-    if (loadStates) {
+    val states = if (loadStates) {
       val stateDao = StateDaoImpl(DomainSupport.db)
       val statesFuture = stateDao.getStates
       val stateList = Await.result(statesFuture, 10 seconds)
-      placesFormData = placesFormData.copy(states = stateList)
+      stateList
     }
+    else
+      Seq.empty[State]
 
-    placesFormData
+    PlacesFormData(None, Option(newAddress), addressList, states)
   }
 }
 
+@deprecated
 object NewPlaceFormPage extends NewPlaceFormPage
 

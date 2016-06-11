@@ -3,14 +3,16 @@ package com.all4journey.webapp.pages
 import com.all4journey.shared.domain._
 import com.all4journey.webapp.util.{HtmlHelper, AddressForm, NavPills, AjaxHelper}
 import org.scalajs.dom
+import org.scalajs.dom.html.Div
 import org.scalajs.dom.raw.Element
 import org.scalajs.jquery.{jQuery => $}
 import prickle.{Pickle, Unpickle}
 
-import scala.collection.mutable.{ListBuffer, Set}
+import scala.collection.mutable.Set
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 import scala.util.Success
+import scalatags.JsDom.TypedTag
 import scalatags.JsDom.all._
 
 
@@ -32,10 +34,10 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
     }
 
     val content = dom.document.getElementById("content")
-    content.appendChild(placesForm(None).render)
+    content.appendChild(placesForm.render)
 
     buildStatesDropDown(formData.states)
-    buildPlacesDropDown(formData.addresses)
+    buildPlacesForm(None, formData.addresses)
 
     $("#successBanner").hide()
     $("#errorBanner").hide()
@@ -44,58 +46,67 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
   @JSExport
   def buildStatesDropDown(states: Seq[State]): Unit = {
 
-    val stateDropdown = dom.document.getElementById("userState")
-
     for (stateItem <- states) {
-      val option = dom.document.createElement("option")
-      option.textContent = stateItem.description
-      option.setAttribute("value", stateItem.id)
-      stateDropdown.appendChild(option)
+      val option = buildDropwDownOption(stateItem.description, stateItem.id)
+      $(".partOfStateList").append(option)
     }
+
   }
 
   @JSExport
-  def buildPlacesDropDown(addresses: Seq[Address]): Unit = {
+  def buildPlacesForm(addressToDisplay: Option[Address], addresses: Seq[Address]): Unit = {
+
+    val homeAddressOption = addresses.find(address => address.addressType == HomeAddressType)
+    homeAddressOption.foreach(
+      homeAddress => AddressForm.refreshFields(homeAddress)
+    )
+
+    val places = addresses.filter(
+      address => address.addressType == PlaceAddressType
+    )
 
     placeNames.clear
+    places.map(
+      placeNames += _.placeName
+    )
 
     val placesDropdown = dom.document.getElementById("places")
 
-    // find the HOME place and add it to the top
-    var listWithoutHomeType = new ListBuffer[Address]()
-      for (addressItem <- addresses) {
-        if (addressItem.addressType.equals(HomeAddressType)) {
-          buildDropwDownOption(placesDropdown, addressItem.placeName, addressItem.id)
-
-          AddressForm.refreshFields(addressItem)
-        }
-
-        else {
-          listWithoutHomeType += addressItem
-        }
-
-        placeNames += addressItem.placeName
-      }
-
-
-    for (addressItem <- listWithoutHomeType) {
+    places.foreach(addressItem =>
       buildDropwDownOption(placesDropdown, addressItem.placeName, addressItem.id)
-    }
+    )
 
     buildDropwDownOption(placesDropdown, AddNewPlaceIndicator, "0")
+
+    val defaultPlaceOption = addressToDisplay match {
+      case Some(address) if address.addressType == PlaceAddressType => addressToDisplay
+      case _ => places.headOption
+    }
+
+    defaultPlaceOption.foreach(defaultPlace => {
+      AddressForm.refreshFields(defaultPlace)
+      $("#placeName").value(defaultPlace.placeName)
+      $("#places").value(defaultPlace.id).change()
+    })
 
   }
 
   @JSExport
   def buildDropwDownOption(dropDown: Element, textContent: String, optionIndex: String): Unit = {
-    val option = dom.document.createElement("option")
-    option.textContent = textContent
-    option.setAttribute("value", optionIndex)
+    val option = buildDropwDownOption(textContent, optionIndex)
     dropDown.appendChild(option)
   }
 
   @JSExport
-  def placesForm(defaultAddress: Option[Address]) = div(cls := "container")(
+  def buildDropwDownOption(textContent: String, optionIndex: String): Element = {
+    val option = dom.document.createElement("option")
+    option.textContent = textContent
+    option.setAttribute("value", optionIndex)
+    option
+  }
+
+  @JSExport
+  def placesForm: TypedTag[Div] = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
         NavPills.load("placesLink")
@@ -121,22 +132,29 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
     div(cls := "row")(
       div(cls := "col-md-10 col-md-offset-1 personal-info")(
         form(cls := "form-horizontal", role := "form")(
+          h3("Home Address"),
+          AddressForm.load(HomeAddressType),
             h3("Your Places"),
             div(id := "placeFieldsDiv")(
               div(id := "placeDiv", cls := "form-group")(
                 label(cls := "col-lg-3 control-label")("Place:"),
                 div(cls := "col-lg-8")(
                   div(cls := "ui-select")(
-                    select(id := "places", name := "places", cls := "form-control partOfStateList", onchange := { () =>
+                    select(id := "places", name := "places", cls := "form-control partOfPlacesList", onchange := { () =>
                       val placeId = $("#places").value().toString.trim
-                      if (!placeId.equals("0")) {
-                        AjaxHelper.doAjaxGetWithJson(s"/multiformProfile/places/get?id=$placeId", "", "", AddressForm.refresh, HtmlHelper.showErrorBanner)
-                      } else {
-                        $("#placeName").value("")
-                        $("#streetAddress").value("")
-                        $("#userState").value("NONE").change()
-                        $("#zipCode").value("")
+                      placeId match {
+                        case "0" =>
+                          $("#placeName").value("")
+                          AddressForm.resetFields(PlaceAddressType)
+                        case _ =>
+                          AjaxHelper.doAjaxGetWithJson(s"/multiformProfile/places/get?id=$placeId", "", "", AddressForm.refresh, HtmlHelper.showErrorBanner)
+                          $("#placeName").value(
+                            $("#places option:selected").text.toString.trim
+                          )
                       }
+                      // if help blocks have been added due to validation, remove them from the form.
+                      $(".has-error").removeClass("has-error")
+                      $(".help-block").remove()
                     })(
                       //option(value := AddNewPlaceIndicator, selected := "selected")(AddNewPlaceIndicator)
                     )
@@ -150,7 +168,7 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
                   input(id := "placeName", name := "placeName", cls := "form-control", `type` := "text")
                 )
               ),
-              AddressForm.load(defaultAddress)
+              AddressForm.load(PlaceAddressType)
             )
           ),
           div(
@@ -162,37 +180,44 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
                   $(".has-error").removeClass("has-error")
                   $(".help-block").remove()
 
-                  val addressUuid = $("#places").value().toString.trim
-                  val pn = $("#placeName").value().toString.trim
+                  val placeAddressUuid = $("#places").value().toString.trim
+                  val aPlacename = $("#placeName").value().toString.trim
 
-                  var address = AddressForm.buildObjectFromForm()
-                  address = address.copy(id = addressUuid, addressType = PlaceAddressType, placeName = pn)
-
-                  val addressViolations = Address.doValidation(address)
-                  AddressForm.setViolationPrompts(addressViolations)
-
-                  val isPlacenameTaken = addressUuid match {
-                    case "0" => placeNames.contains(pn)
+                  val isPlacenameValid = (placeAddressUuid, aPlacename) match {
+                    case ("0",  pn) if pn.nonEmpty => !placeNames.contains(pn)
+                    case (anyUuid, "") => false
                     case _ =>
                       val placeNameFromDropDown = $("#places option:selected").text().toString.trim
-                      if (pn != placeNameFromDropDown)
-                        placeNames.contains(pn)
+                      if (aPlacename != placeNameFromDropDown)
+                        !placeNames.contains(aPlacename)
                       else
-                        false
+                        true
                   }
 
-                  if (isPlacenameTaken)
-                    setPlacenameDupViolationPrompt
+                  if (!isPlacenameValid)
+                    setPlacenameViolationPrompt()
 
-                  if (addressViolations.isEmpty && !isPlacenameTaken) {
-                    val placesFormPayload = new PlacesFormData(Some(address), Seq[Address](), Seq[State]())
+                  var placeAddress = AddressForm.buildObjectFromForm(PlaceAddressType)
+                  placeAddress = placeAddress.copy(id = placeAddressUuid, addressType = PlaceAddressType, placeName = aPlacename)
+
+                  val placeAddressViolations = Address.doValidation(placeAddress)
+                  AddressForm.setViolationPrompts(placeAddressViolations, PlaceAddressType)
+
+                  //-----------------
+
+                  val homeAddress = AddressForm.buildObjectFromForm(HomeAddressType)
+
+                  val homeAddressViolations = Address.doValidation(homeAddress)
+                  AddressForm.setViolationPrompts(homeAddressViolations, HomeAddressType)
+
+                  if (placeAddressViolations.isEmpty && homeAddressViolations.isEmpty && isPlacenameValid) {
+                    val placesFormPayload = new PlacesFormData(Some(homeAddress), Some(placeAddress), Seq.empty[Address], Seq.empty[State])
                     val pickledPfp = Pickle.intoString(placesFormPayload)
 
-                    if (addressUuid.equals("0")) {
-                      AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/new", pickledPfp, "", refreshFormAndPlacesDropDown, HtmlHelper.showErrorBanner)
-                    } else {
-                      AjaxHelper.doAjaxPostWithJson("/multiformProfile/places/update", pickledPfp, "", refreshFormAndPlacesDropDown, HtmlHelper.showErrorBanner)
-                    }
+                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/places", pickledPfp, "", refreshFormAndPlacesDropDown, HtmlHelper.showErrorBanner)
+
+
+
                   }
                 }),
                 span(),
@@ -211,15 +236,15 @@ object PlacesFormJsImpl extends PlacesFormJs with AddressTypePickler {
     Unpickle[PlacesFormData].fromString(s"$data") match {
       case Success(someFormData: PlacesFormData) =>
         $("#places").empty()
-        buildPlacesDropDown(someFormData.addresses)
-        $("#places").value(someFormData.address.getOrElse(AddressForm.emptyAddress).id).change()
+        buildPlacesForm(someFormData.place, someFormData.addresses)
+        //$("#places").value(someFormData.address.getOrElse(AddressForm.emptyAddress).id).change()
         HtmlHelper.showSuccessBanner()
       case _ =>
         HtmlHelper.showErrorBanner()
     }
   }
 
-  private def setPlacenameDupViolationPrompt = {
+  private def setPlacenameViolationPrompt(): Unit = {
     HtmlHelper.showHelpBlock("#placeNameDiv", "placeNameHelpBlock", "invalid place name... please choose a different one")
   }
 }

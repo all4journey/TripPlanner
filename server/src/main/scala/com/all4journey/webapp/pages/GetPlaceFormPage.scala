@@ -19,6 +19,7 @@ import scala.language.postfixOps
 /**
   * Created by aabreu on 1/30/16.
   */
+@deprecated
 trait GetPlaceFormPage extends Page with LazyLogging with AddressTypePickler {
   def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
     get {
@@ -44,6 +45,7 @@ trait GetPlaceFormPage extends Page with LazyLogging with AddressTypePickler {
   }
 }
 
+@deprecated
 object GetPlaceFormPage extends GetPlaceFormPage
 
 

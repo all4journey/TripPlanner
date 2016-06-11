@@ -27,7 +27,7 @@ trait PersonalInfoFormPage extends Page with LazyLogging with SecurityDirectives
       get {
         extractRequestContext { implicit ctx => {
 //          authenticate { user =>
-            val personalFormData = buildFormData(loadStates = true)
+            val personalFormData = buildFormData
 
             val personalInfoFormView = new PersonalInfoFormView("token", personalFormData)
             complete(personalInfoFormView.apply())
@@ -42,7 +42,7 @@ trait PersonalInfoFormPage extends Page with LazyLogging with SecurityDirectives
                 Unpickle[PersonalFormData].fromString(profileJsonPayload) match {
                   case Success(pfd: PersonalFormData) =>
                     handleProfileUpdates(pfd)
-                    val postSuccessFormData = buildFormData(loadStates = false)
+                    val postSuccessFormData = buildFormData
                     val pickledPfp = Pickle.intoString(postSuccessFormData)
                     complete(pickledPfp)
                   case _ => complete(StatusCodes.BadRequest)
@@ -60,62 +60,12 @@ trait PersonalInfoFormPage extends Page with LazyLogging with SecurityDirectives
     val userDao = UserDao(DomainSupport.db)
     userDao.update(updatedUser)
 
-    personalFormData.address match {
-      case Some(someAddress) => createOrUpdateAddress(user.id, someAddress.copy(userId = user.id))
-      case _ =>
-    }
-
-
   }
 
-  private def createOrUpdateAddress(userId: String, addressToInsertOrUpdate: Address): Unit = {
-    val violations = Address.doValidation(addressToInsertOrUpdate)
-
-    if (violations.isEmpty) {
-      val addressDao = AddressDao(DomainSupport.db)
-      if (addressToInsertOrUpdate.id == "0") {
-        val homeAddressFuture = addressDao.getHomeAddressByUserId(userId)
-        val homeAddressResult = Await.result(homeAddressFuture, 10 seconds)
-
-        if (!homeAddressResult.isEmpty)
-          throw HomeAddressException
-        else
-          addressDao.create(addressToInsertOrUpdate)
-      }
-
-      else
-        addressDao.update(addressToInsertOrUpdate)
-    }
-
-    else
-      throw InvalidAddressException
-  }
-
-  private def buildFormData(loadStates: Boolean): PersonalFormData = {
-
+  private def buildFormData: PersonalFormData = {
     val user = UserContext.getCurrentUser
+    PersonalFormData(user)
 
-    var personalFormData = PersonalFormData(user, None, Seq[State]())
-
-    val addressDao = AddressDao(DomainSupport.db)
-    val homeAddressFuture = addressDao.getHomeAddressByUserId(user.id)
-    val homeAddressResult = Await.result(homeAddressFuture, 10 seconds)
-
-    if (homeAddressResult.size > 1)
-      throw MultipleHomeAddressException
-
-    else if (homeAddressResult.nonEmpty) {
-      personalFormData = personalFormData.copy(address = Some(homeAddressResult.head))
-    }
-
-    if (loadStates) {
-      val stateDao = StateDaoImpl(DomainSupport.db)
-      val statesFuture = stateDao.getStates
-      val stateList = Await.result(statesFuture, 10 seconds)
-      personalFormData = personalFormData.copy(states = stateList)
-    }
-
-    personalFormData
   }
 }
 
