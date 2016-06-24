@@ -1,7 +1,7 @@
 package com.all4journey.webapp.pages
 
 import com.all4journey.shared.domain._
-import com.all4journey.webapp.util.{HtmlHelper, AddressForm, AjaxHelper, NavPills}
+import com.all4journey.webapp.util.{HtmlHelper, AjaxHelper, NavPills}
 import org.scalajs.dom
 import prickle._
 import org.scalajs.jquery.{jQuery => $}
@@ -28,9 +28,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs  with AddressTypePickle
     }
 
     val content = dom.document.getElementById("content")
-    content.appendChild(personalInfoForm(formData.user, formData.address, token).render)
-
-    buildStatesDropDown(formData.states)
+    content.appendChild(personalInfoForm(formData.user, token).render)
 
     $("#successBanner").hide()
     $("#errorBanner").hide()
@@ -50,7 +48,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs  with AddressTypePickle
   }
 
   @JSExport
-  def personalInfoForm(user: User, homeAddress: Option[Address], token:String) = div(cls := "container")(
+  def personalInfoForm(user: User, token:String) = div(cls := "container")(
     div(cls := "row-fluid")(
       div(cls := "col-sm-12 col-sm-offset-4")(
         NavPills.load("personalInfoLink")
@@ -97,9 +95,7 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs  with AddressTypePickle
               div(cls := "col-lg-8")(
                 input(id := "email", name := "email", cls := "form-control", `type` := "text", value := user.email, disabled)
               )
-            ),
-            h3("Home Address"),
-            AddressForm.load(homeAddress)
+            )
           ),
           div(
             div(cls := "form-group")(
@@ -132,17 +128,13 @@ object PersonalInfoFormJsImpl extends PersonalInfoFormJs  with AddressTypePickle
                       false
                   }
 
-                  val address = AddressForm.buildObjectFromForm()
 
-                  val addressViolations = Address.doValidation(address)
-                  AddressForm.setViolationPrompts(addressViolations)
-
-                  if (validUser && addressViolations.isEmpty) {
-                    val personalFormPayload = new PersonalFormData(user, Some(address), Seq[State]())
+                  if (validUser) {
+                    val personalFormPayload = new PersonalFormData(user)
                     val pickledPfp = Pickle.intoString(personalFormPayload)
 
 
-                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/personal", pickledPfp, "", AddressForm.refreshUuid, HtmlHelper.showErrorBanner)
+                    AjaxHelper.doAjaxPostWithJson("/multiformProfile/personal", pickledPfp, "", (Any) => HtmlHelper.showSuccessBanner(), HtmlHelper.showErrorBanner)
 
                   }
                 }),

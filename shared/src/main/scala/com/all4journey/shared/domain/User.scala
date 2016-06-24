@@ -10,19 +10,6 @@ case class User(id: String = "", fName:String = "Default", lName:String, email:S
   def withHashedPassword(): User = this.copy(password = password.bcrypt)
 }
 
-// the validator needs to go in the same file where the case class is defined otherwise, the compiler throws a fit
-case object User {
-  implicit val userValidator = validator[User] { userToValidate =>
-    userToValidate.fName.length should be < 50
-    userToValidate.lName.length should be < 50
-    userToValidate.email.length should be < 50
-    userToValidate.email should matchRegex("""^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$""")
-  }
-}
-
-case class Profile(user: User, addresses: Seq[Address], vehicles: Seq[Vehicle])
-
-
 sealed abstract class AddressType(var id: String, var description: String) {
   override def equals(anyAddressType: Any) = anyAddressType match {
     case thatAddressType: AddressType => thatAddressType.id.equals(this.id) && thatAddressType.description.equals(this.description)
@@ -32,11 +19,6 @@ sealed abstract class AddressType(var id: String, var description: String) {
 
 case object HomeAddressType extends AddressType("HOME", "Primary Home Address")
 case object PlaceAddressType extends AddressType("PLACE", "An Arbitrary place that you love")
-
-trait AddressTypePickler {
-  implicit val addressTypePickler: PicklerPair[AddressType] = CompositePickler[AddressType].concreteType[HomeAddressType.type].
-    concreteType[PlaceAddressType.type]
-}
 
 object AddressTypeFactory {
   def buildAddressTypeFromString(addressTypeAsString: String): AddressType = addressTypeAsString match {
@@ -48,6 +30,36 @@ object AddressTypeFactory {
 
 case class Address(id: String = "", userId: String = "", street: Option[String], state: State, zipCode: String, addressType: AddressType , placeName: String)
 
+case class State(id: String, description: String)
+
+case class Vehicle(id: String = "", userId: String = "", year: Option[String], make: Option[String], model: Option[String])
+
+
+
+
+// front end payload objects
+
+case class PersonalFormData(user: User)
+
+case class PlacesFormData(homeAddress: Option[Address] = None, place: Option[Address] = None, addresses: Seq[Address], states: Seq[State])
+
+case class Profile(user: User, addresses: Seq[Address], vehicles: Seq[Vehicle])
+
+// end payload objects
+
+
+
+
+// validation stuff is below this point
+
+case object User {
+  implicit val userValidator = validator[User] { userToValidate =>
+    userToValidate.fName.length should be < 50
+    userToValidate.lName.length should be < 50
+    userToValidate.email.length should be < 50
+    userToValidate.email should matchRegex("""^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$""")
+  }
+}
 
 case object Address {
   val StreetRegex = "^\\d{1,}\\s{1}[A-Za-z0-9\\s]?"
@@ -88,7 +100,7 @@ case object Address {
         validate(address)(Address.validatorNoStreetWithState)
       else if (address.street.getOrElse("").isEmpty && address.state.id.equals("NONE") && (!address.zipCode.isEmpty))
         validate(address)(Address.validatorNoStreetNoStateWithZip)
-      else if (address.street.getOrElse("").isEmpty && address.state.id.equals("NONE") && (address.zipCode.isEmpty))
+      else if (address.street.getOrElse("").isEmpty && address.state.id.equals("NONE") && address.zipCode.isEmpty)
       // an empty address is a valid address
         ValidationSuccess
 
@@ -101,22 +113,17 @@ case object Address {
 
     else
       Set.empty[Violation]
-
-    //violations
   }
 }
 
-case class State(id: String, description: String)
+// end validation stuff is below this point
 
-case class Vehicle(id: String = "", userId: String = "", year: Option[String], make: Option[String], model: Option[String])
 
-// need this to load the personal info section of the profile with the list of addresses
-// and also the list of states for the dropdown
-// the JsModuleWithParams only takes one Param type so this class is used to wrap up the two
-// params I need to load the personal info page
-// TODO - JsModuleWithParams should be able to take multiple params
-case class PersonalFormData(user: User, address: Option[Address], states: Seq[State])
 
-case class PlacesFormData(address: Option[Address], addresses: Seq[Address], states: Seq[State])
+// prickle stuff
+trait AddressTypePickler {
+  implicit val addressTypePickler: PicklerPair[AddressType] = CompositePickler[AddressType].concreteType[HomeAddressType.type].
+    concreteType[PlaceAddressType.type]
+}
 
 

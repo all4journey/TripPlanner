@@ -53,7 +53,7 @@ object Routes extends Page {
           PlacesFormPage()
         } ~
         path("multiformProfile" / "places" / "get") {
-          GetPlaceFormPage()
+          PlacesFormPage.getPlaceById()
         } ~
         path("multiformProfile" / "personal") {
           PersonalInfoFormPage()
@@ -67,11 +67,8 @@ object Routes extends Page {
       path("multiformProfile" / "password") {
         PasswordChangeFormPage()
       } ~
-      path("multiformProfile" / "places" / "update") {
-        UpdatePlaceFormPage()
-      } ~
-      path("multiformProfile" / "places" / "new") {
-        NewPlaceFormPage()
+      path("multiformProfile" / "places") {
+        PlacesFormPage()
       } ~
       path("multiformProfile" / "personal") {
         PersonalInfoFormPage()

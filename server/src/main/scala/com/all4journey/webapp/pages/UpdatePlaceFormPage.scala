@@ -18,6 +18,7 @@ import scala.util.Success
 /**
   * Created by aabreu on 1/31/16.
   */
+@deprecated
 trait UpdatePlaceFormPage extends Page with LazyLogging with AddressTypePickler {
   def apply()(implicit actorSystem: ActorSystem, mat: Materializer) = pathEnd {
     post {
@@ -25,7 +26,7 @@ trait UpdatePlaceFormPage extends Page with LazyLogging with AddressTypePickler 
         entity(as[String]) { addressJsonPayload =>
           Unpickle[PlacesFormData].fromString(addressJsonPayload) match {
             case Success(someFormData: PlacesFormData) =>
-              val updatedAddress = someFormData.address match {
+              val updatedAddress = someFormData.place match {
                 case Some(someAddress) =>
                   updatePlace(someAddress)
                   someAddress
@@ -45,24 +46,25 @@ trait UpdatePlaceFormPage extends Page with LazyLogging with AddressTypePickler 
 
     val user = UserContext.getCurrentUser
 
-    var placesFormData = PlacesFormData(None, Seq[Address](), Seq[State]())
+   // var placesFormData = PlacesFormData(None, Seq[Address](), Seq[State]())
 
     val addressDao = AddressDao(DomainSupport.db)
     val addressesFuture = addressDao.getAddressesByUserId(user.id, None)
     val addressList = Await.result(addressesFuture, 10 seconds)
 
-    placesFormData = placesFormData.copy(addresses = addressList)
+    //placesFormData = placesFormData.copy(addresses = addressList)
 
-    placesFormData = placesFormData.copy(address = Some(updatedAddress))
+   // placesFormData = placesFormData.copy(address = Some(updatedAddress))
 
-    if (loadStates) {
+    val states = if (loadStates) {
       val stateDao = StateDaoImpl(DomainSupport.db)
       val statesFuture = stateDao.getStates
-      val stateList = Await.result(statesFuture, 10 seconds)
-      placesFormData = placesFormData.copy(states = stateList)
-    }
+      Await.result(statesFuture, 10 seconds)
 
-    placesFormData
+    } else
+      Seq.empty[State]
+
+    PlacesFormData(None, Option(updatedAddress), addressList, states)
   }
 
   private def updatePlace(address: Address): Unit = {
@@ -79,4 +81,5 @@ trait UpdatePlaceFormPage extends Page with LazyLogging with AddressTypePickler 
   }
 }
 
+@deprecated
 object UpdatePlaceFormPage extends UpdatePlaceFormPage
