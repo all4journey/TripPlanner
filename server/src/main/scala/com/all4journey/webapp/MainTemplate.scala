@@ -4,6 +4,7 @@ import akka.http.scaladsl.server.RequestContext
 
 import scala.scalajs.niocharset.StandardCharsets
 import scalatags.Text.all._
+import scalatags.generic.PixelStyle
 
 object MainTemplate extends View {
   def apply(
@@ -29,6 +30,14 @@ object MainTemplate extends View {
             ul(cls := "nav navbar-nav")(
               menuItem("Main", "/"),
               menuItem("Profile", "/multiformProfile/personal")
+            ),
+            ul(cls := "nav navbar-nav navbar-right")(
+              menuItem("Sign in", "/login"), // TODO this only displays if there is no user session
+              menuItem("Sign up", "/signUp", Some("padding-right: 10px")) // TODO this only displays if there is no user session
+            /*
+              TODO once there is a user session established, this needs to display throughout the session
+              menuItem("Sign out", "/signOut", Some("padding-right: 10px"))
+             */
             )
         ),
         div(cls := "container-fluid")(
@@ -42,10 +51,12 @@ object MainTemplate extends View {
       )
     )
 
-  def menuItem(name: String, hrefPath: String)(implicit ctx: RequestContext) =
+  def menuItem(name: String, hrefPath: String, customStyle: Option[String] = None)(implicit ctx: RequestContext) = {
     li(
       if (ctx.request.uri.path.toString == hrefPath) cls := "menu active"
       else cls := "menu",
-      a(href := hrefPath, name)
+      a(href := hrefPath, name),
+      style := customStyle.getOrElse("")
     )
+  }
 }
