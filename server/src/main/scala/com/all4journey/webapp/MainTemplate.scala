@@ -4,7 +4,6 @@ import akka.http.scaladsl.server.RequestContext
 
 import scala.scalajs.niocharset.StandardCharsets
 import scalatags.Text.all._
-import scalatags.generic.PixelStyle
 
 object MainTemplate extends View {
   def apply(
@@ -19,6 +18,7 @@ object MainTemplate extends View {
       head(
         meta(charset := StandardCharsets.UTF_8.name.toLowerCase),
         titleTag(s"All4Journey - $titleText"),
+        scriptPath("https://cdn.withcopper.com/1/copper.js"),
         scriptPath("/client-fastopt.js"),
         scriptPath("/client-jsdeps.js"),
         scriptPath("/assets/bootstrap/bootstrap.min.js"),
@@ -28,15 +28,15 @@ object MainTemplate extends View {
       body()(
         div(cls := "navbar navbar-inverse navbar-fixed-top", role := "navigation")(
             ul(cls := "nav navbar-nav")(
-              menuItem("Main", "/"),
-              menuItem("Profile", "/multiformProfile/personal")
+              menuItem("Main", "/")
             ),
             ul(cls := "nav navbar-nav navbar-right")(
-              menuItem("Sign in", "/login"), // TODO this only displays if there is no user session
-              menuItem("Sign up", "/signUp", Some("padding-right: 10px")) // TODO this only displays if there is no user session
+              // menuItem("Profile", "/multiformProfile/personal"), // TODO this only displays if there is a user session established
+              menuItem("Sign in", "/login", "glyphicon-log-in"), // TODO this only displays if there is no user session
+              menuItem("Sign up", "javascript:Copper.login({ application_id: '57786660483D692158904B8B8E3B61E6518E2BBC', scope: 'name, phone' })", "glyphicon-pencil") // TODO this only displays if there is no user session
             /*
               TODO once there is a user session established, this needs to display throughout the session
-              menuItem("Sign out", "/signOut", Some("padding-right: 10px"))
+              menuItem("Sign out", "/logout", "glyphicon-log-out")
              */
             )
         ),
@@ -51,12 +51,20 @@ object MainTemplate extends View {
       )
     )
 
-  def menuItem(name: String, hrefPath: String, customStyle: Option[String] = None)(implicit ctx: RequestContext) = {
+  def menuItem(name: String, hrefPath: String)(implicit ctx: RequestContext) =
     li(
       if (ctx.request.uri.path.toString == hrefPath) cls := "menu active"
       else cls := "menu",
-      a(href := hrefPath, name),
-      style := customStyle.getOrElse("")
+      a(href := hrefPath, name)
     )
-  }
+
+  def menuItem(name: String, hrefPath: String, glyphIcon: String)(implicit ctx: RequestContext) =
+    li(
+      if (ctx.request.uri.path.toString == hrefPath) cls := "menu active"
+      else cls := "menu",
+      a(href := hrefPath)(
+        span(cls := s"glyphicon $glyphIcon", paddingRight := "10px")(),
+        strong()(name)
+      )
+    )
 }
