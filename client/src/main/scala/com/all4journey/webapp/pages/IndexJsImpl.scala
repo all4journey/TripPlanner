@@ -1,6 +1,7 @@
 package com.all4journey.webapp.pages
 
-import scala.scalajs.js.Dynamic.global
+import org.scalajs.dom
+import scalajs.js.Dynamic
 
 // $COVERAGE-OFF$
 /**
@@ -8,7 +9,18 @@ import scala.scalajs.js.Dynamic.global
   */
 object IndexJsImpl extends IndexJs{
   def run(): Unit = {
-    global.document.getElementById("content").textContent = "More content to come!"
+//    val script = dom.document.createElement("script")
+//    script.setAttribute("type", "text/javascript")
+//    script.innerHTML =
+//      "Copper.login({ " +
+//          "application_id: '[your application_id]', scope: 'name, phone' " +
+//      "}, " +
+//      "function(err, user) { " +
+//          "console.log('User logged in ->', user); " +
+//      "});"
+
+    dom.document.getElementById("content").textContent = "More content to come!"
+   // dom.document.head.appendChild(script)
   }
 }
 
